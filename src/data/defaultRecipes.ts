@@ -5,13 +5,13 @@ export const DEFAULT_RECIPES: Recipe[] = [
     id: 'classic-sourdough',
     name: 'Classic Sourdough',
     description: 'The golden standard open-crumb country loaf with crispy caramelized crust, tender open crumb, and subtle sourdough tang.',
-    loavesCount: 2,
-    flourGrams: 1000,
-    waterGrams: 650,
-    starterGrams: 200,
-    saltGrams: 20,
+    loavesCount: 1,
+    flourGrams: 500,
+    waterGrams: 325,
+    starterGrams: 100,
+    saltGrams: 10,
     hydration: 65,
-    starterRatio: '1:3:3 (30g starter + 90g water + 90g flour = 210g total)',
+    starterRatio: '1:3:3 (15g starter + 45g water + 45g flour = 105g total)',
     starterFeedHours: 6,
     defaultRetardHours: 14, // 14h cold retard by default (flexible 12-48h)
     preheatMinutes: 45,
@@ -29,15 +29,15 @@ export const DEFAULT_RECIPES: Recipe[] = [
         durationMinutes: 360, // 6 hours
         description: 'Build your levain for peak yeast activity.',
         detailedInstructions: [
-          'In a clean glass jar, mix 30g mature starter, 90g lukewarm water (78°F / 25°C), and 90g bread flour.',
+          'In a clean glass jar, mix 15g mature starter, 45g lukewarm water (78°F / 25°C), and 45g bread flour.',
           'Stir vigorously until thoroughly combined with no dry patches.',
           'Scrape down the sides and place a rubber band at the current level.',
           'Leave in a warm spot (75°F–80°F / 24°C–27°C) for ~6 hours.'
         ],
         ingredientsUsed: [
-          { name: 'Seed Starter', amount: 30, unit: 'g' },
-          { name: 'Water (Lukewarm)', amount: 90, unit: 'g' },
-          { name: 'Flour', amount: 90, unit: 'g' }
+          { name: 'Seed Starter', amount: 15, unit: 'g' },
+          { name: 'Water (Lukewarm)', amount: 45, unit: 'g' },
+          { name: 'Flour', amount: 45, unit: 'g' }
         ],
         isBiologicalEstimate: true,
         canOverrideCompletion: true,
@@ -66,7 +66,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
           title: 'Levain Peak Milestone',
           visualCue: 'Dome-shaped crest with maximum expansion.',
           checklist: [
-            '200g needed for dough (keep 10g remaining to feed for your next bake)',
+            '100g needed for dough (keep 5-10g remaining to feed for your next bake)',
             'Do not wait until starter starts collapsing back down'
           ]
         }
@@ -80,14 +80,14 @@ export const DEFAULT_RECIPES: Recipe[] = [
         durationMinutes: 30, // 30 min rest before salt
         description: 'Combine flour, water, and active starter. Allow flour to hydrate.',
         detailedInstructions: [
-          'In a large mixing bowl, disperse 200g peaked starter into 650g warm water.',
-          'Add 1000g flour. Mix by hand or dough scraper until all flour is fully hydrated (shaggy mass).',
+          'In a mixing bowl, disperse 100g peaked starter into 325g warm water.',
+          'Add 500g flour. Mix by hand or dough scraper until all flour is fully hydrated (shaggy mass).',
           'Cover bowl with a damp towel and rest for 30 minutes to develop gluten and enzymatic activity.'
         ],
         ingredientsUsed: [
-          { name: 'Bread Flour', amount: 1000, unit: 'g' },
-          { name: 'Water (~80°F/27°C)', amount: 650, unit: 'g' },
-          { name: 'Peaked Starter', amount: 200, unit: 'g' }
+          { name: 'Bread Flour', amount: 500, unit: 'g' },
+          { name: 'Water (~80°F/27°C)', amount: 325, unit: 'g' },
+          { name: 'Peaked Starter', amount: 100, unit: 'g' }
         ]
       },
       {
@@ -99,13 +99,13 @@ export const DEFAULT_RECIPES: Recipe[] = [
         durationMinutes: 30, // 30 min rest before S&F 1
         description: 'Incorporate salt to strengthen gluten and control fermentation.',
         detailedInstructions: [
-          'Sprinkle 20g fine sea salt evenly over the dough surface (optionally with 10g splash of water).',
+          'Sprinkle 10g fine sea salt evenly over the dough surface (optionally with 5g splash of water).',
           'Dimple and pinch the salt into the dough with your fingers.',
           'Perform slap-and-folds or bowl squeezes for 2–3 minutes until smooth and elastic.',
           'Cover and rest for 30 minutes before the first Stretch & Fold.'
         ],
         ingredientsUsed: [
-          { name: 'Fine Sea Salt', amount: 20, unit: 'g' }
+          { name: 'Fine Sea Salt', amount: 10, unit: 'g' }
         ]
       },
       {
@@ -192,19 +192,18 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'shape-loaves',
-        name: '🍞 Divide & Shape Loaves',
-        shortName: 'Shape Loaves',
+        name: '🍞 Shape Loaf',
+        shortName: 'Shape Loaf',
         phase: 'shape',
         icon: 'PackageCheck',
         durationMinutes: 30,
-        description: 'Divide into 2 equal loaves (~930g each), pre-shape, rest, and final shape into bannetons.',
+        description: 'Pre-shape, rest, and final shape into banneton.',
         detailedInstructions: [
           'Turn dough out onto a lightly dusted work surface.',
-          'Divide dough into 2 equal portions (~935g each) using a bench knife.',
-          'Pre-shape into loose rounds; let bench rest uncovered for 15 minutes.',
-          'Dust bannetons with rice flour / 50:50 rice-wheat blend.',
-          'Final shape: fold into batards (oval) or boules (round) creating taut surface tension.',
-          'Stitch seams and transfer upside-down (smooth side down) into prepared bannetons.'
+          'Pre-shape into a loose round; let bench rest uncovered for 15 minutes.',
+          'Dust banneton with rice flour / 50:50 rice-wheat blend.',
+          'Final shape: fold into a batard (oval) or boule (round) creating taut surface tension.',
+          'Stitch seams and transfer upside-down (smooth side down) into prepared banneton.'
         ]
       },
       {
@@ -307,13 +306,13 @@ export const DEFAULT_RECIPES: Recipe[] = [
     id: 'high-hydration-sourdough',
     name: 'Tartine Style High Hydration (78%)',
     description: 'Custardy, open honeycombed crumb with a thin, blistered glass-like crust for experienced bakers.',
-    loavesCount: 2,
-    flourGrams: 1000,
-    waterGrams: 780,
-    starterGrams: 200,
-    saltGrams: 20,
+    loavesCount: 1,
+    flourGrams: 500,
+    waterGrams: 390,
+    starterGrams: 100,
+    saltGrams: 10,
     hydration: 78,
-    starterRatio: '1:3:3 (30g seed + 90g water + 90g flour)',
+    starterRatio: '1:3:3 (15g seed + 45g water + 45g flour)',
     starterFeedHours: 5.5,
     defaultRetardHours: 16,
     preheatMinutes: 45,
@@ -327,13 +326,13 @@ export const DEFAULT_RECIPES: Recipe[] = [
     id: 'whole-wheat-artisan',
     name: 'Rustic Whole Wheat Blend (72%)',
     description: '30% Stone-ground Whole Wheat flour blend offering rich nutty aroma and deep caramelized crust.',
-    loavesCount: 2,
-    flourGrams: 1000,
-    waterGrams: 720,
-    starterGrams: 200,
-    saltGrams: 20,
+    loavesCount: 1,
+    flourGrams: 500,
+    waterGrams: 360,
+    starterGrams: 100,
+    saltGrams: 10,
     hydration: 72,
-    starterRatio: '1:3:3 (30g seed + 90g water + 90g flour)',
+    starterRatio: '1:3:3 (15g seed + 45g water + 45g flour)',
     starterFeedHours: 5,
     defaultRetardHours: 14,
     preheatMinutes: 45,

@@ -19,11 +19,11 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
 
   const [name, setName] = useState<string>(editingRecipe?.name || 'Custom Sourdough Loaf');
   const [description, setDescription] = useState<string>(editingRecipe?.description || 'My personalized artisan sourdough schedule.');
-  const [loavesCount, setLoavesCount] = useState<number>(editingRecipe?.loavesCount || 2);
-  const [flourGrams, setFlourGrams] = useState<number>(editingRecipe?.flourGrams || 1000);
-  const [waterGrams, setWaterGrams] = useState<number>(editingRecipe?.waterGrams || 650);
-  const [starterGrams, setStarterGrams] = useState<number>(editingRecipe?.starterGrams || 200);
-  const [saltGrams, setSaltGrams] = useState<number>(editingRecipe?.saltGrams || 20);
+  const [loavesCount, setLoavesCount] = useState<number>(editingRecipe?.loavesCount || 1);
+  const [flourGrams, setFlourGrams] = useState<number>(editingRecipe?.flourGrams || 500);
+  const [waterGrams, setWaterGrams] = useState<number>(editingRecipe?.waterGrams || 325);
+  const [starterGrams, setStarterGrams] = useState<number>(editingRecipe?.starterGrams || 100);
+  const [saltGrams, setSaltGrams] = useState<number>(editingRecipe?.saltGrams || 10);
   const [defaultRetardHours, setDefaultRetardHours] = useState<number>(editingRecipe?.defaultRetardHours || 14);
 
   // Dynamic steps list

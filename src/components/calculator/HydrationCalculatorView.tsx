@@ -9,11 +9,11 @@ interface HydrationCalculatorViewProps {
 export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = ({ onApplyFormula }) => {
   const { saveRecipe } = useSourdough();
 
-  const [flourGrams, setFlourGrams] = useState<number>(1000);
+  const [flourGrams, setFlourGrams] = useState<number>(500);
   const [hydrationPercent, setHydrationPercent] = useState<number>(68);
   const [starterPercent, setStarterPercent] = useState<number>(20);
   const [saltPercent, setSaltPercent] = useState<number>(2.0);
-  const [loavesCount, setLoavesCount] = useState<number>(2);
+  const [loavesCount, setLoavesCount] = useState<number>(1);
 
   // Calculations
   const waterGrams = Math.round((flourGrams * hydrationPercent) / 100);
