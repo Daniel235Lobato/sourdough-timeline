@@ -1,8 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { X, Calendar, Clock, ArrowRight, Snowflake, Sparkles, AlertCircle } from 'lucide-react';
-import { format, addDays, setHours, setMinutes } from 'date-fns';
+import React, { useState, useMemo, useEffect } from 'react';
+import { X, Calendar, Clock, ArrowRight, Snowflake, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { format, addDays, isSameDay, differenceInCalendarDays } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
-import { calculateReverseSchedule } from '../../engine/scheduler';
+import { 
+  calculateReverseSchedule, 
+  getEarliestBakeByTime, 
+  getMinimumRecipeDurationMinutes,
+  roundToNearestHalfHour 
+} from '../../engine/scheduler';
 
 interface BakeByModalProps {
   isOpen: boolean;
@@ -17,41 +22,100 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
 }) => {
   const { selectedRecipe, startNewBake } = useSourdough();
 
-  // Default to 2 days ahead at 10:00 AM (e.g., Saturday 10 AM)
-  const defaultTarget = addDays(new Date(), 2);
-  const [selectedDateStr, setSelectedDateStr] = useState<string>(format(defaultTarget, 'yyyy-MM-dd'));
-  const [selectedTimeStr, setSelectedTimeStr] = useState<string>('10:00');
   const [coldRetardHours, setColdRetardHours] = useState<number>(selectedRecipe.defaultRetardHours || 14);
 
-  // Compute live reverse schedule
-  const reverseCalculation = useMemo(() => {
+  // Compute minimum recipe duration and absolute earliest valid Bake-By time from right now (rounded to nearest half hour)
+  const earliestPossibleBakeBy = useMemo(() => {
+    return getEarliestBakeByTime(selectedRecipe, new Date(), coldRetardHours);
+  }, [selectedRecipe, coldRetardHours]);
+
+  const minDurationHours = useMemo(() => {
+    const mins = getMinimumRecipeDurationMinutes(selectedRecipe, coldRetardHours);
+    return Math.round((mins / 60) * 10) / 10;
+  }, [selectedRecipe, coldRetardHours]);
+
+  // Selected date and time state (defaulted to earliest valid bake-by time)
+  const [selectedDateStr, setSelectedDateStr] = useState<string>(() => format(earliestPossibleBakeBy, 'yyyy-MM-dd'));
+  const [selectedTimeStr, setSelectedTimeStr] = useState<string>(() => format(earliestPossibleBakeBy, 'HH:mm'));
+
+  // Sync if cold retard changes and pushes earliest time further
+  useEffect(() => {
+    const [hours, minutes] = selectedTimeStr.split(':').map(Number);
+    const [year, month, day] = selectedDateStr.split('-').map(Number);
+    const currentSelected = new Date(year, month - 1, day, hours, minutes, 0);
+
+    if (currentSelected.getTime() < earliestPossibleBakeBy.getTime()) {
+      setSelectedDateStr(format(earliestPossibleBakeBy, 'yyyy-MM-dd'));
+      setSelectedTimeStr(format(earliestPossibleBakeBy, 'HH:mm'));
+    }
+  }, [earliestPossibleBakeBy]);
+
+  // Evaluate currently selected target date
+  const selectedTargetDate = useMemo(() => {
     try {
       const [hours, minutes] = selectedTimeStr.split(':').map(Number);
       const [year, month, day] = selectedDateStr.split('-').map(Number);
-      const targetDate = new Date(year, month - 1, day, hours, minutes, 0);
+      return new Date(year, month - 1, day, hours, minutes, 0);
+    } catch {
+      return earliestPossibleBakeBy;
+    }
+  }, [selectedDateStr, selectedTimeStr, earliestPossibleBakeBy]);
 
-      return calculateReverseSchedule(selectedRecipe, targetDate, coldRetardHours);
+  const isSelectedTimeTooEarly = selectedTargetDate.getTime() < earliestPossibleBakeBy.getTime();
+
+  // Compute live reverse schedule
+  const reverseCalculation = useMemo(() => {
+    if (isSelectedTimeTooEarly) return null;
+    try {
+      return calculateReverseSchedule(selectedRecipe, selectedTargetDate, coldRetardHours);
     } catch {
       return null;
     }
-  }, [selectedRecipe, selectedDateStr, selectedTimeStr, coldRetardHours]);
+  }, [selectedRecipe, selectedTargetDate, coldRetardHours, isSelectedTimeTooEarly]);
 
   if (!isOpen) return null;
 
-  const handleQuickDate = (daysFromNow: number) => {
-    const target = addDays(new Date(), daysFromNow);
-    setSelectedDateStr(format(target, 'yyyy-MM-dd'));
+  // Days offset relative to today for quick buttons
+  const earliestDaysOffset = Math.max(0, differenceInCalendarDays(earliestPossibleBakeBy, new Date()));
+
+  const handleQuickDaySelect = (dayOffsetFromToday: number) => {
+    const target = addDays(new Date(), dayOffsetFromToday);
+    const dateStr = format(target, 'yyyy-MM-dd');
+    setSelectedDateStr(dateStr);
+
+    // If picking the earliest possible day, ensure time is at or after earliest half hour
+    if (isSameDay(target, earliestPossibleBakeBy)) {
+      const [currH, currM] = selectedTimeStr.split(':').map(Number);
+      const testDate = new Date(target.getFullYear(), target.getMonth(), target.getDate(), currH, currM, 0);
+      if (testDate.getTime() < earliestPossibleBakeBy.getTime()) {
+        setSelectedTimeStr(format(earliestPossibleBakeBy, 'HH:mm'));
+      }
+    }
+  };
+
+  const handleTimePreset = (time: string) => {
+    const [h, m] = time.split(':').map(Number);
+    const [year, month, day] = selectedDateStr.split('-').map(Number);
+    const testDate = new Date(year, month - 1, day, h, m, 0);
+
+    if (testDate.getTime() >= earliestPossibleBakeBy.getTime()) {
+      setSelectedTimeStr(time);
+    } else {
+      // Clamp to earliest possible time
+      setSelectedDateStr(format(earliestPossibleBakeBy, 'yyyy-MM-dd'));
+      setSelectedTimeStr(format(earliestPossibleBakeBy, 'HH:mm'));
+    }
   };
 
   const handleBuildTimeline = () => {
-    const [hours, minutes] = selectedTimeStr.split(':').map(Number);
-    const [year, month, day] = selectedDateStr.split('-').map(Number);
-    const targetDate = new Date(year, month - 1, day, hours, minutes, 0);
+    if (isSelectedTimeTooEarly) return;
 
-    startNewBake('bake-by', targetDate, coldRetardHours);
+    startNewBake('bake-by', selectedTargetDate, coldRetardHours);
     onTimelineBuilt();
     onClose();
   };
+
+  const minDateAttribute = format(earliestPossibleBakeBy, 'yyyy-MM-dd');
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
@@ -67,7 +131,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                 Bake By? (Arrive By)
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Calculates backward to tell you when to feed
+                Calculates backward from target ready time
               </p>
             </div>
           </div>
@@ -79,60 +143,90 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
           </button>
         </div>
 
+        {/* Earliest Safe Time Notice */}
+        <div className="mt-4 p-3 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 text-xs text-stone-600 dark:text-stone-300 flex items-start space-x-2">
+          <Clock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="leading-relaxed">
+            <span className="font-semibold text-stone-900 dark:text-stone-100">
+              Minimum timeline duration: ~{minDurationHours} hours.
+            </span>{' '}
+            Earliest possible bake-by time from now is{' '}
+            <span className="font-bold text-amber-700 dark:text-amber-300">
+              {format(earliestPossibleBakeBy, 'EEE, MMM d')} at {format(earliestPossibleBakeBy, 'h:mm a')}
+            </span>.
+          </div>
+        </div>
+
         {/* Date & Time Selection */}
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-              When do you want your bread ready?
+              Target Ready Date:
             </label>
+
+            {/* Quick Day Chips (only showing valid future days) */}
             <div className="grid grid-cols-3 gap-2 mb-2.5">
-              <button
-                type="button"
-                onClick={() => handleQuickDate(1)}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                  selectedDateStr === format(addDays(new Date(), 1), 'yyyy-MM-dd')
-                    ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                Tomorrow
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDate(2)}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                  selectedDateStr === format(addDays(new Date(), 2), 'yyyy-MM-dd')
-                    ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                {format(addDays(new Date(), 2), 'EEEE')}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDate(3)}
-                className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                  selectedDateStr === format(addDays(new Date(), 3), 'yyyy-MM-dd')
-                    ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                {format(addDays(new Date(), 3), 'EEEE')}
-              </button>
+              {[earliestDaysOffset, earliestDaysOffset + 1, earliestDaysOffset + 2].map((offset) => {
+                const dayDate = addDays(new Date(), offset);
+                const dayStr = format(dayDate, 'yyyy-MM-dd');
+                const isSelected = selectedDateStr === dayStr;
+                const isTomorrowDate = offset === 1;
+
+                return (
+                  <button
+                    key={offset}
+                    type="button"
+                    onClick={() => handleQuickDaySelect(offset)}
+                    className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
+                      isSelected
+                        ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
+                        : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                    }`}
+                  >
+                    {isTomorrowDate ? 'Tomorrow' : format(dayDate, 'EEE, MMM d')}
+                  </button>
+                );
+              })}
             </div>
+
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="date"
+                min={minDateAttribute}
                 value={selectedDateStr}
                 onChange={(e) => setSelectedDateStr(e.target.value)}
                 className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
               <input
                 type="time"
+                step="1800"
                 value={selectedTimeStr}
                 onChange={(e) => setSelectedTimeStr(e.target.value)}
                 className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
+            </div>
+          </div>
+
+          {/* Quick Time Presets (Half-hour intervals) */}
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1.5">
+              Popular Half-Hour Target Times:
+            </label>
+            <div className="grid grid-cols-4 gap-1.5">
+              {['08:00', '10:00', '12:30', '17:00'].map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  onClick={() => handleTimePreset(time)}
+                  className={`py-1.5 px-1 rounded-lg text-xs font-mono font-medium border transition-all ${
+                    selectedTimeStr === time
+                      ? 'border-crust-500 bg-crust-500 text-white font-bold'
+                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100'
+                  }`}
+                >
+                  {time === '08:00' ? '8:00 AM' : time === '10:00' ? '10:00 AM' : time === '12:30' ? '12:30 PM' : '5:00 PM'}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -163,8 +257,25 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             </div>
           </div>
 
-          {/* Dynamic Calculated Start Callout Banner */}
-          {reverseCalculation && (
+          {/* Too Early Error Warning Banner */}
+          {isSelectedTimeTooEarly ? (
+            <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/60 p-3.5 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-start space-x-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold">Target time is too early:</span> Sourdough requires at least {minDurationHours} hours from now to ferment properly.
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedDateStr(format(earliestPossibleBakeBy, 'yyyy-MM-dd'));
+                    setSelectedTimeStr(format(earliestPossibleBakeBy, 'HH:mm'));
+                  }}
+                  className="block mt-1 font-bold text-amber-700 dark:text-amber-300 underline"
+                >
+                  Set to earliest valid time ({format(earliestPossibleBakeBy, 'EEE, h:mm a')})
+                </button>
+              </div>
+            </div>
+          ) : reverseCalculation && (
             <div className="rounded-2xl bg-gradient-to-br from-crust-50 via-amber-50 to-orange-50 dark:from-stone-800/90 dark:to-stone-800/40 p-4 border border-crust-200 dark:border-stone-700">
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 rounded-full bg-crust-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm font-bold text-sm">
@@ -193,7 +304,8 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
         <div className="mt-6">
           <button
             onClick={handleBuildTimeline}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-crust-600 via-amber-600 to-crust-700 hover:from-crust-700 hover:to-crust-800 text-white rounded-2xl font-semibold shadow-lg shadow-crust-600/25 hover:shadow-crust-600/35 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98]"
+            disabled={isSelectedTimeTooEarly}
+            className="w-full py-3.5 px-4 bg-gradient-to-r from-crust-600 via-amber-600 to-crust-700 hover:from-crust-700 hover:to-crust-800 text-white rounded-2xl font-semibold shadow-lg shadow-crust-600/25 hover:shadow-crust-600/35 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>CALCULATE START TIME & BAKE</span>
             <ArrowRight className="w-4 h-4" />

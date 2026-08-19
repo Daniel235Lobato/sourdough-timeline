@@ -3,6 +3,57 @@ import { Recipe, ScheduledStep, RecipeStep } from '../types/timeline';
 import { getRecipeWithSteps } from '../data/defaultRecipes';
 
 /**
+ * Round a Date UP to the nearest half hour (e.g. :00 or :30) with seconds reset to 0
+ */
+export function roundToNearestHalfHour(date: Date): Date {
+  const rounded = new Date(date);
+  rounded.setSeconds(0, 0);
+  const minutes = rounded.getMinutes();
+  
+  if (minutes === 0 || minutes === 30) {
+    return rounded;
+  } else if (minutes < 30) {
+    rounded.setMinutes(30);
+  } else {
+    rounded.setMinutes(0);
+    rounded.setHours(rounded.getHours() + 1);
+  }
+  return rounded;
+}
+
+/**
+ * Calculate minimum total minutes required for a recipe to complete.
+ */
+export function getMinimumRecipeDurationMinutes(recipeInput: Recipe, coldRetardHours?: number): number {
+  const recipe = getRecipeWithSteps(recipeInput);
+  let totalMinutes = 0;
+
+  recipe.steps.forEach((step: RecipeStep) => {
+    if (step.isColdRetard) {
+      const minRetard = step.minDurationMinutes || 720; // 12 hours minimum
+      const effectiveRetard = coldRetardHours !== undefined 
+        ? Math.max(minRetard, Math.round(coldRetardHours * 60))
+        : (recipe.defaultRetardHours ? Math.round(recipe.defaultRetardHours * 60) : minRetard);
+      totalMinutes += effectiveRetard;
+    } else {
+      totalMinutes += step.durationMinutes;
+    }
+  });
+
+  return totalMinutes;
+}
+
+/**
+ * Calculate the earliest valid future "Bake By" date/time from the current moment,
+ * strictly rounded up to the nearest half hour.
+ */
+export function getEarliestBakeByTime(recipe: Recipe, baseTime: Date = new Date(), coldRetardHours?: number): Date {
+  const minDurationMin = getMinimumRecipeDurationMinutes(recipe, coldRetardHours);
+  const rawEarliest = addMinutes(baseTime, minDurationMin);
+  return roundToNearestHalfHour(rawEarliest);
+}
+
+/**
  * Format friendly day label relative to today / bake start
  */
 export function getFriendlyDayLabel(date: Date, referenceDate: Date = new Date()): string {
