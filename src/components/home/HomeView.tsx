@@ -44,7 +44,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
           When are you baking?
         </h1>
-        <p className="text-stone-600 dark:text-stone-400 text-sm mt-1 max-w-sm mx-auto">
+        <p className="font-serif italic text-stone-600 dark:text-stone-400 text-sm sm:text-base mt-2 max-w-sm mx-auto leading-relaxed">
           Choose a start time or target fresh-baked time. We calculate every single fold, rise, and bake step for you.
         </p>
       </div>
