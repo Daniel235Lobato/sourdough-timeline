@@ -543,7 +543,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
   const scaleRecipeLoaves = useCallback((recipeId: string, newLoavesCount: number) => {
     if (newLoavesCount < 1 || newLoavesCount > 8) return;
     setRecipes(prev => {
-      return prev.map(recipe => {
+      let updatedSelected: Recipe | null = null;
+      const updated = prev.map(recipe => {
         if (recipe.id !== recipeId) return recipe;
         const scaleFactor = newLoavesCount / recipe.loavesCount;
         const newFlour = Math.round(recipe.flourGrams * scaleFactor);
@@ -551,7 +552,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
         const newStarter = Math.round(recipe.starterGrams * scaleFactor);
         const newSalt = Math.round(recipe.saltGrams * scaleFactor);
 
-        return {
+        const scaled: Recipe = {
           ...recipe,
           loavesCount: newLoavesCount,
           flourGrams: newFlour,
@@ -580,7 +581,14 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
             return step;
           })
         };
+        updatedSelected = scaled;
+        return scaled;
       });
+
+      if (updatedSelected) {
+        setSelectedRecipeState(updatedSelected);
+      }
+      return updated;
     });
   }, []);
 
