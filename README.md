@@ -1,6 +1,6 @@
-# Levain Maps 🍞 — Minimalist Sourdough Baking Timeline App
+# Levain 🍞 — Minimalist Sourdough Baking Timeline App
 
-> **"Google Maps for Sourdough Baking"** — Smart forward & reverse scheduling, real-time biological fermentation tracking, and visual animated timelines.
+> Smart forward & reverse scheduling, real-time biological fermentation tracking, and visual animated timelines.
 
 ---
 

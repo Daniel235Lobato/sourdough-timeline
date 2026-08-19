@@ -43,14 +43,14 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="font-serif font-bold text-stone-900 dark:text-stone-100 text-lg tracking-tight">
-                Levain Maps
+                Levain
               </span>
               <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                GPS
+                Timeline
               </span>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
-              Sourdough Navigation
+              Sourdough Baking Schedule
             </p>
           </div>
         </button>
