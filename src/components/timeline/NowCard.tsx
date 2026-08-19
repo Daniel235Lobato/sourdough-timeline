@@ -53,7 +53,8 @@ export const NowCard: React.FC<NowCardProps> = ({
   const countdown = useCountdown(
     currentStep.startTime,
     currentStep.endTime,
-    !hasStartedCurrentStep && !isAlreadyStarted
+    !hasStartedCurrentStep && !isAlreadyStarted,
+    currentStep.durationMinutes
   );
 
   const handleActionClick = () => {
