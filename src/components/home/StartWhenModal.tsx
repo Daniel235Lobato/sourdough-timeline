@@ -111,10 +111,10 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
-                Start When?
+                Start Feeding
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Forward schedule starting from feeding
+                Calculate your schedule forward from starter feeding
               </p>
             </div>
           </div>

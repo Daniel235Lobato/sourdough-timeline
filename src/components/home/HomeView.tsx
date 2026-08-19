@@ -44,9 +44,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </p>
       </div>
 
-      {/* Two Large Action Cards: START WHEN vs BAKE BY */}
+      {/* Two Large Action Cards: Start Feeding vs Target Serve Time */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        {/* START WHEN */}
+        {/* START FEEDING */}
         <button
           onClick={() => setIsStartWhenOpen(true)}
           className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between h-44 relative overflow-hidden"
@@ -58,10 +58,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <Clock className="w-5 h-5" />
             </div>
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 leading-tight">
-              START WHEN
+              Start Feeding
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              "I know when I want to begin feeding my starter"
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-normal">
+              Calculate your schedule forward from starter feeding
             </p>
           </div>
 
@@ -71,7 +71,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </button>
 
-        {/* BAKE BY */}
+        {/* TARGET SERVE TIME */}
         <button
           onClick={() => setIsBakeByOpen(true)}
           className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-crust-500 dark:hover:border-crust-500 shadow-sm hover:shadow-xl hover:shadow-crust-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between h-44 relative overflow-hidden"
@@ -83,10 +83,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <Calendar className="w-5 h-5" />
             </div>
             <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 leading-tight">
-              BAKE BY
+              Target Serve Time
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-              "I know when I want my warm bread ready to eat"
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-normal">
+              Work backward from when you want fresh sourdough
             </p>
           </div>
 

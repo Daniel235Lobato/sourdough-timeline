@@ -128,10 +128,10 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
-                Bake By? (Arrive By)
+                Target Serve Time
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Calculates backward from target ready time
+                Work backward from when you want fresh sourdough
               </p>
             </div>
           </div>
