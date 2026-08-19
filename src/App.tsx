@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component, ErrorInfo, ReactNode } from 'react';
 import { SourdoughProvider, useSourdough } from './context/SourdoughContext';
 import { Header } from './components/common/Header';
 import { BottomNav } from './components/common/BottomNav';
@@ -7,6 +7,56 @@ import { TimelineView } from './components/timeline/TimelineView';
 import { RecipeListView } from './components/recipes/RecipeListView';
 import { BakeHistoryView } from './components/history/BakeHistoryView';
 import { HydrationCalculatorView } from './components/calculator/HydrationCalculatorView';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('App Error Caught:', error, errorInfo);
+  }
+
+  handleReset = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col items-center justify-center p-6 text-center">
+          <div className="text-5xl mb-4">🍞</div>
+          <h1 className="font-serif text-2xl font-bold mb-2">Something went wrong</h1>
+          <p className="text-xs text-stone-400 max-w-sm mb-4">
+            {this.state.error?.message || 'An unexpected error occurred while loading the app.'}
+          </p>
+          <button
+            onClick={this.handleReset}
+            className="py-2.5 px-5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs transition-colors"
+          >
+            Clear Data & Reload
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const MainAppContent: React.FC = () => {
   const { activeSession } = useSourdough();
@@ -51,8 +101,10 @@ const MainAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <SourdoughProvider>
-      <MainAppContent />
-    </SourdoughProvider>
+    <ErrorBoundary>
+      <SourdoughProvider>
+        <MainAppContent />
+      </SourdoughProvider>
+    </ErrorBoundary>
   );
 }
