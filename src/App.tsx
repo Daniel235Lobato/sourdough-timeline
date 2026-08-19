@@ -7,7 +7,7 @@ import { TimelineView } from './components/timeline/TimelineView';
 import { RecipeListView } from './components/recipes/RecipeListView';
 import { BakeHistoryView } from './components/history/BakeHistoryView';
 import { HydrationCalculatorView } from './components/calculator/HydrationCalculatorView';
-import logoImg from './assets/logo.png';
+import { Logo } from './components/common/Logo';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -41,7 +41,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col items-center justify-center p-6 text-center">
-          <img src={logoImg} alt="Logo" className="w-16 h-16 mb-4 object-contain" />
+          <div className="w-16 h-16 mb-4">
+            <Logo size={64} className="w-full h-full" />
+          </div>
           <h1 className="font-serif text-2xl font-bold mb-2">Something went wrong</h1>
           <p className="text-xs text-stone-400 max-w-sm mb-4">
             {this.state.error?.message || 'An unexpected error occurred while loading the app.'}

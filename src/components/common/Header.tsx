@@ -1,7 +1,7 @@
 import React from 'react';
 import { Volume2, VolumeX, Bell, BellOff, MapPin } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
-import logoImg from '../../assets/logo.png';
+import { Logo } from './Logo';
 
 interface HeaderProps {
   activeTab: string;
@@ -38,12 +38,8 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
           onClick={() => setActiveTab(activeSession ? 'timeline' : 'home')}
           className="flex items-center space-x-2 text-left group"
         >
-          <div className="w-9 h-9 rounded-2xl bg-amber-50 dark:bg-stone-900 border border-amber-200/80 dark:border-stone-800 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
-            <img 
-              src={logoImg} 
-              alt="Levain Sourdough Timeline" 
-              className="w-full h-full object-contain"
-            />
+          <div className="w-10 h-10 rounded-2xl bg-amber-50/80 dark:bg-stone-900 border border-amber-200/80 dark:border-stone-800 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+            <Logo size={36} className="w-full h-full" />
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
