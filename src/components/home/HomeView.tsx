@@ -4,7 +4,6 @@ import {
   Calendar, 
   ArrowRight, 
   Play, 
-  Sparkles, 
   ChevronRight 
 } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
@@ -23,9 +22,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
 }) => {
   const { selectedRecipe, scaleRecipeLoaves, startNewBake } = useSourdough();
 
-  const [isStartWhenOpen, setIsStartWhenOpen] = useState(false);
-  const [isBakeByOpen, setIsBakeByOpen] = useState(false);
-  const [isStartFromStepOpen, setIsStartFromStepOpen] = useState(false);
+  const [isStartWhenOpen, setIsStartWhenOpen] = useState<boolean>(false);
+  const [isBakeByOpen, setIsBakeByOpen] = useState<boolean>(false);
+  const [isStartFromStepOpen, setIsStartFromStepOpen] = useState<boolean>(false);
 
   const handleQuickStartNow = () => {
     // Start forward schedule right now
@@ -36,11 +35,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   return (
     <div className="pb-24 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
       {/* Hero Welcome Banner */}
-      <div className="text-center pt-3 pb-2">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-semibold mb-3 border border-amber-200 dark:border-amber-800/80">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-          <span>Minimalist Sourdough Timeline</span>
-        </div>
+      <div className="text-center pt-2 pb-1">
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
           When are you baking?
         </h1>
