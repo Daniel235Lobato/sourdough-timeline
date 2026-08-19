@@ -36,7 +36,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-flour-50/95 dark:bg-stone-950/95 backdrop-blur-lg border-t border-stone-200/80 dark:border-stone-800 pb-safe">
-      <div className="max-w-2xl mx-auto flex items-center justify-around px-2 py-2">
+      <div className="max-w-2xl mx-auto flex items-center justify-around px-2 py-1.5">
         {navItems.map(item => {
           const Icon = item.icon;
           const isActive = activeTab === item.id || (item.id === 'home' && activeTab === 'timeline' && !activeSession);
@@ -45,7 +45,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex-1 flex flex-col items-center py-1.5 px-2 rounded-xl transition-all relative ${
+              className={`flex-1 flex flex-col items-center py-1 px-1 rounded-xl transition-all relative ${
                 isActive 
                   ? 'text-crust-600 dark:text-crust-400 font-semibold' 
                   : 'text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
@@ -59,7 +59,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight">
+              <span className="text-[11px] mt-0.5 tracking-tight">
                 {item.label}
               </span>
               {isActive && (

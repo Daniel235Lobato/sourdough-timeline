@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, Clock, Calendar, ArrowRight, Snowflake, Sparkles } from 'lucide-react';
-import { format, addDays, setHours, setMinutes } from 'date-fns';
+import { format, addDays, addMinutes, setHours, setMinutes } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
 
@@ -10,6 +10,47 @@ interface StartWhenModalProps {
   onTimelineBuilt: () => void;
 }
 
+const getSuggestedStartTimes = (dateStr: string) => {
+  const now = new Date();
+  const isToday = dateStr === format(now, 'yyyy-MM-dd');
+
+  if (isToday) {
+    const currentMinutes = now.getMinutes();
+    let startHour = now.getHours();
+    let startMinute = 0;
+
+    // Round to next comfortable 30-min interval from current time
+    if (currentMinutes <= 10) {
+      startMinute = 0;
+    } else if (currentMinutes <= 40) {
+      startMinute = 30;
+    } else {
+      startHour = (startHour + 1) % 24;
+      startMinute = 0;
+    }
+
+    const suggestions: { value: string; label: string }[] = [];
+    const baseDate = setMinutes(setHours(new Date(), startHour), startMinute);
+
+    for (let i = 0; i < 4; i++) {
+      const slot = addMinutes(baseDate, i * 30);
+      suggestions.push({
+        value: format(slot, 'HH:mm'),
+        label: format(slot, 'h:mm a')
+      });
+    }
+    return suggestions;
+  } else {
+    // For tomorrow / future dates, provide default morning slots
+    return [
+      { value: '07:00', label: '7:00 AM' },
+      { value: '07:30', label: '7:30 AM' },
+      { value: '08:00', label: '8:00 AM' },
+      { value: '08:30', label: '8:30 AM' },
+    ];
+  }
+};
+
 export const StartWhenModal: React.FC<StartWhenModalProps> = ({
   isOpen,
   onClose,
@@ -17,13 +58,31 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
 }) => {
   const { selectedRecipe, startNewBake } = useSourdough();
 
-  // Default to 7:00 AM today (or tomorrow if currently past 7pm)
+  // Default to today (or tomorrow if past 9pm)
   const now = new Date();
-  const defaultDate = now.getHours() >= 19 ? addDays(now, 1) : now;
+  const defaultDate = now.getHours() >= 21 ? addDays(now, 1) : now;
 
   const [selectedDateStr, setSelectedDateStr] = useState<string>(format(defaultDate, 'yyyy-MM-dd'));
-  const [selectedTimeStr, setSelectedTimeStr] = useState<string>('07:00');
   const [coldRetardHours, setColdRetardHours] = useState<number>(selectedRecipe.defaultRetardHours || 14);
+
+  const suggestedTimes = useMemo(() => {
+    return getSuggestedStartTimes(selectedDateStr);
+  }, [selectedDateStr, isOpen]);
+
+  const [selectedTimeStr, setSelectedTimeStr] = useState<string>(() => {
+    const initialSuggestions = getSuggestedStartTimes(format(defaultDate, 'yyyy-MM-dd'));
+    return initialSuggestions[0]?.value || '07:00';
+  });
+
+  // When modal opens or selected date changes, sync to the first suggested slot
+  useEffect(() => {
+    if (isOpen) {
+      const currentSuggestions = getSuggestedStartTimes(selectedDateStr);
+      if (currentSuggestions.length > 0) {
+        setSelectedTimeStr(currentSuggestions[0].value);
+      }
+    }
+  }, [isOpen, selectedDateStr]);
 
   if (!isOpen) return null;
 
@@ -123,19 +182,19 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               Start Time (Feed Starter)
             </label>
-            <div className="grid grid-cols-4 gap-2 mb-2.5">
-              {['06:00', '07:00', '08:00', '09:00'].map((time) => (
+            <div className="grid grid-cols-2 min-[380px]:grid-cols-4 gap-2 mb-2.5">
+              {suggestedTimes.map(({ value, label }) => (
                 <button
-                  key={time}
+                  key={value}
                   type="button"
-                  onClick={() => setSelectedTimeStr(time)}
-                  className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                    selectedTimeStr === time
+                  onClick={() => setSelectedTimeStr(value)}
+                  className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
+                    selectedTimeStr === value
                       ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
                       : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
                   }`}
                 >
-                  {time === '06:00' ? '6:00 AM' : time === '07:00' ? '7:00 AM' : time === '08:00' ? '8:00 AM' : '9:00 AM'}
+                  {label}
                 </button>
               ))}
             </div>

@@ -16,7 +16,7 @@
 
   /* Support for iOS bottom safe area */
   .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
