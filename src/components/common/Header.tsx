@@ -36,21 +36,16 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
         {/* Brand / Logo */}
         <button 
           onClick={() => setActiveTab(activeSession ? 'timeline' : 'home')}
-          className="flex items-center space-x-2 text-left group"
+          className="flex items-center space-x-2.5 text-left group"
         >
-          <div className="w-10 h-10 rounded-2xl bg-amber-50/80 dark:bg-stone-900 border border-amber-200/80 dark:border-stone-800 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
-            <Logo size={36} className="w-full h-full" />
+          <div className="w-11 h-11 rounded-2xl bg-amber-50/80 dark:bg-stone-900 border border-amber-200/80 dark:border-stone-800 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+            <Logo size={40} className="w-full h-full" />
           </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-serif font-bold text-stone-900 dark:text-stone-100 text-lg tracking-tight">
-                Levain
-              </span>
-              <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                Timeline
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
+          <div className="flex flex-col justify-center">
+            <span className="font-serif font-extrabold text-stone-900 dark:text-stone-100 text-[22px] tracking-tight leading-none">
+              Levain
+            </span>
+            <p className="font-serif italic text-[11.5px] text-stone-500 dark:text-stone-400 tracking-wide mt-1 leading-none">
               Sourdough Baking Schedule
             </p>
           </div>
