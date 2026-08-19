@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col items-center justify-center p-6 text-center">
-          <div className="text-5xl mb-4">🍞</div>
+          <img src="/logo.png" alt="Logo" className="w-16 h-16 mb-4 object-contain" />
           <h1 className="font-serif text-2xl font-bold mb-2">Something went wrong</h1>
           <p className="text-xs text-stone-400 max-w-sm mb-4">
             {this.state.error?.message || 'An unexpected error occurred while loading the app.'}

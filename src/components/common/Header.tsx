@@ -37,8 +37,12 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
           onClick={() => setActiveTab(activeSession ? 'timeline' : 'home')}
           className="flex items-center space-x-2 text-left group"
         >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-600 to-crust-700 flex items-center justify-center text-white text-base shadow-sm group-hover:scale-105 transition-transform">
-            🍞
+          <div className="w-9 h-9 rounded-2xl bg-amber-50 dark:bg-stone-900 border border-amber-200/80 dark:border-stone-800 flex items-center justify-center p-1 shadow-sm group-hover:scale-105 transition-transform overflow-hidden">
+            <img 
+              src="/logo.png" 
+              alt="Levain Sourdough Timeline" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
