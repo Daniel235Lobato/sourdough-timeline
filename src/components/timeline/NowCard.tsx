@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CheckCircle, 
   Clock, 
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { ScheduledStep } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
-import { useCountdown } from '../../hooks/useCountdown';
+import { useCountdown, formatDurationToHMS } from '../../hooks/useCountdown';
 import { StarterBubbles } from '../animations/StarterBubbles';
 import { DoughExpanding } from '../animations/DoughExpanding';
 import { FridgeColdEffect } from '../animations/FridgeColdEffect';
@@ -34,20 +34,32 @@ export const NowCard: React.FC<NowCardProps> = ({
   onOpenRunningBehind
 }) => {
   const { 
+    startCurrentStepNow,
     completeCurrentStep, 
     triggerBiologicalReady, 
     activeSession 
   } = useSourdough();
 
-  const [hasStartedCurrentStep, setHasStartedCurrentStep] = useState(false);
-  const [showChecklistModal, setShowChecklistModal] = useState(false);
+  // Check if this step was already started
+  const isAlreadyStarted = Boolean(currentStep.actualStartTime);
+  const [hasStartedCurrentStep, setHasStartedCurrentStep] = useState(isAlreadyStarted);
 
-  // Live countdown to step completion or next step
-  const countdown = useCountdown(currentStep.startTime, currentStep.endTime);
+  // Sync state if step changes
+  useEffect(() => {
+    setHasStartedCurrentStep(Boolean(currentStep.actualStartTime));
+  }, [currentStep.id, currentStep.actualStartTime]);
+
+  // Live countdown to step completion in HH:MM:SS format
+  const countdown = useCountdown(
+    currentStep.startTime,
+    currentStep.endTime,
+    !hasStartedCurrentStep && !isAlreadyStarted
+  );
 
   const handleActionClick = () => {
-    if (!hasStartedCurrentStep) {
+    if (!hasStartedCurrentStep && !isAlreadyStarted) {
       setHasStartedCurrentStep(true);
+      startCurrentStepNow();
     } else {
       completeCurrentStep();
       setHasStartedCurrentStep(false);
@@ -79,6 +91,12 @@ export const NowCard: React.FC<NowCardProps> = ({
         return 'from-amber-500/10 via-transparent to-transparent border-amber-500/30 text-stone-900 dark:text-stone-100';
     }
   };
+
+  // Determine display time in Hour:Min:Second format
+  const isTimerRunning = hasStartedCurrentStep || isAlreadyStarted;
+  const timeDisplay = isTimerRunning 
+    ? countdown.formattedCountdown 
+    : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
     <div className={`rounded-3xl bg-white dark:bg-stone-900 border-2 bg-gradient-to-b ${getPhaseColorClass()} p-5 shadow-xl transition-all relative overflow-hidden`}>
@@ -177,15 +195,15 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       )}
 
-      {/* Live Countdown & Next Step Indicator */}
+      {/* Live Countdown & Next Step Indicator with Hour:Min:Second format */}
       <div className="flex items-center justify-between py-2 border-t border-stone-200/60 dark:border-stone-800/80 mb-4">
         <div className="flex items-center space-x-2">
-          <Clock className="w-4 h-4 text-stone-400" />
+          <Clock className={`w-4 h-4 ${isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
           <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
-            {countdown.isPast ? 'Target reached' : `Time remaining: `}
+            {isTimerRunning ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') : 'Step duration: '}
           </span>
-          <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100">
-            {countdown.formattedCountdown}
+          <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100 tracking-wider">
+            {timeDisplay}
           </span>
         </div>
 
@@ -204,12 +222,12 @@ export const NowCard: React.FC<NowCardProps> = ({
         <button
           onClick={handleActionClick}
           className={`w-full py-4 px-4 rounded-2xl font-bold text-base flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98] shadow-lg ${
-            hasStartedCurrentStep
+            isTimerRunning
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
               : 'bg-stone-900 dark:bg-amber-600 hover:bg-black dark:hover:bg-amber-700 text-white shadow-stone-900/20'
           }`}
         >
-          {hasStartedCurrentStep ? (
+          {isTimerRunning ? (
             <>
               <CheckCircle className="w-5 h-5" />
               <span>STEP COMPLETE ✓</span>

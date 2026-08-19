@@ -23,6 +23,7 @@ interface SourdoughContextType {
   
   // Core Actions
   startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe) => void;
+  startCurrentStepNow: () => void;
   completeCurrentStep: () => void;
   advanceToStepIndex: (index: number) => void;
   triggerBiologicalReady: (stepId: string) => void;
@@ -215,6 +216,51 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       });
     }
   }, [selectedRecipe, soundEnabled, notificationsEnabled, playStepChime, requestPermission, sendNotification]);
+
+  /**
+   * Start current step timer right now and align schedule
+   */
+  const startCurrentStepNow = useCallback(() => {
+    if (!activeSession) return;
+    const now = new Date();
+    const currIdx = activeSession.currentStepIndex;
+    const currentStep = activeSession.steps[currIdx];
+
+    const updatedSteps = [...activeSession.steps];
+    const duration = currentStep.durationMinutes;
+    const end = new Date(now.getTime() + duration * 60000);
+
+    updatedSteps[currIdx] = {
+      ...currentStep,
+      startTime: now,
+      endTime: end,
+      actualStartTime: now
+    };
+
+    // Propagate subsequent steps forward
+    let cursor = end;
+    for (let i = currIdx + 1; i < updatedSteps.length; i++) {
+      const step = updatedSteps[i];
+      const sStart = cursor;
+      const sEnd = new Date(sStart.getTime() + step.durationMinutes * 60000);
+      updatedSteps[i] = {
+        ...step,
+        startTime: sStart,
+        endTime: sEnd
+      };
+      cursor = sEnd;
+    }
+
+    setActiveSession({
+      ...activeSession,
+      steps: updatedSteps,
+      targetBakeByTime: updatedSteps[updatedSteps.length - 1]?.endTime
+    });
+
+    if (soundEnabled) {
+      playStepChime();
+    }
+  }, [activeSession, soundEnabled, playStepChime]);
 
   /**
    * Mark current step complete and advance to next
@@ -604,6 +650,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       notificationsEnabled,
       setNotificationsEnabled,
       startNewBake,
+      startCurrentStepNow,
       completeCurrentStep,
       advanceToStepIndex,
       triggerBiologicalReady,
