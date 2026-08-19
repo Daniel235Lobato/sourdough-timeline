@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Plus, Trash2, Save, Sparkles, Layers, Clock } from 'lucide-react';
 import { Recipe, RecipeStep, StepPhase } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
+import { Modal } from '../common/Modal';
 
 interface RecipeBuilderModalProps {
   isOpen: boolean;
@@ -199,9 +200,8 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-800 relative max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-lg">
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center space-x-2.5">
             <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
@@ -374,7 +374,6 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
             <span>SAVE RECIPE & SCHEDULE</span>
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };

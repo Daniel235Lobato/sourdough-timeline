@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Star, Sparkles, Trophy, Heart, Bookmark, RotateCcw, Check } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
 import { CompletedLoafAnimation } from '../animations/CompletedLoafAnimation';
+import { Modal } from '../common/Modal';
 
 interface LoafSuccessModalProps {
   isOpen: boolean;
@@ -33,9 +34,14 @@ export const LoafSuccessModal: React.FC<LoafSuccessModalProps> = ({ isOpen, onBa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md animate-fade-in">
-      <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-800 relative max-h-[95vh] overflow-y-auto">
-        {/* Animated Celebration */}
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {}}
+      maxWidthClass="max-w-md"
+      backdropClass="bg-stone-950/80 backdrop-blur-md"
+      cardClass="max-h-[95vh]"
+    >
+      {/* Animated Celebration */}
         <CompletedLoafAnimation />
 
         {/* Loaf Specs Grid */}
@@ -170,7 +176,6 @@ export const LoafSuccessModal: React.FC<LoafSuccessModalProps> = ({ isOpen, onBa
             <span>PLAN ANOTHER BAKE</span>
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };

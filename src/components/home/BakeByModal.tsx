@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { X, Calendar, Clock, ArrowRight, Snowflake, Sparkles, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { format, addDays, isSameDay, differenceInCalendarDays } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
+import { Modal } from '../common/Modal';
 import { 
   calculateReverseSchedule, 
   getEarliestBakeByTime, 
@@ -118,9 +119,8 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
   const minDateAttribute = format(earliestPossibleBakeBy, 'yyyy-MM-dd');
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-800 relative max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md">
+      {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
           <div className="flex items-center space-x-2.5">
             <div className="w-9 h-9 rounded-2xl bg-crust-100 dark:bg-crust-950/60 text-crust-600 dark:text-crust-400 flex items-center justify-center">
@@ -311,7 +311,6 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
