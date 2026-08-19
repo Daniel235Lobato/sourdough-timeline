@@ -36,10 +36,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <div className="pb-24 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
       {/* Hero Welcome Banner */}
       <div className="text-center pt-2 pb-1">
-        <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
+        <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.15]">
           When are you baking?
         </h1>
-        <p className="font-serif italic text-stone-600 dark:text-stone-400 text-sm sm:text-base mt-2 max-w-sm mx-auto leading-relaxed">
+        <p className="font-sans text-[15px] text-[#5A524C] dark:text-stone-300 font-normal leading-[1.4] mt-2 max-w-sm mx-auto">
           We calculate every single fold, rise, and bake step for you.
         </p>
       </div>
@@ -49,7 +49,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* START FEEDING */}
         <button
           onClick={() => setIsStartWhenOpen(true)}
-          className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between h-44 relative overflow-hidden"
+          className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-amber-500 dark:hover:border-amber-500 shadow-sm hover:shadow-xl hover:shadow-amber-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between min-h-[190px] sm:min-h-[195px] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-28 h-28 bg-amber-500/5 rounded-full blur-2xl group-hover:bg-amber-500/15 transition-all pointer-events-none" />
           
@@ -57,15 +57,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Clock className="w-5 h-5" />
             </div>
-            <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 leading-tight">
+            <h2 className="font-serif text-[21px] font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.2]">
               Start Feeding
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-normal">
+            <p className="text-[15px] text-[#5A524C] dark:text-stone-300 leading-[1.45] mt-1.5 font-normal">
               Calculate your schedule forward from starter feeding
             </p>
           </div>
 
-          <div className="flex items-center text-xs font-semibold text-amber-700 dark:text-amber-400 mt-2">
+          <div className="flex items-center text-xs font-semibold text-amber-700 dark:text-amber-400 mt-3">
             <span>Calculate forward</span>
             <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -74,7 +74,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* TARGET SERVE TIME */}
         <button
           onClick={() => setIsBakeByOpen(true)}
-          className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-crust-500 dark:hover:border-crust-500 shadow-sm hover:shadow-xl hover:shadow-crust-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between h-44 relative overflow-hidden"
+          className="group text-left p-5 rounded-3xl bg-white dark:bg-stone-900 border-2 border-stone-200/80 dark:border-stone-800 hover:border-crust-500 dark:hover:border-crust-500 shadow-sm hover:shadow-xl hover:shadow-crust-500/10 transition-all transform active:scale-[0.98] flex flex-col justify-between min-h-[190px] sm:min-h-[195px] relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-28 h-28 bg-crust-500/5 rounded-full blur-2xl group-hover:bg-crust-500/15 transition-all pointer-events-none" />
 
@@ -82,15 +82,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="w-10 h-10 rounded-2xl bg-crust-100 dark:bg-crust-950/80 text-crust-700 dark:text-crust-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Calendar className="w-5 h-5" />
             </div>
-            <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 leading-tight">
+            <h2 className="font-serif text-[21px] font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.2]">
               Target Serve Time
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-normal">
+            <p className="text-[15px] text-[#5A524C] dark:text-stone-300 leading-[1.45] mt-1.5 font-normal">
               Work backward from when you want fresh sourdough
             </p>
           </div>
 
-          <div className="flex items-center text-xs font-semibold text-crust-700 dark:text-crust-400 mt-2">
+          <div className="flex items-center text-xs font-semibold text-crust-700 dark:text-crust-400 mt-3">
             <span>Calculate backward</span>
             <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
           </div>

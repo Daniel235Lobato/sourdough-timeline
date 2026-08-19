@@ -83,10 +83,10 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
   return (
     <div className="pb-28 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
       <div>
-        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">
+        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.2]">
           Baker's Percentages & Hydration
         </h2>
-        <p className="text-xs text-stone-500 dark:text-stone-400">
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
           Adjust baker's percentages to calculate exact gram weights and crumb characteristics
         </p>
       </div>

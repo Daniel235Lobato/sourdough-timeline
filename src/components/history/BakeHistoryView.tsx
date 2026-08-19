@@ -10,10 +10,10 @@ export const BakeHistoryView: React.FC = () => {
     <div className="pb-28 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">
+        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.2]">
           Bake Journal & Archive
         </h2>
-        <p className="text-xs text-stone-500 dark:text-stone-400">
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
           Track previous bakes, fermentation timing, and crumb ratings to master your bake
         </p>
       </div>
