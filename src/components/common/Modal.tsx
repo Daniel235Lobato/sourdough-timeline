@@ -42,13 +42,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto overscroll-contain animate-fade-in ${backdropClass}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto overflow-x-hidden overscroll-contain animate-fade-in ${backdropClass}`}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className={`bg-white dark:bg-stone-900 rounded-3xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 dark:border-stone-800 relative max-h-[90vh] overflow-y-auto my-auto ${maxWidthClass} ${cardClass}`}
+        className={`bg-white dark:bg-stone-900 rounded-3xl w-full p-4 sm:p-6 shadow-2xl border border-stone-200 dark:border-stone-800 relative max-h-[90vh] overflow-y-auto overflow-x-hidden my-auto ${maxWidthClass} ${cardClass}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

@@ -165,7 +165,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             </label>
 
             {/* Quick Day Chips (only showing valid future days) */}
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2.5">
+            <div className="grid grid-cols-3 gap-2 mb-2.5">
               {[earliestDaysOffset, earliestDaysOffset + 1, earliestDaysOffset + 2].map((offset) => {
                 const dayDate = addDays(new Date(), offset);
                 const dayStr = format(dayDate, 'yyyy-MM-dd');
@@ -177,7 +177,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                     key={offset}
                     type="button"
                     onClick={() => handleQuickDaySelect(offset)}
-                    className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center truncate ${
+                    className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
                       isSelected
                         ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
                         : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -189,20 +189,20 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
               })}
             </div>
 
-            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <input
                 type="date"
                 min={minDateAttribute}
                 value={selectedDateStr}
                 onChange={(e) => setSelectedDateStr(e.target.value)}
-                className="w-full min-w-0 bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
+                className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
               <input
                 type="time"
                 step="1800"
                 value={selectedTimeStr}
                 onChange={(e) => setSelectedTimeStr(e.target.value)}
-                className="w-full min-w-0 bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
+                className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
             </div>
           </div>
@@ -212,13 +212,13 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
               Popular Target Times:
             </label>
-            <div className="grid grid-cols-2 min-[340px]:grid-cols-4 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {['08:00', '10:00', '12:30', '17:00'].map((time) => (
                 <button
                   key={time}
                   type="button"
                   onClick={() => handleTimePreset(time)}
-                  className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center whitespace-nowrap flex items-center justify-center ${
+                  className={`min-w-0 w-full py-2.5 px-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center ${
                     selectedTimeStr === time
                       ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm font-bold'
                       : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'

@@ -132,11 +132,11 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               Start Date
             </label>
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2.5">
+            <div className="grid grid-cols-3 gap-2 mb-2.5">
               <button
                 type="button"
                 onClick={() => handleQuickDate(0)}
-                className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center truncate ${
+                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
                   selectedDateStr === format(new Date(), 'yyyy-MM-dd')
                     ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
                     : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -147,7 +147,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDate(1)}
-                className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center truncate ${
+                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
                   selectedDateStr === format(addDays(new Date(), 1), 'yyyy-MM-dd')
                     ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
                     : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -158,7 +158,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleQuickDate(2)}
-                className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center truncate ${
+                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
                   selectedDateStr === format(addDays(new Date(), 2), 'yyyy-MM-dd')
                     ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
                     : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -172,7 +172,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
                 type="date"
                 value={selectedDateStr}
                 onChange={(e) => setSelectedDateStr(e.target.value)}
-                className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
           </div>
@@ -182,13 +182,13 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
               Start Time (Feed Starter)
             </label>
-            <div className="grid grid-cols-2 min-[340px]:grid-cols-4 gap-1.5 sm:gap-2 mb-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2.5">
               {suggestedTimes.map(({ value, label }) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setSelectedTimeStr(value)}
-                  className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center whitespace-nowrap flex items-center justify-center ${
+                  className={`min-w-0 w-full py-2.5 px-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center ${
                     selectedTimeStr === value
                       ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
                       : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -202,7 +202,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
               type="time"
               value={selectedTimeStr}
               onChange={(e) => setSelectedTimeStr(e.target.value)}
-              className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </div>
 
