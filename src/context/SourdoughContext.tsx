@@ -122,7 +122,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     return [
       {
         id: 'sample-bake-1',
-        recipeName: 'Classic Sourdough (2 Loaves)',
+        recipeName: 'Classic Sourdough',
         loavesCount: 2,
         hydration: 65,
         startedAt: new Date(Date.now() - 86400000 * 3).toISOString(),

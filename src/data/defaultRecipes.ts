@@ -3,7 +3,7 @@ import { Recipe } from '../types/timeline';
 export const DEFAULT_RECIPES: Recipe[] = [
   {
     id: 'classic-sourdough',
-    name: 'Classic Sourdough (2 Loaves)',
+    name: 'Classic Sourdough',
     description: 'The golden standard open-crumb country loaf with crispy caramelized crust, tender open crumb, and subtle sourdough tang.',
     loavesCount: 2,
     flourGrams: 1000,
@@ -192,7 +192,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'shape-loaves',
-        name: '🍞 Divide & Shape 2 Loaves',
+        name: '🍞 Divide & Shape Loaves',
         shortName: 'Shape Loaves',
         phase: 'shape',
         icon: 'PackageCheck',
@@ -345,8 +345,8 @@ export const DEFAULT_RECIPES: Recipe[] = [
   },
   {
     id: 'same-day-boule',
-    name: 'Same-Day Express Sourdough (1 Loaf)',
-    description: 'Faster turnaround single loaf utilizing warm ambient fermentation without overnight refrigeration.',
+    name: 'Same-Day Express Sourdough',
+    description: 'Faster turnaround loaf utilizing warm ambient fermentation without overnight refrigeration.',
     loavesCount: 1,
     flourGrams: 500,
     waterGrams: 340,

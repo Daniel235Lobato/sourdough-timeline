@@ -56,7 +56,7 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
   const handleCreateFromFormula = () => {
     const customRecipe = {
       id: `calc-recipe-${Date.now()}`,
-      name: `${hydrationPercent}% Custom Loaf (${loavesCount} Loaves)`,
+      name: `${hydrationPercent}% Custom Sourdough`,
       description: `Tailored formula: ${hydrationPercent}% hydration, ${starterPercent}% starter, ${saltPercent}% salt.`,
       loavesCount,
       flourGrams,
