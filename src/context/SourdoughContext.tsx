@@ -21,6 +21,12 @@ interface SourdoughContextType {
   notificationsEnabled: boolean;
   setNotificationsEnabled: (val: boolean) => void;
   
+  // Push Notifications (PWA / Web Push)
+  isPushSubscribed: boolean;
+  isPushSubscribing: boolean;
+  subscribeToPushNotifications: () => Promise<PushSubscription | null>;
+  sendTestPush: () => Promise<boolean>;
+
   // Core Actions
   startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe) => void;
   startCurrentStepNow: () => void;
@@ -51,7 +57,16 @@ const SourdoughContext = createContext<SourdoughContextType | undefined>(undefin
 
 export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { playStepChime, playSuccessCelebration } = useAudioChime();
-  const { sendNotification, requestPermission } = useNotifications();
+  const { 
+    sendNotification, 
+    requestPermission, 
+    isSubscribed: isPushSubscribed,
+    isSubscribing: isPushSubscribing,
+    subscribeToPushNotifications,
+    scheduleRemotePush,
+    cancelRemotePush,
+    sendTestPush
+  } = useNotifications();
 
   // Load custom recipes and combine with default recipes
   const [recipes, setRecipes] = useState<Recipe[]>(() => {
@@ -649,6 +664,10 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       setSoundEnabled,
       notificationsEnabled,
       setNotificationsEnabled,
+      isPushSubscribed,
+      isPushSubscribing,
+      subscribeToPushNotifications,
+      sendTestPush,
       startNewBake,
       startCurrentStepNow,
       completeCurrentStep,

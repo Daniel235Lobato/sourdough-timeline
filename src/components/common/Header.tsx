@@ -14,7 +14,10 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     soundEnabled, 
     setSoundEnabled, 
     notificationsEnabled, 
-    setNotificationsEnabled 
+    setNotificationsEnabled,
+    isPushSubscribed,
+    isPushSubscribing,
+    subscribeToPushNotifications
   } = useSourdough();
 
   // Calculate session completion percentage
@@ -29,6 +32,17 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     progressPercent = Math.round((completedCount / totalSteps) * 100);
     if (activeSession.isCompleted) progressPercent = 100;
   }
+
+  const handleNotificationToggle = async () => {
+    if (!notificationsEnabled) {
+      setNotificationsEnabled(true);
+      if (!isPushSubscribed) {
+        await subscribeToPushNotifications();
+      }
+    } else {
+      setNotificationsEnabled(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 bg-flour-50/90 dark:bg-stone-950/90 backdrop-blur-md border-b border-stone-200/80 dark:border-stone-800 px-4 py-3 max-w-2xl mx-auto w-full transition-all">
@@ -80,15 +94,24 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
 
-          {/* Notification Toggle */}
+          {/* Web Push / Notification Toggle */}
           <button
-            onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-            title={notificationsEnabled ? 'Mute notifications' : 'Enable step alerts'}
-            className={`p-2 rounded-xl border transition-colors ${
+            onClick={handleNotificationToggle}
+            disabled={isPushSubscribing}
+            title={
               notificationsEnabled
-                ? 'border-stone-300 dark:border-stone-700 text-emerald-600 dark:text-emerald-400 bg-white/60 dark:bg-stone-900/60'
+                ? isPushSubscribed
+                  ? 'Background Web Push alerts active (screen locked & closed browser supported)'
+                  : 'Step notifications enabled'
+                : 'Enable background Web Push alerts'
+            }
+            className={`p-2 rounded-xl border transition-all ${
+              notificationsEnabled
+                ? isPushSubscribed
+                  ? 'border-emerald-400 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400 bg-emerald-50/60 dark:bg-emerald-950/40 shadow-sm'
+                  : 'border-stone-300 dark:border-stone-700 text-emerald-600 dark:text-emerald-400 bg-white/60 dark:bg-stone-900/60'
                 : 'border-stone-200 dark:border-stone-800 text-stone-400 dark:text-stone-500'
-            }`}
+            } ${isPushSubscribing ? 'animate-pulse opacity-70' : ''}`}
           >
             {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
           </button>

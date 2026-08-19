@@ -1,0 +1,31 @@
+{
+  "name": "Levain — Sourdough Timeline",
+  "short_name": "Levain",
+  "description": "Minimalist sourdough baking schedule, intelligent biological fermentation tracking, and timers.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbfaf8",
+  "theme_color": "#fbfaf8",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo.png",
+      "sizes": "280x280",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./favicon.png",
+      "sizes": "280x280",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
