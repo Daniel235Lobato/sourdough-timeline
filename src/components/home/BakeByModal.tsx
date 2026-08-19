@@ -165,7 +165,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             </label>
 
             {/* Quick Day Chips (only showing valid future days) */}
-            <div className="grid grid-cols-3 gap-2 mb-2.5">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-2.5">
               {[earliestDaysOffset, earliestDaysOffset + 1, earliestDaysOffset + 2].map((offset) => {
                 const dayDate = addDays(new Date(), offset);
                 const dayStr = format(dayDate, 'yyyy-MM-dd');
@@ -177,7 +177,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                     key={offset}
                     type="button"
                     onClick={() => handleQuickDaySelect(offset)}
-                    className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center truncate ${
                       isSelected
                         ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm'
                         : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -189,39 +189,39 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
               })}
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 min-[340px]:grid-cols-2 gap-2">
               <input
                 type="date"
                 min={minDateAttribute}
                 value={selectedDateStr}
                 onChange={(e) => setSelectedDateStr(e.target.value)}
-                className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
+                className="w-full min-w-0 bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
               <input
                 type="time"
                 step="1800"
                 value={selectedTimeStr}
                 onChange={(e) => setSelectedTimeStr(e.target.value)}
-                className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
+                className="w-full min-w-0 bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-crust-500"
               />
             </div>
           </div>
 
           {/* Quick Time Presets (Half-hour intervals) */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-400 mb-1.5">
-              Popular Half-Hour Target Times:
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
+              Popular Target Times:
             </label>
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-2 min-[340px]:grid-cols-4 gap-1.5 sm:gap-2">
               {['08:00', '10:00', '12:30', '17:00'].map((time) => (
                 <button
                   key={time}
                   type="button"
                   onClick={() => handleTimePreset(time)}
-                  className={`py-1.5 px-1 rounded-lg text-xs font-mono font-medium border transition-all ${
+                  className={`py-2 px-1 sm:px-2 rounded-xl text-[11px] sm:text-xs font-semibold border transition-all text-center whitespace-nowrap flex items-center justify-center ${
                     selectedTimeStr === time
-                      ? 'border-crust-500 bg-crust-500 text-white font-bold'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100'
+                      ? 'border-crust-500 bg-crust-50 dark:bg-crust-950/50 text-crust-700 dark:text-crust-300 shadow-sm font-bold'
+                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
                   }`}
                 >
                   {time === '08:00' ? '8:00 AM' : time === '10:00' ? '10:00 AM' : time === '12:30' ? '12:30 PM' : '5:00 PM'}
@@ -276,22 +276,22 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
               </div>
             </div>
           ) : reverseCalculation && (
-            <div className="rounded-2xl bg-gradient-to-br from-crust-50 via-amber-50 to-orange-50 dark:from-stone-800/90 dark:to-stone-800/40 p-4 border border-crust-200 dark:border-stone-700">
-              <div className="flex items-start space-x-3">
+            <div className="rounded-2xl bg-gradient-to-br from-crust-50 via-amber-50 to-orange-50 dark:from-stone-800/90 dark:to-stone-800/40 p-3.5 sm:p-4 border border-crust-200 dark:border-stone-700">
+              <div className="flex items-start space-x-2.5 sm:space-x-3">
                 <div className="w-8 h-8 rounded-full bg-crust-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm font-bold text-sm">
                   🌱
                 </div>
-                <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-crust-700 dark:text-crust-400">
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-crust-700 dark:text-crust-400">
                     Recommended Feeding Time:
                   </span>
-                  <div className="font-serif text-xl font-extrabold text-stone-900 dark:text-stone-100 mt-0.5">
+                  <div className="font-serif text-lg sm:text-xl font-extrabold text-stone-900 dark:text-stone-100 mt-0.5 break-words">
                     {format(reverseCalculation.calculatedStartTime, 'EEEE, MMM d')} at{' '}
                     <span className="text-crust-600 dark:text-crust-400">
                       {format(reverseCalculation.calculatedStartTime, 'h:mm a')}
                     </span>
                   </div>
-                  <p className="text-xs text-stone-600 dark:text-stone-400 mt-1.5 leading-relaxed">
+                  <p className="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 mt-1 leading-relaxed">
                     Based on your recipe, 6h starter build, 4.5h mix & folds, {coldRetardHours}h refrigerator retard, baking, and 2h cooling.
                   </p>
                 </div>
