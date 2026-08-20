@@ -197,9 +197,16 @@ router.post('/test', async (req, res) => {
 
 // 3b. Trigger Direct Push (called by QStash or external scheduler webhook)
 router.post('/trigger', async (req, res) => {
-  const { subscription, payload, title, body, stepId, stepName } = req.body;
+  // Handle test ping from diagnostic tool
+  if (req.body && req.body.test) {
+    console.log('[Push Server] /trigger received QStash test ping! Responding HTTP 200 OK.');
+    return res.json({ success: true, message: 'QStash test webhook received and acknowledged successfully' });
+  }
+
+  const { subscription, payload, title, body, stepId, stepName } = req.body || {};
   if (!subscription) {
-    return res.status(400).json({ error: 'Subscription required' });
+    console.warn('[Push Server] /trigger called without subscription. Responding 200 to acknowledge webhook.');
+    return res.json({ success: false, error: 'No subscription payload in webhook' });
   }
 
   const pushPayload = payload || {
