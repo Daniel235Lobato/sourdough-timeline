@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode, useCallback } from 'react';
 import { Recipe, BakeSession, BakeHistoryEntry, ScheduleMode } from '../types/timeline';
 import { DEFAULT_RECIPES, getRecipeWithSteps } from '../data/defaultRecipes';
 import { 
@@ -190,25 +190,40 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.BAKE_HISTORY, JSON.stringify(bakeHistory));
   }, [bakeHistory]);
 
+  // Track the currently synced step to avoid redundant HTTP requests
+  const lastSyncedStepRef = useRef<{ stepId: string; endMs: number } | null>(null);
+
   // 1. Auto-sync ONLY the currently active step timer with Web Push Server (for device lock-screen / iOS PWA background push)
   useEffect(() => {
+    const currentStep = activeSession?.steps?.[activeSession.currentStepIndex];
+    const endMs = currentStep?.endTime ? new Date(currentStep.endTime).getTime() : 0;
+
     if (!activeSession || activeSession.isCompleted) {
-      if (isPushSubscribed) {
-        cancelRemotePush();
+      if (lastSyncedStepRef.current !== null) {
+        lastSyncedStepRef.current = null;
+        if (isPushSubscribed) {
+          cancelRemotePush();
+        }
       }
       return;
     }
 
-    if (isPushSubscribed && activeSession.steps.length > 0) {
-      const currentStep = activeSession.steps[activeSession.currentStepIndex];
-
+    if (isPushSubscribed && currentStep) {
       // Only schedule a notification if the current step has an active countdown timer (> 0 minutes)
-      if (currentStep && currentStep.durationMinutes > 0) {
-        const fireTimestamp = new Date(currentStep.endTime).getTime();
+      if (currentStep.durationMinutes > 0) {
         const now = Date.now();
 
         // Only schedule if the timer has not already finished
-        if (fireTimestamp > now + 3000) {
+        if (endMs > now + 3000) {
+          // If we already synced this exact step and end timestamp, skip redundant network call
+          if (
+            lastSyncedStepRef.current?.stepId === currentStep.id &&
+            lastSyncedStepRef.current?.endMs === endMs
+          ) {
+            return;
+          }
+
+          lastSyncedStepRef.current = { stepId: currentStep.id, endMs };
           const nextStep = activeSession.steps[activeSession.currentStepIndex + 1];
           const nextStepLabel = nextStep 
             ? `${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}` 
@@ -218,7 +233,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
             stepId: currentStep.id,
             stepName: currentStep.shortName || currentStep.name,
             nextStepName: nextStepLabel,
-            fireTimestamp,
+            fireTimestamp: endMs,
             title: `🍞 ${currentStep.shortName || currentStep.name} Complete!`,
             body: nextStepLabel
               ? `Time to start: ${nextStepLabel}`
@@ -229,17 +244,24 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
           syncSessionPushSchedules([scheduleItem], activeSession.recipeName);
         } else {
           // Timer already reached 0
-          cancelRemotePush();
+          if (lastSyncedStepRef.current !== null) {
+            lastSyncedStepRef.current = null;
+            cancelRemotePush();
+          }
         }
       } else {
         // Step has 0 minutes (no countdown timer); cancel any previous remote push
-        cancelRemotePush();
+        if (lastSyncedStepRef.current !== null) {
+          lastSyncedStepRef.current = null;
+          cancelRemotePush();
+        }
       }
     }
   }, [
     activeSession?.currentStepIndex,
-    activeSession?.steps[activeSession?.currentStepIndex || 0]?.endTime,
+    activeSession?.steps,
     activeSession?.isCompleted,
+    activeSession?.recipeName,
     isPushSubscribed,
     syncSessionPushSchedules,
     cancelRemotePush
