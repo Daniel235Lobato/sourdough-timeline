@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const DEFAULT_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BIU6b6CbdfOxfMZb9-1GZPJetimPSFXx3BlgDuXCy6jAdQMoYvi_QNWOjknWP-nztlwVRfo34Fq4-Fc33q2-z2g';
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
@@ -18,8 +18,19 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 export interface SchedulePushParams {
   stepId: string;
   stepName: string;
+  nextStepName?: string;
   fireTimestamp: number;
   recipeName?: string;
+  title?: string;
+  body?: string;
+}
+
+export interface SyncSessionScheduleItem {
+  stepId: string;
+  stepName: string;
+  nextStepName?: string;
+  fireTimestamp: number;
+  title?: string;
   body?: string;
 }
 
@@ -28,6 +39,18 @@ export function useNotifications() {
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const [pushSubscription, setPushSubscription] = useState<PushSubscription | null>(null);
   const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
+
+  // iOS and PWA detection
+  const isIOS = useMemo(() => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }, []);
+
+  const isStandalone = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    const nav = window.navigator as { standalone?: boolean };
+    return Boolean(nav.standalone) || window.matchMedia('(display-mode: standalone)').matches;
+  }, []);
 
   // 1. Register Service Worker on mount
   useEffect(() => {
@@ -74,7 +97,7 @@ export function useNotifications() {
   // 3. Subscribe to Web Push Notifications
   const subscribeToPushNotifications = useCallback(async (): Promise<PushSubscription | null> => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.warn('[Push] Push notifications not supported in this browser.');
+      console.warn('[Push] Push notifications not supported in this browser environment.');
       return null;
     }
 
@@ -111,7 +134,6 @@ export function useNotifications() {
           body: JSON.stringify({ subscription })
         });
       } catch (apiErr) {
-        // Backend optional in local/offline client mode
         console.info('[Push] Backend sync skipped or unavailable:', apiErr);
       }
 
@@ -124,7 +146,7 @@ export function useNotifications() {
     }
   }, [swRegistration, requestPermission]);
 
-  // 4. Schedule Remote Push for a Timeline Step
+  // 4. Schedule Remote Push for a Single Step Timer
   const scheduleRemotePush = useCallback(async (params: SchedulePushParams) => {
     if (!pushSubscription) return;
 
@@ -142,7 +164,29 @@ export function useNotifications() {
     }
   }, [pushSubscription]);
 
-  // 5. Cancel Scheduled Remote Push Notifications
+  // 5. Batch Sync Session Step Timers with Push Server
+  const syncSessionPushSchedules = useCallback(async (
+    schedules: SyncSessionScheduleItem[],
+    recipeName?: string
+  ) => {
+    if (!pushSubscription) return;
+
+    try {
+      await fetch(`${API_BASE_URL}/api/notifications/sync-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: pushSubscription,
+          schedules,
+          recipeName
+        })
+      });
+    } catch (e) {
+      console.warn('[Push] Session push sync error:', e);
+    }
+  }, [pushSubscription]);
+
+  // 6. Cancel Scheduled Remote Push Notifications
   const cancelRemotePush = useCallback(async (stepId?: string) => {
     if (!pushSubscription) return;
 
@@ -160,24 +204,28 @@ export function useNotifications() {
     }
   }, [pushSubscription]);
 
-  // 6. Test Push Notification
+  // 7. Test Push Notification (Immediate trigger to verify device lock-screen push)
   const sendTestPush = useCallback(async () => {
-    if (!pushSubscription) return false;
+    let sub = pushSubscription;
+    if (!sub) {
+      sub = await subscribeToPushNotifications();
+    }
+    if (!sub) return false;
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/notifications/test`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscription: pushSubscription })
+        body: JSON.stringify({ subscription: sub })
       });
       return res.ok;
     } catch (e) {
       console.warn('[Push] Test push error:', e);
       return false;
     }
-  }, [pushSubscription]);
+  }, [pushSubscription, subscribeToPushNotifications]);
 
-  // 7. Local In-App Notification (Fallback when app is active in foreground)
+  // 8. Local In-App Notification (When app is active in foreground)
   const sendNotification = useCallback((title: string, body: string) => {
     if ('Notification' in window && Notification.permission === 'granted') {
       try {
@@ -204,9 +252,12 @@ export function useNotifications() {
     isSubscribed: !!pushSubscription,
     pushSubscription,
     isSubscribing,
+    isIOS,
+    isStandalone,
     requestPermission,
     subscribeToPushNotifications,
     scheduleRemotePush,
+    syncSessionPushSchedules,
     cancelRemotePush,
     sendTestPush,
     sendNotification,

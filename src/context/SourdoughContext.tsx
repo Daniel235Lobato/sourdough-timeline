@@ -24,8 +24,12 @@ interface SourdoughContextType {
   // Push Notifications (PWA / Web Push)
   isPushSubscribed: boolean;
   isPushSubscribing: boolean;
+  isIOS: boolean;
+  isStandalone: boolean;
   subscribeToPushNotifications: () => Promise<PushSubscription | null>;
   sendTestPush: () => Promise<boolean>;
+  scheduleRemotePush: (params: { stepId: string; stepName: string; nextStepName?: string; fireTimestamp: number; recipeName?: string; title?: string; body?: string }) => Promise<void>;
+  cancelRemotePush: (stepId?: string) => Promise<void>;
 
   // Core Actions
   startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe) => void;
@@ -62,8 +66,11 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     requestPermission, 
     isSubscribed: isPushSubscribed,
     isSubscribing: isPushSubscribing,
+    isIOS,
+    isStandalone,
     subscribeToPushNotifications,
     scheduleRemotePush,
+    syncSessionPushSchedules,
     cancelRemotePush,
     sendTestPush
   } = useNotifications();
@@ -158,6 +165,9 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
 
+  // Track notified steps so we only notify once when a timer finishes
+  const [notifiedStepEndIds, setNotifiedStepEndIds] = useState<Set<string>>(new Set());
+
   // Sync activeSession to LocalStorage
   useEffect(() => {
     if (activeSession) {
@@ -171,6 +181,78 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.BAKE_HISTORY, JSON.stringify(bakeHistory));
   }, [bakeHistory]);
+
+  // 1. Auto-sync upcoming step timers with Web Push Server (for device lock-screen / iOS PWA background push)
+  useEffect(() => {
+    if (!activeSession || activeSession.isCompleted) {
+      if (isPushSubscribed) {
+        cancelRemotePush();
+      }
+      return;
+    }
+
+    if (isPushSubscribed && activeSession.steps.length > 0) {
+      const schedules = activeSession.steps
+        .slice(activeSession.currentStepIndex)
+        .map((step, idx) => {
+          const actualNextStep = activeSession.steps[activeSession.currentStepIndex + idx + 1];
+          const fireTimestamp = new Date(step.endTime).getTime();
+          const nextStepName = actualNextStep ? `${actualNextStep.name} (${actualNextStep.durationMinutes}m)` : undefined;
+          return {
+            stepId: step.id,
+            stepName: step.name,
+            nextStepName,
+            fireTimestamp,
+            title: `🍞 ${step.shortName || step.name} Complete!`,
+            body: actualNextStep
+              ? `Time to start: ${actualNextStep.name} (${actualNextStep.durationMinutes}m)`
+              : `Bake Complete! Your sourdough is ready 🎉`
+          };
+        });
+
+      syncSessionPushSchedules(schedules, activeSession.recipeName);
+    }
+  }, [activeSession, isPushSubscribed, syncSessionPushSchedules, cancelRemotePush]);
+
+  // 2. Monitor active step in foreground: trigger chime and in-app notification when timer hits 0
+  useEffect(() => {
+    if (!activeSession || activeSession.isCompleted) return;
+
+    const currentStep = activeSession.steps[activeSession.currentStepIndex];
+    if (!currentStep) return;
+
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const endMs = new Date(currentStep.endTime).getTime();
+
+      // Check if timer has just expired and hasn't notified yet
+      if (now >= endMs && !notifiedStepEndIds.has(currentStep.id)) {
+        setNotifiedStepEndIds(prev => new Set(prev).add(currentStep.id));
+        const nextStep = activeSession.steps[activeSession.currentStepIndex + 1];
+
+        if (soundEnabled) {
+          playStepChime();
+        }
+        if (notificationsEnabled) {
+          sendNotification(
+            `${currentStep.shortName || currentStep.name} Complete!`,
+            nextStep
+              ? `Time to start: ${nextStep.name} (${nextStep.durationMinutes}m)`
+              : `Bake Complete! Your sourdough is ready 🎉`
+          );
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [activeSession, soundEnabled, notificationsEnabled, notifiedStepEndIds, playStepChime, sendNotification]);
+
+  // Clear notified set when resetting or switching sessions
+  useEffect(() => {
+    if (!activeSession) {
+      setNotifiedStepEndIds(new Set());
+    }
+  }, [activeSession]);
 
   /**
    * Start a brand new bake session using Start When (forward) or Bake By (reverse)
@@ -568,7 +650,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
    */
   const resetSession = useCallback(() => {
     setActiveSession(null);
-  }, []);
+    cancelRemotePush();
+  }, [cancelRemotePush]);
 
   /**
    * Recipe Management
@@ -666,8 +749,12 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       setNotificationsEnabled,
       isPushSubscribed,
       isPushSubscribing,
+      isIOS,
+      isStandalone,
       subscribeToPushNotifications,
       sendTestPush,
+      scheduleRemotePush,
+      cancelRemotePush,
       startNewBake,
       startCurrentStepNow,
       completeCurrentStep,

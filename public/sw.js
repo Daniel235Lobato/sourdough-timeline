@@ -17,24 +17,27 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (e) {
-      data = { title: 'Levain Alert', body: event.data.text() };
+      data = { title: '🍞 Sourdough Alert', body: event.data.text() };
     }
   }
 
-  const title = data.title || '🍞 Sourdough Alert';
+  const title = data.title || '🍞 Sourdough Step Complete!';
   const options = {
-    body: data.body || 'Time for your next sourdough baking step!',
+    body: data.body || 'Time to start your next baking step!',
     icon: data.icon || './logo.png',
     badge: data.badge || './favicon.png',
     tag: data.tag || 'sourdough-timer-' + Date.now(),
     renotify: true,
     requireInteraction: true,
-    vibrate: [200, 100, 200, 100, 400],
+    vibrate: [300, 150, 300, 150, 500],
     data: {
       url: data.url || './',
       stepId: data.stepId,
       timestamp: Date.now()
-    }
+    },
+    actions: [
+      { action: 'open_timeline', title: 'Open Schedule 🍞' }
+    ]
   };
 
   event.waitUntil(
@@ -52,6 +55,11 @@ self.addEventListener('notificationclick', (event) => {
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
         if ('focus' in client) {
+          // Send message to client to notify step completion
+          client.postMessage({
+            type: 'STEP_NOTIFICATION_CLICKED',
+            stepId: event.notification.data?.stepId
+          });
           return client.focus();
         }
       }

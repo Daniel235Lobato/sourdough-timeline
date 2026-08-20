@@ -11,7 +11,9 @@ import {
   TrendingUp,
   Snowflake,
   Flame,
-  Wind
+  Wind,
+  Bell,
+  BellRing
 } from 'lucide-react';
 import { ScheduledStep } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
@@ -37,7 +39,9 @@ export const NowCard: React.FC<NowCardProps> = ({
     startCurrentStepNow,
     completeCurrentStep, 
     triggerBiologicalReady, 
-    activeSession 
+    activeSession,
+    isPushSubscribed,
+    subscribeToPushNotifications
   } = useSourdough();
 
   // Check if this step was already started
@@ -197,25 +201,51 @@ export const NowCard: React.FC<NowCardProps> = ({
       )}
 
       {/* Live Countdown & Next Step Indicator with Hour:Min:Second format */}
-      <div className="flex items-center justify-between py-2 border-t border-stone-200/60 dark:border-stone-800/80 mb-4">
-        <div className="flex items-center space-x-2">
-          <Clock className={`w-4 h-4 ${isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
-          <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
-            {isTimerRunning ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') : 'Step duration: '}
-          </span>
-          <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100 tracking-wider">
-            {timeDisplay}
-          </span>
-        </div>
-
-        {nextStep && (
-          <div className="text-right text-[11px] text-stone-500 dark:text-stone-400">
-            <span>Next: </span>
-            <span className="font-medium text-stone-800 dark:text-stone-200 truncate max-w-[120px] inline-block align-bottom">
-              {nextStep.shortName}
+      <div className="space-y-1.5 py-2 border-t border-stone-200/60 dark:border-stone-800/80 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Clock className={`w-4 h-4 ${isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
+            <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
+              {isTimerRunning ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') : 'Step duration: '}
+            </span>
+            <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100 tracking-wider">
+              {timeDisplay}
             </span>
           </div>
-        )}
+
+          {nextStep && (
+            <div className="text-right text-[11px] text-stone-500 dark:text-stone-400">
+              <span>Next: </span>
+              <span className="font-medium text-stone-800 dark:text-stone-200 truncate max-w-[120px] inline-block align-bottom">
+                {nextStep.shortName}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Step push alert pill */}
+        <div className="flex items-center justify-between text-[11px] pt-1">
+          {isPushSubscribed ? (
+            <span className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-medium">
+              <BellRing className="w-3 h-3 animate-pulse" />
+              <span>Push alert scheduled for next step</span>
+            </span>
+          ) : (
+            <button
+              onClick={subscribeToPushNotifications}
+              className="inline-flex items-center space-x-1 text-amber-700 dark:text-amber-400 hover:underline font-medium"
+            >
+              <Bell className="w-3 h-3" />
+              <span>Enable push alert when timer ends</span>
+            </button>
+          )}
+
+          {nextStep && (
+            <span className="text-[10px] text-stone-400">
+              Starts at {nextStep.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Primary Action Buttons */}

@@ -90,9 +90,9 @@ app.post('/api/notifications/test', async (req, res) => {
   }
 });
 
-// 4. Schedule Timer Push Notification
+// 4. Schedule Single Timer Push Notification
 app.post('/api/notifications/schedule', (req, res) => {
-  const { subscription, stepId, stepName, fireTimestamp, recipeName, body } = req.body;
+  const { subscription, stepId, stepName, nextStepName, fireTimestamp, recipeName, body, title } = req.body;
   if (!subscription || !stepId || !fireTimestamp) {
     return res.status(400).json({ error: 'Missing required schedule parameters' });
   }
@@ -107,11 +107,14 @@ app.post('/api/notifications/schedule', (req, res) => {
     scheduledJobs.delete(jobId);
   }
 
+  const pushTitle = title || `🍞 ${stepName || 'Step'} Complete!`;
+  const pushBody = body || (nextStepName ? `Time to start: ${nextStepName}` : `Bake Complete! Your sourdough is ready.`);
+
   // If already in the past (within 1 minute), trigger immediately
   if (delayMs <= 0) {
     const payload = {
-      title: `🍞 ${stepName || 'Sourdough Step Ready'}`,
-      body: body || `Time for step: ${stepName}! (${recipeName || 'Levain'})`,
+      title: pushTitle,
+      body: pushBody,
       icon: './logo.png',
       badge: './favicon.png',
       tag: `step-${stepId}`,
@@ -124,10 +127,10 @@ app.post('/api/notifications/schedule', (req, res) => {
 
   // Schedule timeout
   const timeoutId = setTimeout(async () => {
-    console.log(`[Push Server] Firing scheduled push for step: ${stepName} (${jobId})`);
+    console.log(`[Push Server] Firing timer notification for completed step "${stepName}" -> Next: "${nextStepName || 'Done'}" (${jobId})`);
     const payload = {
-      title: `🍞 ${stepName || 'Sourdough Step Ready'}`,
-      body: body || `Time for step: ${stepName}! (${recipeName || 'Levain'})`,
+      title: pushTitle,
+      body: pushBody,
       icon: './logo.png',
       badge: './favicon.png',
       tag: `step-${stepId}`,
@@ -142,14 +145,76 @@ app.post('/api/notifications/schedule', (req, res) => {
     timeoutId,
     fireTimestamp,
     stepName,
+    nextStepName,
     endpoint: subscription.endpoint
   });
 
-  console.log(`[Push Server] Scheduled push for "${stepName}" in ${Math.round(delayMs / 1000)}s`);
+  console.log(`[Push Server] Scheduled timer push for "${stepName}" (next: "${nextStepName || 'Done'}") in ${Math.round(delayMs / 1000)}s`);
   res.json({ success: true, message: `Scheduled in ${Math.round(delayMs / 1000)} seconds`, jobId });
 });
 
-// 5. Cancel Scheduled Push Notifications
+// 5. Batch Sync Session Schedule (Cancels old jobs and sets new future timers)
+app.post('/api/notifications/sync-session', (req, res) => {
+  const { subscription, schedules, recipeName } = req.body;
+  if (!subscription || !subscription.endpoint || !Array.isArray(schedules)) {
+    return res.status(400).json({ error: 'Valid subscription and schedules array required' });
+  }
+
+  // First cancel all existing jobs for this subscription endpoint
+  let cancelledCount = 0;
+  for (const [jobId, job] of scheduledJobs.entries()) {
+    if (job.endpoint === subscription.endpoint) {
+      clearTimeout(job.timeoutId);
+      scheduledJobs.delete(jobId);
+      cancelledCount++;
+    }
+  }
+
+  const now = Date.now();
+  let scheduledCount = 0;
+
+  for (const item of schedules) {
+    const { stepId, stepName, nextStepName, fireTimestamp, title, body } = item;
+    if (!stepId || !fireTimestamp) continue;
+
+    const delayMs = fireTimestamp - now;
+    // Only schedule future timer ends (allow up to 2 seconds grace)
+    if (delayMs > 2000) {
+      const jobId = `${subscription.endpoint}::${stepId}`;
+      const pushTitle = title || `🍞 ${stepName || 'Step'} Complete!`;
+      const pushBody = body || (nextStepName ? `Time to start: ${nextStepName}` : `Bake Complete! Your sourdough is ready 🎉`);
+
+      const timeoutId = setTimeout(async () => {
+        console.log(`[Push Server] Timer expired for step "${stepName}"! Pushing notification for next: "${nextStepName || 'Done'}"`);
+        const payload = {
+          title: pushTitle,
+          body: pushBody,
+          icon: './logo.png',
+          badge: './favicon.png',
+          tag: `step-${stepId}`,
+          stepId,
+          url: './'
+        };
+        await sendPush(subscription, payload);
+        scheduledJobs.delete(jobId);
+      }, delayMs);
+
+      scheduledJobs.set(jobId, {
+        timeoutId,
+        fireTimestamp,
+        stepName,
+        nextStepName,
+        endpoint: subscription.endpoint
+      });
+      scheduledCount++;
+    }
+  }
+
+  console.log(`[Push Server] Synced session: cancelled ${cancelledCount} previous jobs, scheduled ${scheduledCount} upcoming step timer pushes.`);
+  res.json({ success: true, cancelledCount, scheduledCount });
+});
+
+// 6. Cancel Scheduled Push Notifications
 app.post('/api/notifications/cancel', (req, res) => {
   const { subscriptionEndpoint, stepId } = req.body;
   if (!subscriptionEndpoint) {
@@ -168,6 +233,16 @@ app.post('/api/notifications/cancel', (req, res) => {
   }
 
   res.json({ success: true, cancelledCount });
+});
+
+// 7. Health & Status
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    activeSubscriptions: subscriptions.size,
+    scheduledJobsCount: scheduledJobs.size,
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, () => {

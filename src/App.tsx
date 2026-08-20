@@ -7,6 +7,7 @@ import { TimelineView } from './components/timeline/TimelineView';
 import { RecipeListView } from './components/recipes/RecipeListView';
 import { BakeHistoryView } from './components/history/BakeHistoryView';
 import { HydrationCalculatorView } from './components/calculator/HydrationCalculatorView';
+import { NotificationBanner } from './components/common/NotificationBanner';
 import { Logo } from './components/common/Logo';
 
 interface ErrorBoundaryProps {
@@ -72,6 +73,9 @@ const MainAppContent: React.FC = () => {
 
       {/* Main Tab Screen Container */}
       <main className="flex-1 w-full max-w-2xl mx-auto pt-2 pb-8">
+        {/* Device & PWA Step Notification Banner */}
+        <NotificationBanner />
+
         {(activeTab === 'home' || (!activeSession && activeTab === 'timeline')) && (
           <HomeView
             onNavigateToTimeline={() => setActiveTab('timeline')}
