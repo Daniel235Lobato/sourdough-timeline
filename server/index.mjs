@@ -51,13 +51,15 @@ async function sendPush(subscription, payload) {
   }
 }
 
+const router = express.Router();
+
 // 1. Get Public VAPID Key
-app.get('/api/notifications/vapid-public-key', (req, res) => {
+router.get('/vapid-public-key', (req, res) => {
   res.json({ publicKey: VAPID_PUBLIC_KEY });
 });
 
 // 2. Register/Save Push Subscription
-app.post('/api/notifications/subscribe', (req, res) => {
+router.post('/subscribe', (req, res) => {
   const { subscription } = req.body;
   if (!subscription || !subscription.endpoint) {
     return res.status(400).json({ error: 'Valid subscription object required' });
@@ -73,7 +75,7 @@ app.post('/api/notifications/subscribe', (req, res) => {
 });
 
 // 3. Test Push Notification
-app.post('/api/notifications/test', async (req, res) => {
+router.post('/test', async (req, res) => {
   const { subscription } = req.body;
   if (!subscription) {
     return res.status(400).json({ error: 'Subscription required' });
@@ -81,7 +83,7 @@ app.post('/api/notifications/test', async (req, res) => {
 
   const payload = {
     title: '🍞 Levain Push Test',
-    body: 'Background notifications are connected and working!',
+    body: 'Background notifications are connected and working on your device!',
     icon: './logo.png',
     badge: './favicon.png',
     tag: 'test-notification',
@@ -90,14 +92,14 @@ app.post('/api/notifications/test', async (req, res) => {
 
   const result = await sendPush(subscription, payload);
   if (result.success) {
-    res.json({ success: true, message: 'Test notification sent' });
+    res.json({ success: true, message: 'Test notification sent successfully' });
   } else {
     res.status(500).json({ error: result.error });
   }
 });
 
 // 4. Schedule Single Timer Push Notification
-app.post('/api/notifications/schedule', (req, res) => {
+router.post('/schedule', (req, res) => {
   const { subscription, stepId, stepName, nextStepName, fireTimestamp, recipeName, body, title } = req.body;
   if (!subscription || !stepId || !fireTimestamp) {
     return res.status(400).json({ error: 'Missing required schedule parameters' });
@@ -160,7 +162,7 @@ app.post('/api/notifications/schedule', (req, res) => {
 });
 
 // 5. Batch Sync Session Schedule (Cancels old jobs and sets new future timers)
-app.post('/api/notifications/sync-session', (req, res) => {
+router.post('/sync-session', (req, res) => {
   const { subscription, schedules, recipeName } = req.body;
   if (!subscription || !subscription.endpoint || !Array.isArray(schedules)) {
     return res.status(400).json({ error: 'Valid subscription and schedules array required' });
@@ -221,7 +223,7 @@ app.post('/api/notifications/sync-session', (req, res) => {
 });
 
 // 6. Cancel Scheduled Push Notifications
-app.post('/api/notifications/cancel', (req, res) => {
+router.post('/cancel', (req, res) => {
   const { subscriptionEndpoint, stepId } = req.body;
   if (!subscriptionEndpoint) {
     return res.status(400).json({ error: 'subscriptionEndpoint required' });
@@ -242,7 +244,7 @@ app.post('/api/notifications/cancel', (req, res) => {
 });
 
 // 7. Health & Status
-app.get('/api/health', (req, res) => {
+router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     activeSubscriptions: subscriptions.size,
@@ -250,6 +252,12 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+// Mount Router on all common path variations for fullstack and serverless
+app.use('/api/notifications', router);
+app.use('/notifications', router);
+app.use('/api', router);
+app.use('/', router);
 
 if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(PORT, () => {

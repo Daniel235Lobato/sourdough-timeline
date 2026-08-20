@@ -2,28 +2,39 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const DEFAULT_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BIU6b6CbdfOxfMZb9-1GZPJetimPSFXx3BlgDuXCy6jAdQMoYvi_QNWOjknWP-nztlwVRfo34Fq4-Fc33q2-z2g';
 
-// Dynamically resolve the Push Server URL so mobile devices on LAN or custom domains connect automatically
+// Dynamically resolve the Push Server URL so mobile devices on LAN, Vercel, or custom domains connect automatically
 export function getApiBaseUrl(): string {
-  if (typeof window === 'undefined') return import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  if (typeof window === 'undefined') return import.meta.env.VITE_API_URL || '';
 
-  // 1. Check if user configured custom URL in localStorage
+  // 1. Check if user configured custom URL in localStorage (e.g. manual tunnel or external server)
   const savedUrl = localStorage.getItem('levain_push_server_url_v1');
   if (savedUrl) return savedUrl.replace(/\/$/, '');
 
   const envUrl = import.meta.env.VITE_API_URL;
-  // 2. If envUrl is a remote cloud URL (not localhost), use it
-  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+  // 2. If envUrl is explicitly set to an external remote URL (e.g. Render / Railway)
+  if (envUrl && envUrl.startsWith('http') && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
     return envUrl.replace(/\/$/, '');
   }
 
-  // 3. If accessed from iPhone / mobile device on LAN (e.g. 192.168.x.x:5173 or my-mac.local:5173)
   const hostname = window.location.hostname;
-  if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+
+  // 3. If running locally on LAN dev server (e.g. http://192.168.1.50:5173)
+  if (
+    hostname &&
+    (hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.endsWith('.local'))
+  ) {
     const protocol = window.location.protocol;
     return `${protocol}//${hostname}:3001`;
   }
 
-  return envUrl ? envUrl.replace(/\/$/, '') : 'http://localhost:3001';
+  // 4. If running locally on localhost dev server (http://localhost:5173)
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3001';
+  }
+
+  // 5. If running on a cloud deployment (e.g. Vercel, Netlify, custom HTTPS domain)
+  // The API is hosted on the exact same origin!
+  return window.location.origin;
 }
 
 // Utility to convert VAPID base64 string to Uint8Array for pushManager
