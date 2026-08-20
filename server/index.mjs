@@ -33,15 +33,21 @@ const scheduledJobs = new Map();
 // Helper to send a web push notification safely
 async function sendPush(subscription, payload) {
   try {
-    await webpush.sendNotification(subscription, JSON.stringify(payload));
-    return { success: true };
+    const options = {
+      urgency: 'high',
+      topic: 'sourdough-timer',
+      TTL: 86400 // 24 hours
+    };
+    const response = await webpush.sendNotification(subscription, JSON.stringify(payload), options);
+    console.log(`[Push Server] ✓ Push delivered successfully (HTTP ${response.statusCode}) to ${subscription.endpoint.slice(0, 45)}...`);
+    return { success: true, statusCode: response.statusCode };
   } catch (error) {
-    console.error('WebPush delivery error:', error.statusCode, error.message);
+    console.error(`[Push Server] ✗ WebPush delivery error (HTTP ${error.statusCode}):`, error.message);
     // If subscription is 404 or 410 Gone, remove it
     if (error.statusCode === 404 || error.statusCode === 410) {
       subscriptions.delete(subscription.endpoint);
     }
-    return { success: false, error: error.message };
+    return { success: false, error: error.message, statusCode: error.statusCode };
   }
 }
 

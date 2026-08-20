@@ -1,7 +1,30 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
 const DEFAULT_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 'BIU6b6CbdfOxfMZb9-1GZPJetimPSFXx3BlgDuXCy6jAdQMoYvi_QNWOjknWP-nztlwVRfo34Fq4-Fc33q2-z2g';
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
+// Dynamically resolve the Push Server URL so mobile devices on LAN or custom domains connect automatically
+export function getApiBaseUrl(): string {
+  if (typeof window === 'undefined') return import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
+  // 1. Check if user configured custom URL in localStorage
+  const savedUrl = localStorage.getItem('levain_push_server_url_v1');
+  if (savedUrl) return savedUrl.replace(/\/$/, '');
+
+  const envUrl = import.meta.env.VITE_API_URL;
+  // 2. If envUrl is a remote cloud URL (not localhost), use it
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl.replace(/\/$/, '');
+  }
+
+  // 3. If accessed from iPhone / mobile device on LAN (e.g. 192.168.x.x:5173 or my-mac.local:5173)
+  const hostname = window.location.hostname;
+  if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    const protocol = window.location.protocol;
+    return `${protocol}//${hostname}:3001`;
+  }
+
+  return envUrl ? envUrl.replace(/\/$/, '') : 'http://localhost:3001';
+}
 
 // Utility to convert VAPID base64 string to Uint8Array for pushManager
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -39,6 +62,8 @@ export function useNotifications() {
   const [swRegistration, setSwRegistration] = useState<ServiceWorkerRegistration | null>(null);
   const [pushSubscription, setPushSubscription] = useState<PushSubscription | null>(null);
   const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
+  const [serverStatus, setServerStatus] = useState<'connected' | 'unreachable' | 'checking'>('checking');
+  const [lastSyncError, setLastSyncError] = useState<string | null>(null);
 
   // iOS and PWA detection
   const isIOS = useMemo(() => {
@@ -52,13 +77,24 @@ export function useNotifications() {
     return Boolean(nav.standalone) || window.matchMedia('(display-mode: standalone)').matches;
   }, []);
 
-  // 1. Register Service Worker on mount
+  // 1. Register Service Worker and check Push Server on mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     if ('Notification' in window) {
       setPermission(Notification.permission);
     }
+
+    // Check Push Server health
+    const apiUrl = getApiBaseUrl();
+    fetch(`${apiUrl}/api/health`)
+      .then(res => {
+        if (res.ok) setServerStatus('connected');
+        else setServerStatus('unreachable');
+      })
+      .catch(() => {
+        setServerStatus('unreachable');
+      });
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -71,6 +107,17 @@ export function useNotifications() {
             const existing = await registration.pushManager.getSubscription();
             if (existing) {
               setPushSubscription(existing);
+              // Ensure backend knows about this subscription
+              try {
+                await fetch(`${apiUrl}/api/notifications/subscribe`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ subscription: existing })
+                });
+                setServerStatus('connected');
+              } catch (e) {
+                console.warn('[Push] Error syncing existing subscription to server:', e);
+              }
             }
           } catch (e) {
             console.warn('[Push] Error getting existing subscription:', e);
@@ -102,6 +149,7 @@ export function useNotifications() {
     }
 
     setIsSubscribing(true);
+    setLastSyncError(null);
     try {
       // 1. Ensure permission is granted
       const hasPerm = Notification.permission === 'granted' || (await requestPermission());
@@ -126,21 +174,32 @@ export function useNotifications() {
 
       setPushSubscription(subscription);
 
-      // 4. Send subscription payload to backend API (if configured)
+      // 4. Send subscription payload to backend API
+      const apiUrl = getApiBaseUrl();
       try {
-        await fetch(`${API_BASE_URL}/api/notifications/subscribe`, {
+        const res = await fetch(`${apiUrl}/api/notifications/subscribe`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subscription })
         });
-      } catch (apiErr) {
-        console.info('[Push] Backend sync skipped or unavailable:', apiErr);
+        if (res.ok) {
+          setServerStatus('connected');
+        } else {
+          setLastSyncError(`Server returned status ${res.status}`);
+        }
+      } catch (apiErr: unknown) {
+        const msg = apiErr instanceof Error ? apiErr.message : 'Cannot reach push server';
+        console.warn(`[Push] Server sync failed (${apiUrl}):`, msg);
+        setLastSyncError(`Could not reach push server at ${apiUrl}`);
+        setServerStatus('unreachable');
       }
 
       setIsSubscribing(false);
       return subscription;
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('[Push] Failed to subscribe to push notifications:', err);
+      const msg = err instanceof Error ? err.message : 'Subscription error';
+      setLastSyncError(msg);
       setIsSubscribing(false);
       return null;
     }
@@ -149,9 +208,10 @@ export function useNotifications() {
   // 4. Schedule Remote Push for a Single Step Timer
   const scheduleRemotePush = useCallback(async (params: SchedulePushParams) => {
     if (!pushSubscription) return;
+    const apiUrl = getApiBaseUrl();
 
     try {
-      await fetch(`${API_BASE_URL}/api/notifications/schedule`, {
+      await fetch(`${apiUrl}/api/notifications/schedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -170,9 +230,10 @@ export function useNotifications() {
     recipeName?: string
   ) => {
     if (!pushSubscription) return;
+    const apiUrl = getApiBaseUrl();
 
     try {
-      await fetch(`${API_BASE_URL}/api/notifications/sync-session`, {
+      const res = await fetch(`${apiUrl}/api/notifications/sync-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -181,17 +242,22 @@ export function useNotifications() {
           recipeName
         })
       });
+      if (res.ok) {
+        setServerStatus('connected');
+      }
     } catch (e) {
-      console.warn('[Push] Session push sync error:', e);
+      console.warn(`[Push] Session push sync error (${apiUrl}):`, e);
+      setServerStatus('unreachable');
     }
   }, [pushSubscription]);
 
   // 6. Cancel Scheduled Remote Push Notifications
   const cancelRemotePush = useCallback(async (stepId?: string) => {
     if (!pushSubscription) return;
+    const apiUrl = getApiBaseUrl();
 
     try {
-      await fetch(`${API_BASE_URL}/api/notifications/cancel`, {
+      await fetch(`${apiUrl}/api/notifications/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -205,23 +271,34 @@ export function useNotifications() {
   }, [pushSubscription]);
 
   // 7. Test Push Notification (Immediate trigger to verify device lock-screen push)
-  const sendTestPush = useCallback(async () => {
+  const sendTestPush = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
     let sub = pushSubscription;
     if (!sub) {
       sub = await subscribeToPushNotifications();
     }
-    if (!sub) return false;
+    if (!sub) {
+      return { success: false, error: 'Could not create push subscription. Ensure notification permissions are allowed.' };
+    }
 
+    const apiUrl = getApiBaseUrl();
     try {
-      const res = await fetch(`${API_BASE_URL}/api/notifications/test`, {
+      const res = await fetch(`${apiUrl}/api/notifications/test`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ subscription: sub })
       });
-      return res.ok;
-    } catch (e) {
+      if (res.ok) {
+        setServerStatus('connected');
+        return { success: true };
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        return { success: false, error: errorData.error || `Server returned error ${res.status}` };
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Network error';
       console.warn('[Push] Test push error:', e);
-      return false;
+      setServerStatus('unreachable');
+      return { success: false, error: `Could not connect to push server at ${apiUrl}. Make sure npm run server is running!` };
     }
   }, [pushSubscription, subscribeToPushNotifications]);
 
@@ -247,11 +324,23 @@ export function useNotifications() {
     }
   }, [swRegistration]);
 
+  // 9. Save Custom Server URL if user wants to change port/host
+  const setCustomPushServerUrl = useCallback((url: string) => {
+    if (!url) {
+      localStorage.removeItem('levain_push_server_url_v1');
+    } else {
+      localStorage.setItem('levain_push_server_url_v1', url.trim());
+    }
+  }, []);
+
   return {
     permission,
     isSubscribed: !!pushSubscription,
     pushSubscription,
     isSubscribing,
+    serverStatus,
+    lastSyncError,
+    apiBaseUrl: getApiBaseUrl(),
     isIOS,
     isStandalone,
     requestPermission,
@@ -261,6 +350,7 @@ export function useNotifications() {
     cancelRemotePush,
     sendTestPush,
     sendNotification,
+    setCustomPushServerUrl,
     isSupported: typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator
   };
 }

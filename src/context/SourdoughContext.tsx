@@ -24,12 +24,16 @@ interface SourdoughContextType {
   // Push Notifications (PWA / Web Push)
   isPushSubscribed: boolean;
   isPushSubscribing: boolean;
+  serverStatus: 'connected' | 'unreachable' | 'checking';
+  lastSyncError: string | null;
+  apiBaseUrl: string;
   isIOS: boolean;
   isStandalone: boolean;
   subscribeToPushNotifications: () => Promise<PushSubscription | null>;
-  sendTestPush: () => Promise<boolean>;
+  sendTestPush: () => Promise<{ success: boolean; error?: string }>;
   scheduleRemotePush: (params: { stepId: string; stepName: string; nextStepName?: string; fireTimestamp: number; recipeName?: string; title?: string; body?: string }) => Promise<void>;
   cancelRemotePush: (stepId?: string) => Promise<void>;
+  setCustomPushServerUrl: (url: string) => void;
 
   // Core Actions
   startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe) => void;
@@ -66,13 +70,17 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     requestPermission, 
     isSubscribed: isPushSubscribed,
     isSubscribing: isPushSubscribing,
+    serverStatus,
+    lastSyncError,
+    apiBaseUrl,
     isIOS,
     isStandalone,
     subscribeToPushNotifications,
     scheduleRemotePush,
     syncSessionPushSchedules,
     cancelRemotePush,
-    sendTestPush
+    sendTestPush,
+    setCustomPushServerUrl
   } = useNotifications();
 
   // Load custom recipes and combine with default recipes
@@ -749,12 +757,16 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       setNotificationsEnabled,
       isPushSubscribed,
       isPushSubscribing,
+      serverStatus,
+      lastSyncError,
+      apiBaseUrl,
       isIOS,
       isStandalone,
       subscribeToPushNotifications,
       sendTestPush,
       scheduleRemotePush,
       cancelRemotePush,
+      setCustomPushServerUrl,
       startNewBake,
       startCurrentStepNow,
       completeCurrentStep,
