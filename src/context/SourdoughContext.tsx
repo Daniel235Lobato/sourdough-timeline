@@ -191,14 +191,19 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, [bakeHistory]);
 
   // Track the currently synced step to avoid redundant HTTP requests across app reloads/opens
-  const lastSyncedStepRef = useRef<{ stepId: string; endMs: number } | null>(() => {
+  const lastSyncedStepRef = useRef<{ stepId: string; endMs: number } | null>(null);
+
+  // Restore last synced step from localStorage on mount
+  useEffect(() => {
     try {
       const saved = localStorage.getItem('levain_last_synced_step_v1');
-      return saved ? JSON.parse(saved) : null;
+      if (saved) {
+        lastSyncedStepRef.current = JSON.parse(saved);
+      }
     } catch {
-      return null;
+      // Ignore parse error
     }
-  });
+  }, []);
 
   // 1. Auto-sync ONLY the currently active step timer with Web Push Server (for device lock-screen / iOS PWA background push)
   useEffect(() => {
