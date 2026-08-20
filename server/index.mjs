@@ -76,38 +76,62 @@ router.post('/subscribe', (req, res) => {
 
 const QSTASH_TOKEN = process.env.QSTASH_TOKEN || process.env.UPSTASH_QSTASH_TOKEN;
 
-// Helper to schedule delayed webhook on serverless environments via Upstash QStash
+const QSTASH_REGIONS = [
+  'https://qstash.upstash.io',
+  'https://qstash-us-east-1.upstash.io',
+  'https://qstash-us-central1.upstash.io',
+  'https://qstash-eu-west-1.upstash.io',
+  'https://qstash-ap-southeast-1.upstash.io'
+];
+
+let workingQStashBase = process.env.QSTASH_URL ? process.env.QSTASH_URL.replace(/\/v2\/publish\/?$/, '').replace(/\/$/, '') : null;
+
+async function postToQStash(endpointBase, targetUrl, delaySeconds, body, token) {
+  const qstashUrl = `${endpointBase}/v2/publish/${targetUrl}`;
+  return await fetch(qstashUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Upstash-Delay': `${delaySeconds}s`
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+// Helper to schedule delayed webhook on serverless environments via Upstash QStash (with multi-region failover)
 async function scheduleWithQStash(targetUrl, delaySeconds, body) {
   if (!QSTASH_TOKEN) {
     console.warn('[Push Server] ⚠️ QSTASH_TOKEN is not defined in environment variables');
     return false;
   }
   const token = QSTASH_TOKEN.replace(/^Bearer\s+/i, '').trim();
-  try {
-    const qstashUrl = `https://qstash.upstash.io/v2/publish/${targetUrl}`;
-    const res = await fetch(qstashUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Upstash-Delay': `${delaySeconds}s`
-      },
-      body: JSON.stringify(body)
-    });
 
-    if (!res.ok) {
-      const errBody = await res.text();
-      console.error(`[Push Server] ✗ QStash API returned HTTP ${res.status}:`, errBody);
+  const candidateBases = workingQStashBase 
+    ? [workingQStashBase, ...QSTASH_REGIONS.filter(r => r !== workingQStashBase)]
+    : QSTASH_REGIONS;
+
+  for (const base of candidateBases) {
+    try {
+      const res = await postToQStash(base, targetUrl, delaySeconds, body, token);
+      if (res.ok) {
+        workingQStashBase = base;
+        const data = await res.json();
+        console.log(`[Push Server] ✓ QStash (${base}) accepted message! ID: ${data.messageId} for delay ${delaySeconds}s -> ${targetUrl}`);
+        return true;
+      }
+      const errText = await res.text();
+      if (res.status === 404 && errText.includes('not found in this region')) {
+        console.warn(`[Push Server] QStash region mismatch on ${base}, trying next region...`);
+        continue;
+      }
+      console.error(`[Push Server] ✗ QStash API returned HTTP ${res.status} from ${base}:`, errText);
       return false;
+    } catch (e) {
+      console.error(`[Push Server] ✗ QStash fetch exception on ${base}:`, e);
     }
-
-    const data = await res.json();
-    console.log(`[Push Server] ✓ QStash accepted message! ID: ${data.messageId || JSON.stringify(data)} for delay ${delaySeconds}s -> ${targetUrl}`);
-    return true;
-  } catch (e) {
-    console.error('[Push Server] ✗ QStash fetch exception:', e);
-    return false;
   }
+  return false;
 }
 
 // 2b. QStash Diagnostics & Test
@@ -120,23 +144,31 @@ router.get('/test-qstash', async (req, res) => {
   const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
   const targetUrl = `${proto}://${host}/api/notifications/trigger`;
 
-  try {
-    const qstashUrl = `https://qstash.upstash.io/v2/publish/${targetUrl}`;
-    const qstashRes = await fetch(qstashUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Upstash-Delay': '10s'
-      },
-      body: JSON.stringify({ test: true, timestamp: Date.now() })
-    });
-    const status = qstashRes.status;
-    const body = await qstashRes.text();
-    return res.json({ status, body, targetUrl, tokenLength: token.length });
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
+  const candidateBases = workingQStashBase 
+    ? [workingQStashBase, ...QSTASH_REGIONS.filter(r => r !== workingQStashBase)]
+    : QSTASH_REGIONS;
+
+  for (const base of candidateBases) {
+    try {
+      const qstashRes = await postToQStash(base, targetUrl, 10, { test: true, timestamp: Date.now() }, token);
+      const status = qstashRes.status;
+      const body = await qstashRes.text();
+      if (qstashRes.ok) {
+        workingQStashBase = base;
+        let parsed = body;
+        try { parsed = JSON.parse(body); } catch {}
+        return res.json({ success: true, region: base, status, result: parsed, targetUrl });
+      }
+      if (status === 404 && body.includes('not found in this region')) {
+        continue;
+      }
+      return res.json({ success: false, region: base, status, body, targetUrl });
+    } catch (err) {
+      return res.status(500).json({ error: err.message, region: base });
+    }
   }
+
+  return res.status(500).json({ error: 'Could not connect to QStash in any region' });
 });
 
 // 3. Test Push Notification
