@@ -222,8 +222,10 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
 
     if (isPushSubscribed && currentStep) {
-      // Only schedule a notification if the current step has an active countdown timer (> 0 minutes)
-      if (currentStep.durationMinutes > 0) {
+      const isStepStarted = Boolean(currentStep.actualStartTime);
+
+      // ONLY schedule a notification if the user has explicitly CLICKED "Start Step" AND step has a timer (> 0 min)
+      if (isStepStarted && currentStep.durationMinutes > 0) {
         const now = Date.now();
 
         // Only schedule if the timer has not already finished
@@ -266,7 +268,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
           }
         }
       } else {
-        // Step has 0 minutes (no countdown timer); cancel any previous remote push
+        // Step not started yet (paused waiting for user to tap "Start Step") or 0-minute milestone; cancel any remote push
         if (lastSyncedStepRef.current !== null) {
           lastSyncedStepRef.current = null;
           localStorage.removeItem('levain_last_synced_step_v1');
@@ -289,7 +291,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (!activeSession || activeSession.isCompleted) return;
 
     const currentStep = activeSession.steps[activeSession.currentStepIndex];
-    if (!currentStep || currentStep.durationMinutes === 0) return;
+    const isStepStarted = Boolean(currentStep?.actualStartTime);
+    if (!currentStep || !isStepStarted || currentStep.durationMinutes === 0) return;
 
     const interval = setInterval(() => {
       const now = Date.now();
