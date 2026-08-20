@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: levain-push-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm run server
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: NODE_ENV
+        value: production
+      - key: VAPID_PUBLIC_KEY
+        value: BIU6b6CbdfOxfMZb9-1GZPJetimPSFXx3BlgDuXCy6jAdQMoYvi_QNWOjknWP-nztlwVRfo34Fq4-Fc33q2-z2g
+      - key: VAPID_PRIVATE_KEY
+        value: qgchOH4s56fIuh-FRlfnTyCTWSFszbhDbkyjZOulhDE
+      - key: VAPID_SUBJECT
+        value: mailto:admin@sourdough-timeline.app

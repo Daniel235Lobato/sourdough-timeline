@@ -74,6 +74,31 @@ router.post('/subscribe', (req, res) => {
   res.status(201).json({ success: true, message: 'Subscription stored successfully' });
 });
 
+const QSTASH_TOKEN = process.env.QSTASH_TOKEN || process.env.UPSTASH_QSTASH_TOKEN;
+
+// Helper to schedule delayed webhook on serverless environments via Upstash QStash
+async function scheduleWithQStash(targetUrl, delaySeconds, body) {
+  if (!QSTASH_TOKEN) return false;
+  try {
+    const qstashUrl = `https://qstash.upstash.io/v2/publish/${encodeURI(targetUrl)}`;
+    const res = await fetch(qstashUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${QSTASH_TOKEN}`,
+        'Content-Type': 'application/json',
+        'Upstash-Delay': `${delaySeconds}s`
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    console.log(`[Push Server] ✓ Scheduled QStash message (${data.messageId || 'ok'}) in ${delaySeconds}s -> ${targetUrl}`);
+    return true;
+  } catch (e) {
+    console.error('[Push Server] ✗ QStash scheduling error:', e);
+    return false;
+  }
+}
+
 // 3. Test Push Notification
 router.post('/test', async (req, res) => {
   const { subscription } = req.body;
@@ -98,8 +123,30 @@ router.post('/test', async (req, res) => {
   }
 });
 
+// 3b. Trigger Direct Push (called by QStash or external scheduler webhook)
+router.post('/trigger', async (req, res) => {
+  const { subscription, payload, title, body, stepId, stepName } = req.body;
+  if (!subscription) {
+    return res.status(400).json({ error: 'Subscription required' });
+  }
+
+  const pushPayload = payload || {
+    title: title || '🍞 Step Complete!',
+    body: body || 'Time for your next sourdough baking step!',
+    icon: './logo.png',
+    badge: './favicon.png',
+    tag: `step-${stepId || Date.now()}`,
+    stepId,
+    url: './'
+  };
+
+  console.log(`[Push Server] /trigger received webhook! Sending push: "${pushPayload.title}"`);
+  const result = await sendPush(subscription, pushPayload);
+  res.json(result);
+});
+
 // 4. Schedule Single Timer Push Notification
-router.post('/schedule', (req, res) => {
+router.post('/schedule', async (req, res) => {
   const { subscription, stepId, stepName, nextStepName, fireTimestamp, recipeName, body, title } = req.body;
   if (!subscription || !stepId || !fireTimestamp) {
     return res.status(400).json({ error: 'Missing required schedule parameters' });
@@ -107,6 +154,7 @@ router.post('/schedule', (req, res) => {
 
   const now = Date.now();
   const delayMs = fireTimestamp - now;
+  const delaySeconds = Math.max(1, Math.round(delayMs / 1000));
   const jobId = `${subscription.endpoint}::${stepId}`;
 
   // Clear existing job for this step if any
@@ -118,51 +166,55 @@ router.post('/schedule', (req, res) => {
   const pushTitle = title || `🍞 ${stepName || 'Step'} Complete!`;
   const pushBody = body || (nextStepName ? `Time to start: ${nextStepName}` : `Bake Complete! Your sourdough is ready.`);
 
-  // If already in the past (within 1 minute), trigger immediately
+  const payload = {
+    title: pushTitle,
+    body: pushBody,
+    icon: './logo.png',
+    badge: './favicon.png',
+    tag: `step-${stepId}`,
+    stepId,
+    url: './'
+  };
+
+  // If already in the past, trigger immediately
   if (delayMs <= 0) {
-    const payload = {
-      title: pushTitle,
-      body: pushBody,
-      icon: './logo.png',
-      badge: './favicon.png',
-      tag: `step-${stepId}`,
-      stepId,
-      url: './'
-    };
     sendPush(subscription, payload);
     return res.json({ success: true, message: 'Step is now; sent immediately' });
   }
 
-  // Schedule timeout
-  const timeoutId = setTimeout(async () => {
-    console.log(`[Push Server] Firing timer notification for completed step "${stepName}" -> Next: "${nextStepName || 'Done'}" (${jobId})`);
-    const payload = {
-      title: pushTitle,
-      body: pushBody,
-      icon: './logo.png',
-      badge: './favicon.png',
-      tag: `step-${stepId}`,
-      stepId,
-      url: './'
-    };
-    await sendPush(subscription, payload);
-    scheduledJobs.delete(jobId);
-  }, delayMs);
+  // Determine host for QStash webhook callback
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+  const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+  const triggerUrl = `${proto}://${host}/api/notifications/trigger`;
 
-  scheduledJobs.set(jobId, {
-    timeoutId,
-    fireTimestamp,
-    stepName,
-    nextStepName,
-    endpoint: subscription.endpoint
-  });
+  let usedQStash = false;
+  if (QSTASH_TOKEN && delaySeconds > 2) {
+    usedQStash = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload });
+  }
 
-  console.log(`[Push Server] Scheduled timer push for "${stepName}" (next: "${nextStepName || 'Done'}") in ${Math.round(delayMs / 1000)}s`);
-  res.json({ success: true, message: `Scheduled in ${Math.round(delayMs / 1000)} seconds`, jobId });
+  if (!usedQStash) {
+    // Persistent In-Memory Timer fallback (for 24/7 Node.js servers e.g. Render / Railway / local)
+    const timeoutId = setTimeout(async () => {
+      console.log(`[Push Server] Firing timer notification for completed step "${stepName}" -> Next: "${nextStepName || 'Done'}" (${jobId})`);
+      await sendPush(subscription, payload);
+      scheduledJobs.delete(jobId);
+    }, delayMs);
+
+    scheduledJobs.set(jobId, {
+      timeoutId,
+      fireTimestamp,
+      stepName,
+      nextStepName,
+      endpoint: subscription.endpoint
+    });
+  }
+
+  console.log(`[Push Server] Scheduled timer push for "${stepName}" (next: "${nextStepName || 'Done'}") in ${delaySeconds}s (QStash: ${usedQStash})`);
+  res.json({ success: true, message: `Scheduled in ${delaySeconds} seconds`, jobId, usedQStash });
 });
 
 // 5. Batch Sync Session Schedule (Cancels old jobs and sets new future timers)
-router.post('/sync-session', (req, res) => {
+router.post('/sync-session', async (req, res) => {
   const { subscription, schedules, recipeName } = req.body;
   if (!subscription || !subscription.endpoint || !Array.isArray(schedules)) {
     return res.status(400).json({ error: 'Valid subscription and schedules array required' });
@@ -180,46 +232,62 @@ router.post('/sync-session', (req, res) => {
 
   const now = Date.now();
   let scheduledCount = 0;
+  let qstashCount = 0;
+
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+  const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+  const triggerUrl = `${proto}://${host}/api/notifications/trigger`;
 
   for (const item of schedules) {
     const { stepId, stepName, nextStepName, fireTimestamp, title, body } = item;
     if (!stepId || !fireTimestamp) continue;
 
     const delayMs = fireTimestamp - now;
+    const delaySeconds = Math.round(delayMs / 1000);
+
     // Only schedule future timer ends (allow up to 2 seconds grace)
     if (delayMs > 2000) {
       const jobId = `${subscription.endpoint}::${stepId}`;
       const pushTitle = title || `🍞 ${stepName || 'Step'} Complete!`;
       const pushBody = body || (nextStepName ? `Time to start: ${nextStepName}` : `Bake Complete! Your sourdough is ready 🎉`);
 
-      const timeoutId = setTimeout(async () => {
-        console.log(`[Push Server] Timer expired for step "${stepName}"! Pushing notification for next: "${nextStepName || 'Done'}"`);
-        const payload = {
-          title: pushTitle,
-          body: pushBody,
-          icon: './logo.png',
-          badge: './favicon.png',
-          tag: `step-${stepId}`,
-          stepId,
-          url: './'
-        };
-        await sendPush(subscription, payload);
-        scheduledJobs.delete(jobId);
-      }, delayMs);
+      const payload = {
+        title: pushTitle,
+        body: pushBody,
+        icon: './logo.png',
+        badge: './favicon.png',
+        tag: `step-${stepId}`,
+        stepId,
+        url: './'
+      };
 
-      scheduledJobs.set(jobId, {
-        timeoutId,
-        fireTimestamp,
-        stepName,
-        nextStepName,
-        endpoint: subscription.endpoint
-      });
+      let usedQStash = false;
+      if (QSTASH_TOKEN && delaySeconds > 2) {
+        usedQStash = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload });
+        if (usedQStash) qstashCount++;
+      }
+
+      if (!usedQStash) {
+        const timeoutId = setTimeout(async () => {
+          console.log(`[Push Server] Timer expired for step "${stepName}"! Pushing notification for next: "${nextStepName || 'Done'}"`);
+          await sendPush(subscription, payload);
+          scheduledJobs.delete(jobId);
+        }, delayMs);
+
+        scheduledJobs.set(jobId, {
+          timeoutId,
+          fireTimestamp,
+          stepName,
+          nextStepName,
+          endpoint: subscription.endpoint
+        });
+      }
       scheduledCount++;
     }
   }
 
-  console.log(`[Push Server] Synced session: cancelled ${cancelledCount} previous jobs, scheduled ${scheduledCount} upcoming step timer pushes.`);
-  res.json({ success: true, cancelledCount, scheduledCount });
+  console.log(`[Push Server] Synced session: cancelled ${cancelledCount} previous jobs, scheduled ${scheduledCount} upcoming step timer pushes (QStash: ${qstashCount}).`);
+  res.json({ success: true, cancelledCount, scheduledCount, qstashCount });
 });
 
 // 6. Cancel Scheduled Push Notifications
