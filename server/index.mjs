@@ -103,7 +103,7 @@ async function postToQStash(endpointBase, targetUrl, delaySeconds, body, token) 
 async function scheduleWithQStash(targetUrl, delaySeconds, body) {
   if (!QSTASH_TOKEN) {
     console.warn('[Push Server] ⚠️ QSTASH_TOKEN is not defined in environment variables');
-    return false;
+    return { success: false };
   }
   const token = QSTASH_TOKEN.replace(/^Bearer\s+/i, '').trim();
 
@@ -118,7 +118,7 @@ async function scheduleWithQStash(targetUrl, delaySeconds, body) {
         workingQStashBase = base;
         const data = await res.json();
         console.log(`[Push Server] ✓ QStash (${base}) accepted message! ID: ${data.messageId} for delay ${delaySeconds}s -> ${targetUrl}`);
-        return true;
+        return { success: true, messageId: data.messageId };
       }
       const errText = await res.text();
       if (res.status === 404 && errText.includes('not found in this region')) {
@@ -126,12 +126,30 @@ async function scheduleWithQStash(targetUrl, delaySeconds, body) {
         continue;
       }
       console.error(`[Push Server] ✗ QStash API returned HTTP ${res.status} from ${base}:`, errText);
-      return false;
+      return { success: false };
     } catch (e) {
       console.error(`[Push Server] ✗ QStash fetch exception on ${base}:`, e);
     }
   }
-  return false;
+  return { success: false };
+}
+
+// Helper to cancel/delete a scheduled message from QStash cloud queue
+async function deleteQStashMessage(messageId) {
+  if (!QSTASH_TOKEN || !messageId) return false;
+  const token = QSTASH_TOKEN.replace(/^Bearer\s+/i, '').trim();
+  const base = workingQStashBase || 'https://qstash-us-east-1.upstash.io';
+  try {
+    const res = await fetch(`${base}/v2/messages/${messageId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    console.log(`[Push Server] 🗑️ QStash cancelled message (${messageId}): HTTP ${res.status}`);
+    return res.ok;
+  } catch (e) {
+    console.warn('[Push Server] Error deleting QStash message:', e);
+    return false;
+  }
 }
 
 // 2b. QStash Diagnostics & Test
@@ -294,7 +312,7 @@ router.post('/schedule', async (req, res) => {
 
 // 5. Batch Sync Session Schedule (Cancels old jobs and sets new future timers)
 router.post('/sync-session', async (req, res) => {
-  const { subscription, schedules, recipeName } = req.body;
+  const { subscription, schedules, recipeName, messageIds } = req.body;
   if (!subscription || !subscription.endpoint || !Array.isArray(schedules)) {
     return res.status(400).json({ error: 'Valid subscription and schedules array required' });
   }
@@ -303,15 +321,26 @@ router.post('/sync-session', async (req, res) => {
   let cancelledCount = 0;
   for (const [jobId, job] of scheduledJobs.entries()) {
     if (job.endpoint === subscription.endpoint) {
-      clearTimeout(job.timeoutId);
+      if (job.timeoutId) clearTimeout(job.timeoutId);
+      if (job.qstashMessageId) {
+        await deleteQStashMessage(job.qstashMessageId);
+      }
       scheduledJobs.delete(jobId);
       cancelledCount++;
+    }
+  }
+
+  // Also delete any explicit messageIds passed from the client
+  if (Array.isArray(messageIds)) {
+    for (const msgId of messageIds) {
+      if (msgId) await deleteQStashMessage(msgId);
     }
   }
 
   const now = Date.now();
   let scheduledCount = 0;
   let qstashCount = 0;
+  const returnedMessageIds = [];
 
   const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
   const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
@@ -340,10 +369,16 @@ router.post('/sync-session', async (req, res) => {
         url: './'
       };
 
+      let qstashMessageId = null;
       let usedQStash = false;
       if (QSTASH_TOKEN && delaySeconds > 2) {
-        usedQStash = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload });
-        if (usedQStash) qstashCount++;
+        const qstashRes = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload });
+        if (qstashRes.success) {
+          usedQStash = true;
+          qstashCount++;
+          qstashMessageId = qstashRes.messageId;
+          if (qstashMessageId) returnedMessageIds.push(qstashMessageId);
+        }
       }
 
       if (!usedQStash) {
@@ -358,7 +393,16 @@ router.post('/sync-session', async (req, res) => {
           fireTimestamp,
           stepName,
           nextStepName,
-          endpoint: subscription.endpoint
+          endpoint: subscription.endpoint,
+          qstashMessageId
+        });
+      } else {
+        scheduledJobs.set(jobId, {
+          fireTimestamp,
+          stepName,
+          nextStepName,
+          endpoint: subscription.endpoint,
+          qstashMessageId
         });
       }
       scheduledCount++;
@@ -366,12 +410,12 @@ router.post('/sync-session', async (req, res) => {
   }
 
   console.log(`[Push Server] Synced session: cancelled ${cancelledCount} previous jobs, scheduled ${scheduledCount} upcoming step timer pushes (QStash: ${qstashCount}).`);
-  res.json({ success: true, cancelledCount, scheduledCount, qstashCount });
+  res.json({ success: true, cancelledCount, scheduledCount, qstashCount, messageIds: returnedMessageIds });
 });
 
 // 6. Cancel Scheduled Push Notifications
-router.post('/cancel', (req, res) => {
-  const { subscriptionEndpoint, stepId } = req.body;
+router.post('/cancel', async (req, res) => {
+  const { subscriptionEndpoint, stepId, messageIds } = req.body;
   if (!subscriptionEndpoint) {
     return res.status(400).json({ error: 'subscriptionEndpoint required' });
   }
@@ -380,10 +424,19 @@ router.post('/cancel', (req, res) => {
   for (const [jobId, job] of scheduledJobs.entries()) {
     if (job.endpoint === subscriptionEndpoint) {
       if (!stepId || jobId.endsWith(`::${stepId}`)) {
-        clearTimeout(job.timeoutId);
+        if (job.timeoutId) clearTimeout(job.timeoutId);
+        if (job.qstashMessageId) {
+          await deleteQStashMessage(job.qstashMessageId);
+        }
         scheduledJobs.delete(jobId);
         cancelledCount++;
       }
+    }
+  }
+
+  if (Array.isArray(messageIds)) {
+    for (const msgId of messageIds) {
+      if (msgId) await deleteQStashMessage(msgId);
     }
   }
 

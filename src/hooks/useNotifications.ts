@@ -235,6 +235,15 @@ export function useNotifications() {
     }
   }, [pushSubscription]);
 
+  const [scheduledMsgIds, setScheduledMsgIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('levain_scheduled_msg_ids_v1');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   // 5. Batch Sync Session Step Timers with Push Server
   const syncSessionPushSchedules = useCallback(async (
     schedules: SyncSessionScheduleItem[],
@@ -250,17 +259,23 @@ export function useNotifications() {
         body: JSON.stringify({
           subscription: pushSubscription,
           schedules,
-          recipeName
+          recipeName,
+          messageIds: scheduledMsgIds
         })
       });
       if (res.ok) {
         setServerStatus('connected');
+        const data = await res.json().catch(() => ({}));
+        if (Array.isArray(data.messageIds)) {
+          setScheduledMsgIds(data.messageIds);
+          localStorage.setItem('levain_scheduled_msg_ids_v1', JSON.stringify(data.messageIds));
+        }
       }
     } catch (e) {
       console.warn(`[Push] Session push sync error (${apiUrl}):`, e);
       setServerStatus('unreachable');
     }
-  }, [pushSubscription]);
+  }, [pushSubscription, scheduledMsgIds]);
 
   // 6. Cancel Scheduled Remote Push Notifications
   const cancelRemotePush = useCallback(async (stepId?: string) => {
@@ -273,13 +288,16 @@ export function useNotifications() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           subscriptionEndpoint: pushSubscription.endpoint,
-          stepId
+          stepId,
+          messageIds: scheduledMsgIds
         })
       });
+      setScheduledMsgIds([]);
+      localStorage.removeItem('levain_scheduled_msg_ids_v1');
     } catch (e) {
       console.warn('[Push] Cancel push error:', e);
     }
-  }, [pushSubscription]);
+  }, [pushSubscription, scheduledMsgIds]);
 
   // 7. Test Push Notification (Immediate trigger to verify device lock-screen push)
   const sendTestPush = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
