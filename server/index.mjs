@@ -78,26 +78,66 @@ const QSTASH_TOKEN = process.env.QSTASH_TOKEN || process.env.UPSTASH_QSTASH_TOKE
 
 // Helper to schedule delayed webhook on serverless environments via Upstash QStash
 async function scheduleWithQStash(targetUrl, delaySeconds, body) {
-  if (!QSTASH_TOKEN) return false;
+  if (!QSTASH_TOKEN) {
+    console.warn('[Push Server] ⚠️ QSTASH_TOKEN is not defined in environment variables');
+    return false;
+  }
+  const token = QSTASH_TOKEN.replace(/^Bearer\s+/i, '').trim();
   try {
-    const qstashUrl = `https://qstash.upstash.io/v2/publish/${encodeURI(targetUrl)}`;
+    const qstashUrl = `https://qstash.upstash.io/v2/publish/${targetUrl}`;
     const res = await fetch(qstashUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${QSTASH_TOKEN}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Upstash-Delay': `${delaySeconds}s`
       },
       body: JSON.stringify(body)
     });
-    const data = await res.json().catch(() => ({}));
-    console.log(`[Push Server] ✓ Scheduled QStash message (${data.messageId || 'ok'}) in ${delaySeconds}s -> ${targetUrl}`);
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error(`[Push Server] ✗ QStash API returned HTTP ${res.status}:`, errBody);
+      return false;
+    }
+
+    const data = await res.json();
+    console.log(`[Push Server] ✓ QStash accepted message! ID: ${data.messageId || JSON.stringify(data)} for delay ${delaySeconds}s -> ${targetUrl}`);
     return true;
   } catch (e) {
-    console.error('[Push Server] ✗ QStash scheduling error:', e);
+    console.error('[Push Server] ✗ QStash fetch exception:', e);
     return false;
   }
 }
+
+// 2b. QStash Diagnostics & Test
+router.get('/test-qstash', async (req, res) => {
+  if (!QSTASH_TOKEN) {
+    return res.status(400).json({ error: 'QSTASH_TOKEN is missing in Vercel environment variables' });
+  }
+  const token = QSTASH_TOKEN.replace(/^Bearer\s+/i, '').trim();
+  const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+  const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+  const targetUrl = `${proto}://${host}/api/notifications/trigger`;
+
+  try {
+    const qstashUrl = `https://qstash.upstash.io/v2/publish/${targetUrl}`;
+    const qstashRes = await fetch(qstashUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Upstash-Delay': '10s'
+      },
+      body: JSON.stringify({ test: true, timestamp: Date.now() })
+    });
+    const status = qstashRes.status;
+    const body = await qstashRes.text();
+    return res.json({ status, body, targetUrl, tokenLength: token.length });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 // 3. Test Push Notification
 router.post('/test', async (req, res) => {
