@@ -277,10 +277,20 @@ export function useNotifications() {
       sub = await subscribeToPushNotifications();
     }
     if (!sub) {
-      return { success: false, error: 'Could not create push subscription. Ensure notification permissions are allowed.' };
+      return { success: false, error: 'Could not create push subscription. Ensure notification permissions are allowed in iOS settings.' };
     }
 
     const apiUrl = getApiBaseUrl();
+
+    // Mixed Content detection (HTTPS PWA calling HTTP server)
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && apiUrl.startsWith('http:')) {
+      setServerStatus('unreachable');
+      return {
+        success: false,
+        error: `HTTPS Push Server Required: Because Levain is loaded securely via HTTPS, iOS requires an HTTPS push server URL. Run 'npm run tunnel' on your computer and paste the https://...loca.lt URL into Settings ⚙️.`
+      };
+    }
+
     try {
       const res = await fetch(`${apiUrl}/api/notifications/test`, {
         method: 'POST',
@@ -298,7 +308,7 @@ export function useNotifications() {
       const msg = e instanceof Error ? e.message : 'Network error';
       console.warn('[Push] Test push error:', e);
       setServerStatus('unreachable');
-      return { success: false, error: `Could not connect to push server at ${apiUrl}. Make sure npm run server is running!` };
+      return { success: false, error: `Could not connect to push server at ${apiUrl}. Make sure 'npm run server' (and 'npm run tunnel' if using HTTPS) is running!` };
     }
   }, [pushSubscription, subscribeToPushNotifications]);
 
