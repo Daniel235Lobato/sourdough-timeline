@@ -86,21 +86,25 @@ const QSTASH_REGIONS = [
 
 let workingQStashBase = process.env.QSTASH_URL ? process.env.QSTASH_URL.replace(/\/v2\/publish\/?$/, '').replace(/\/$/, '') : null;
 
-async function postToQStash(endpointBase, targetUrl, delaySeconds, body, token) {
+async function postToQStash(endpointBase, targetUrl, delaySeconds, body, token, deduplicationId) {
   const qstashUrl = `${endpointBase}/v2/publish/${targetUrl}`;
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'Upstash-Delay': `${delaySeconds}s`
+  };
+  if (deduplicationId) {
+    headers['Upstash-Deduplication-Id'] = String(deduplicationId).replace(/[^a-zA-Z0-9_-]/g, '_');
+  }
   return await fetch(qstashUrl, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Upstash-Delay': `${delaySeconds}s`
-    },
+    headers,
     body: JSON.stringify(body)
   });
 }
 
-// Helper to schedule delayed webhook on serverless environments via Upstash QStash (with multi-region failover)
-async function scheduleWithQStash(targetUrl, delaySeconds, body) {
+// Helper to schedule delayed webhook on serverless environments via Upstash QStash (with multi-region failover and deduplication)
+async function scheduleWithQStash(targetUrl, delaySeconds, body, deduplicationId) {
   if (!QSTASH_TOKEN) {
     console.warn('[Push Server] ⚠️ QSTASH_TOKEN is not defined in environment variables');
     return { success: false };
@@ -113,11 +117,11 @@ async function scheduleWithQStash(targetUrl, delaySeconds, body) {
 
   for (const base of candidateBases) {
     try {
-      const res = await postToQStash(base, targetUrl, delaySeconds, body, token);
+      const res = await postToQStash(base, targetUrl, delaySeconds, body, token, deduplicationId);
       if (res.ok) {
         workingQStashBase = base;
         const data = await res.json();
-        console.log(`[Push Server] ✓ QStash (${base}) accepted message! ID: ${data.messageId} for delay ${delaySeconds}s -> ${targetUrl}`);
+        console.log(`[Push Server] ✓ QStash (${base}) accepted message! ID: ${data.messageId} for delay ${delaySeconds}s -> ${targetUrl} (Dedup: ${deduplicationId || 'none'})`);
         return { success: true, messageId: data.messageId };
       }
       const errText = await res.text();
@@ -372,7 +376,8 @@ router.post('/sync-session', async (req, res) => {
       let qstashMessageId = null;
       let usedQStash = false;
       if (QSTASH_TOKEN && delaySeconds > 2) {
-        const qstashRes = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload });
+        const dedupId = `step_${stepId}_${Math.round(fireTimestamp / 1000)}`;
+        const qstashRes = await scheduleWithQStash(triggerUrl, delaySeconds, { subscription, payload }, dedupId);
         if (qstashRes.success) {
           usedQStash = true;
           qstashCount++;
