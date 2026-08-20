@@ -190,7 +190,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.BAKE_HISTORY, JSON.stringify(bakeHistory));
   }, [bakeHistory]);
 
-  // 1. Auto-sync upcoming step timers with Web Push Server (for device lock-screen / iOS PWA background push)
+  // 1. Auto-sync ONLY the currently active step timer with Web Push Server (for device lock-screen / iOS PWA background push)
   useEffect(() => {
     if (!activeSession || activeSession.isCompleted) {
       if (isPushSubscribed) {
@@ -200,34 +200,57 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
 
     if (isPushSubscribed && activeSession.steps.length > 0) {
-      const schedules = activeSession.steps
-        .slice(activeSession.currentStepIndex)
-        .map((step, idx) => {
-          const actualNextStep = activeSession.steps[activeSession.currentStepIndex + idx + 1];
-          const fireTimestamp = new Date(step.endTime).getTime();
-          const nextStepName = actualNextStep ? `${actualNextStep.name} (${actualNextStep.durationMinutes}m)` : undefined;
-          return {
-            stepId: step.id,
-            stepName: step.name,
-            nextStepName,
+      const currentStep = activeSession.steps[activeSession.currentStepIndex];
+
+      // Only schedule a notification if the current step has an active countdown timer (> 0 minutes)
+      if (currentStep && currentStep.durationMinutes > 0) {
+        const fireTimestamp = new Date(currentStep.endTime).getTime();
+        const now = Date.now();
+
+        // Only schedule if the timer has not already finished
+        if (fireTimestamp > now + 3000) {
+          const nextStep = activeSession.steps[activeSession.currentStepIndex + 1];
+          const nextStepLabel = nextStep 
+            ? `${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}` 
+            : undefined;
+
+          const scheduleItem = {
+            stepId: currentStep.id,
+            stepName: currentStep.shortName || currentStep.name,
+            nextStepName: nextStepLabel,
             fireTimestamp,
-            title: `🍞 ${step.shortName || step.name} Complete!`,
-            body: actualNextStep
-              ? `Time to start: ${actualNextStep.name} (${actualNextStep.durationMinutes}m)`
+            title: `🍞 ${currentStep.shortName || currentStep.name} Complete!`,
+            body: nextStepLabel
+              ? `Time to start: ${nextStepLabel}`
               : `Bake Complete! Your sourdough is ready 🎉`
           };
-        });
 
-      syncSessionPushSchedules(schedules, activeSession.recipeName);
+          // Sync ONLY the single current active step
+          syncSessionPushSchedules([scheduleItem], activeSession.recipeName);
+        } else {
+          // Timer already reached 0
+          cancelRemotePush();
+        }
+      } else {
+        // Step has 0 minutes (no countdown timer); cancel any previous remote push
+        cancelRemotePush();
+      }
     }
-  }, [activeSession, isPushSubscribed, syncSessionPushSchedules, cancelRemotePush]);
+  }, [
+    activeSession?.currentStepIndex,
+    activeSession?.steps[activeSession?.currentStepIndex || 0]?.endTime,
+    activeSession?.isCompleted,
+    isPushSubscribed,
+    syncSessionPushSchedules,
+    cancelRemotePush
+  ]);
 
   // 2. Monitor active step in foreground: trigger chime and in-app notification when timer hits 0
   useEffect(() => {
     if (!activeSession || activeSession.isCompleted) return;
 
     const currentStep = activeSession.steps[activeSession.currentStepIndex];
-    if (!currentStep) return;
+    if (!currentStep || currentStep.durationMinutes === 0) return;
 
     const interval = setInterval(() => {
       const now = Date.now();
@@ -245,7 +268,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
           sendNotification(
             `${currentStep.shortName || currentStep.name} Complete!`,
             nextStep
-              ? `Time to start: ${nextStep.name} (${nextStep.durationMinutes}m)`
+              ? `Time to start: ${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}`
               : `Bake Complete! Your sourdough is ready 🎉`
           );
         }
