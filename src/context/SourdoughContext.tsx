@@ -526,7 +526,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       };
     } else if (type === 'bulk_late') {
       // Find bulk step and add time
-      const bulkIdx = updatedSteps.findIndex(s => s.id === 'bulk-complete' || s.id === 'stretch-fold-4');
+      const bulkIdx = updatedSteps.findIndex(s => s.id === 'bulk-complete' || s.id === 'stretch-fold-3' || s.id === 'stretch-fold-4');
       const targetIdx = bulkIdx !== -1 ? bulkIdx : currentIdx;
       updatedSteps[targetIdx] = {
         ...updatedSteps[targetIdx],

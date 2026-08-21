@@ -139,30 +139,17 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'stretch-fold-3',
-        name: '🤲 Stretch & Fold #3',
-        shortName: 'Fold #3',
+        name: '🤲 Stretch & Fold #3 (Final Fold & Rest)',
+        shortName: 'Fold #3 & Bulk',
         phase: 'ferment',
         icon: 'Layers',
-        durationMinutes: 30,
-        description: 'Third structural fold. Dough should show visible elasticity.',
+        durationMinutes: 150, // 2.5 hours bulk fermentation rest after final fold
+        description: 'Third and final fold. Leave dough undisturbed for 2.5 hours of bulk fermentation.',
         detailedInstructions: [
-          'Perform gentle stretch and fold or coil folds.',
-          'Be mindful not to degas the developing air pockets.',
-          'Cover and rest 30 minutes.'
-        ]
-      },
-      {
-        id: 'stretch-fold-4',
-        name: '🤲 Stretch & Fold #4',
-        shortName: 'Fold #4',
-        phase: 'ferment',
-        icon: 'Layers',
-        durationMinutes: 150, // 2.5 hours bulk fermentation after S&F 4
-        description: 'Final fold. Leave dough undisturbed for bulk fermentation.',
-        detailedInstructions: [
-          'Perform a gentle final fold, smooth top surface, and tuck edges under.',
-          'Transfer into a straight-sided transparent container if desired to monitor rise accurately.',
-          'Cover and let rest untouched in a warm location (~78°F / 26°C).'
+          'Perform your 3rd and final gentle stretch & fold or coil fold.',
+          'Smooth the top surface and tuck the edges under to create a neat round.',
+          'Transfer into a transparent container if desired to monitor the rise.',
+          'Cover and leave completely undisturbed in a warm spot (~78°F / 26°C) for 2.5 hours.'
         ],
         isBiologicalEstimate: true,
         targetRisePercentage: '50–75% rise'
