@@ -46,16 +46,16 @@ export const NowCard: React.FC<NowCardProps> = ({
 
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll window to top of card when the step changes
+  // Auto-scroll window to top of viewport when the step changes
   useEffect(() => {
-    // Small timeout ensures DOM layout is updated before scrolling
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    document.body.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+
+    // Double check after DOM render settling
     const timer = setTimeout(() => {
-      if (cardRef.current) {
-        cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 50);
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }, 80);
     return () => clearTimeout(timer);
   }, [currentStep.id, currentStep.index]);
 
@@ -81,6 +81,7 @@ export const NowCard: React.FC<NowCardProps> = ({
 
   const handleActionClick = () => {
     if (isZeroDurationStep) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       completeCurrentStep();
       return;
     }
@@ -89,12 +90,14 @@ export const NowCard: React.FC<NowCardProps> = ({
       setHasStartedCurrentStep(true);
       startCurrentStepNow();
     } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       completeCurrentStep();
       setHasStartedCurrentStep(false);
     }
   };
 
   const handleBiologicalOverride = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     triggerBiologicalReady(currentStep.id);
   };
 
