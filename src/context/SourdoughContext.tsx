@@ -748,35 +748,15 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
         const newStarter = Math.round(recipe.starterGrams * scaleFactor);
         const newSalt = Math.round(recipe.saltGrams * scaleFactor);
 
-        const scaled: Recipe = {
+        const baseScaled: Recipe = {
           ...recipe,
           loavesCount: newLoavesCount,
           flourGrams: newFlour,
           waterGrams: newWater,
           starterGrams: newStarter,
-          saltGrams: newSalt,
-          steps: recipe.steps.map(step => {
-            if (step.id === 'mix-dough') {
-              return {
-                ...step,
-                ingredientsUsed: [
-                  { name: 'Flour', amount: newFlour, unit: 'g' },
-                  { name: 'Water', amount: newWater, unit: 'g' },
-                  { name: 'Peaked Starter', amount: newStarter, unit: 'g' }
-                ]
-              };
-            }
-            if (step.id === 'add-salt') {
-              return {
-                ...step,
-                ingredientsUsed: [
-                  { name: 'Fine Sea Salt', amount: newSalt, unit: 'g' }
-                ]
-              };
-            }
-            return step;
-          })
+          saltGrams: newSalt
         };
+        const scaled = getRecipeWithSteps(baseScaled);
         updatedSelected = scaled;
         return scaled;
       });

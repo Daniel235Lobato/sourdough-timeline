@@ -1,4 +1,5 @@
 import { Recipe } from '../types/timeline';
+import { calculateStarterFeeding } from '../engine/starterCalculator';
 
 export const DEFAULT_RECIPES: Recipe[] = [
   {
@@ -11,8 +12,8 @@ export const DEFAULT_RECIPES: Recipe[] = [
     starterGrams: 100,
     saltGrams: 10,
     hydration: 65,
-    starterRatio: '1:3:3 (15g starter + 45g water + 45g flour = 105g total)',
-    starterFeedHours: 6,
+    starterRatio: '1:2:2 (23g seed + 46g water + 46g flour = 115g total)',
+    starterFeedHours: 5.5,
     defaultRetardHours: 14, // 14h cold retard by default (flexible 12-48h)
     preheatMinutes: 45,
     bakeCoveredMinutes: 20,
@@ -26,18 +27,19 @@ export const DEFAULT_RECIPES: Recipe[] = [
         shortName: 'Feed Starter',
         phase: 'starter',
         icon: 'Sprout',
-        durationMinutes: 360, // 6 hours
-        description: 'Build your levain for peak yeast activity.',
+        durationMinutes: 330, // 5.5 hours
+        description: 'Build 115g active levain for 1 loaf (100g for dough + 15g starter reserve).',
         detailedInstructions: [
-          'In a clean glass jar, mix 15g mature starter, 45g lukewarm water (78°F / 25°C), and 45g bread flour.',
-          'Stir vigorously until thoroughly combined with no dry patches.',
-          'Scrape down the sides and place a rubber band at the current level.',
-          'Leave in a warm spot (75°F–80°F / 24°C–27°C) for ~6 hours.'
+          'In a clean glass jar, measure 23g active seed starter.',
+          'Add 46g lukewarm water (~78°F / 25°C) and stir to disperse.',
+          'Add 46g bread flour (or 50:50 white/wheat blend) and mix until thoroughly combined.',
+          'Mark jar level with a rubber band. Yields 115g total: 100g for dough + 15g left over to repopulate starter.',
+          'Leave in a warm spot (75°F–80°F / 24°C–27°C) for 5–6 hours until peaked.'
         ],
         ingredientsUsed: [
-          { name: 'Seed Starter', amount: 15, unit: 'g' },
-          { name: 'Water (Lukewarm)', amount: 45, unit: 'g' },
-          { name: 'Flour', amount: 45, unit: 'g' }
+          { name: 'Seed Starter', amount: 23, unit: 'g' },
+          { name: 'Water (Lukewarm)', amount: 46, unit: 'g' },
+          { name: 'Flour', amount: 46, unit: 'g' }
         ],
         isBiologicalEstimate: true,
         canOverrideCompletion: true,
@@ -351,17 +353,46 @@ export const DEFAULT_RECIPES: Recipe[] = [
   }
 ];
 
-// Helper to fill in steps for preset variations if empty
+// Helper to fill in steps for preset variations and scale starter feeding per loaf count
 export function getRecipeWithSteps(recipe: Recipe): Recipe {
-  if (recipe.steps && recipe.steps.length > 0) {
-    return recipe;
-  }
-  const baseSteps = DEFAULT_RECIPES[0].steps;
+  const loaves = recipe.loavesCount || 1;
+  const starterPerLoaf = Math.round((recipe.starterGrams || 100) / loaves);
+  const feeding = calculateStarterFeeding(loaves, starterPerLoaf, 15);
+
+  const baseSteps = (recipe.steps && recipe.steps.length > 0) ? recipe.steps : DEFAULT_RECIPES[0].steps;
+
   const clonedSteps = baseSteps.map(s => {
     const step = { ...s };
-    if (step.id === 'cold-retard') {
-      step.durationMinutes = recipe.defaultRetardHours * 60;
+
+    if (step.id === 'feed-starter') {
+      step.description = feeding.description;
+      step.detailedInstructions = feeding.instructions;
+      step.durationMinutes = Math.round(feeding.estimatedHours * 60);
+      step.ingredientsUsed = [
+        { name: 'Active Seed Starter', amount: feeding.seedStarterGrams, unit: 'g' },
+        { name: 'Water (Lukewarm ~78°F)', amount: feeding.waterGrams, unit: 'g' },
+        { name: 'Flour (Bread/WW blend)', amount: feeding.flourGrams, unit: 'g' }
+      ];
     }
+
+    if (step.id === 'starter-peak') {
+      step.description = `Levain is peaked and active. Measure ${feeding.starterNeededForDough}g into dough; leave remaining ${feeding.reserveForRepopulation}g in jar for next bake.`;
+      if (step.fermentationCues) {
+        step.fermentationCues = {
+          ...step.fermentationCues,
+          checklist: [
+            `${feeding.starterNeededForDough}g needed for your ${loaves === 1 ? 'loaf' : `${loaves} loaves`}`,
+            `Leave ${feeding.reserveForRepopulation}g in jar to feed & repopulate starter for future bakes`,
+            'Do not wait until starter starts collapsing back down'
+          ]
+        };
+      }
+    }
+
+    if (step.id === 'cold-retard') {
+      step.durationMinutes = (recipe.defaultRetardHours || 14) * 60;
+    }
+
     if (step.id === 'mix-dough') {
       step.ingredientsUsed = [
         { name: 'Flour', amount: recipe.flourGrams, unit: 'g' },
@@ -369,15 +400,20 @@ export function getRecipeWithSteps(recipe: Recipe): Recipe {
         { name: 'Peaked Starter', amount: recipe.starterGrams, unit: 'g' }
       ];
     }
+
     if (step.id === 'add-salt') {
       step.ingredientsUsed = [
         { name: 'Fine Sea Salt', amount: recipe.saltGrams, unit: 'g' }
       ];
     }
+
     return step;
   });
+
   return {
     ...recipe,
+    starterRatio: `${feeding.feedRatio} (${feeding.seedStarterGrams}g seed + ${feeding.waterGrams}g water + ${feeding.flourGrams}g flour = ${feeding.totalLevainYield}g)`,
+    starterFeedHours: feeding.estimatedHours,
     steps: clonedSteps
   };
 }
