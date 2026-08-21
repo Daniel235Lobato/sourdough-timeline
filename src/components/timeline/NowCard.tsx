@@ -152,12 +152,6 @@ export const NowCard: React.FC<NowCardProps> = ({
             <span>Biological Cues Apply</span>
           </div>
         )}
-
-        {currentStep.flourWeight && (
-          <div className="mt-2 text-xs font-semibold text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800/80 px-2.5 py-1 rounded-lg inline-block">
-            Target Dough: {currentStep.flourWeight}g
-          </div>
-        )}
       </div>
 
       {/* Phase Specific Visual Animation */}
