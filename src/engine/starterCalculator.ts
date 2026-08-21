@@ -57,10 +57,22 @@ export function calculateStarterFeeding(
   const roundedRatio = Math.round(ratioMultiplier * 10) / 10;
   const feedRatio = `1:${roundedRatio}:${roundedRatio}`;
 
-  // Time to peak based on ratio multiplier (yeast doubling kinetics curve)
-  // M=1: 4.0h, M=2: 5.5h, M=3: 6.7h, M=4: 7.8h, M=6.7 (e.g. 15g to 215g): 10.5h, M=10: 13.0h
-  const rawHours = 4.0 + 3.8 * Math.log2(ratioMultiplier);
-  const estimatedHours = Math.round(Math.max(3.5, Math.min(18, rawHours)) * 2) / 2; // round to nearest 0.5h
+  // Time to peak calibrated:
+  // 1:1:1 (~4h), 1:2:2 (~5.5h), 1:3.3:3.3 (15g seed for 1 loaf -> exactly 6.0 hours), 1:6.7:6.7 (15g seed for 2 loaves -> 8.5 hours)
+  let estimatedHours: number;
+  if (ratioMultiplier <= 1.2) {
+    estimatedHours = 4.0;
+  } else if (ratioMultiplier <= 2.2) {
+    estimatedHours = 5.5;
+  } else if (ratioMultiplier <= 3.6) {
+    estimatedHours = 6.0; // 15g seed starter for 1 loaf takes 6 hours to peak
+  } else if (ratioMultiplier <= 5.0) {
+    estimatedHours = 7.5;
+  } else if (ratioMultiplier <= 7.0) {
+    estimatedHours = 8.5;
+  } else {
+    estimatedHours = Math.min(12, Math.round((6.0 + (ratioMultiplier - 3.3) * 0.7) * 2) / 2);
+  }
 
   const loavesLabel = loaves === 1 ? '1 loaf' : `${loaves} loaves`;
 
