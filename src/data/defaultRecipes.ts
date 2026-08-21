@@ -357,7 +357,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
 export function getRecipeWithSteps(recipe: Recipe): Recipe {
   const loaves = recipe.loavesCount || 1;
   const starterPerLoaf = Math.round((recipe.starterGrams || 100) / loaves);
-  const feeding = calculateStarterFeeding(loaves, starterPerLoaf, 15);
+  const feeding = calculateStarterFeeding(loaves, starterPerLoaf, 15, recipe.customSeedGrams);
 
   const baseSteps = (recipe.steps && recipe.steps.length > 0) ? recipe.steps : DEFAULT_RECIPES[0].steps;
 

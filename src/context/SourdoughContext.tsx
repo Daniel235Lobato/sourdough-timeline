@@ -51,6 +51,7 @@ interface SourdoughContextType {
   saveRecipe: (recipe: Recipe) => void;
   deleteRecipe: (id: string) => void;
   scaleRecipeLoaves: (recipeId: string, newLoavesCount: number) => void;
+  updateCustomSeedGrams: (recipeId: string, customSeedGrams?: number) => void;
 }
 
 const STORAGE_KEYS = {
@@ -768,6 +769,26 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
   }, []);
 
+  const updateCustomSeedGrams = useCallback((recipeId: string, customSeedGrams?: number) => {
+    setRecipes(prev => {
+      let updatedSelected: Recipe | null = null;
+      const updated = prev.map(recipe => {
+        if (recipe.id !== recipeId) return recipe;
+        const base: Recipe = {
+          ...recipe,
+          customSeedGrams
+        };
+        const full = getRecipeWithSteps(base);
+        updatedSelected = full;
+        return full;
+      });
+      if (updatedSelected) {
+        setSelectedRecipeState(updatedSelected);
+      }
+      return updated;
+    });
+  }, []);
+
   return (
     <SourdoughContext.Provider value={{
       recipes,
@@ -803,7 +824,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       resetSession,
       saveRecipe,
       deleteRecipe,
-      scaleRecipeLoaves
+      scaleRecipeLoaves,
+      updateCustomSeedGrams
     }}>
       {children}
     </SourdoughContext.Provider>

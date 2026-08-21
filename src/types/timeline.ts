@@ -49,8 +49,9 @@ export interface Recipe {
   saltGrams: number;
   extraIngredients?: { name: string; amount: number; unit: string }[];
   hydration: number; // percentage, e.g. 65
-  starterRatio: string; // e.g. "1:3:3 (30g seed + 90g water + 90g flour)"
-  starterFeedHours: number; // 6 hours
+  starterRatio: string; // e.g. "1:2:2 (23g seed + 46g water + 46g flour = 115g)"
+  starterFeedHours: number; // 5.5 hours
+  customSeedGrams?: number; // Custom or minimum seed starter input (e.g. 15g)
   defaultRetardHours: number; // 14 hours default (12h - 48h range)
   preheatMinutes: number; // 45 min
   bakeCoveredMinutes: number; // 20 min
@@ -83,6 +84,7 @@ export interface BakeSession {
   targetStartTime: Date;
   targetBakeByTime?: Date;
   coldRetardHours: number;
+  customSeedGrams?: number;
   steps: ScheduledStep[];
   currentStepIndex: number;
   startedAt: Date;
