@@ -377,15 +377,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (soundEnabled) {
       playStepChime();
     }
-    if (notificationsEnabled) {
-      requestPermission().then(() => {
-        sendNotification(
-          'Timeline Generated',
-          `Your sourdough schedule is ready! Starting at ${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-        );
-      });
-    }
-  }, [selectedRecipe, soundEnabled, notificationsEnabled, playStepChime, requestPermission, sendNotification]);
+  }, [selectedRecipe, soundEnabled, playStepChime]);
 
   /**
    * Start current step timer right now and align schedule
@@ -460,17 +452,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
         playStepChime();
       }
     }
-
-    if (notificationsEnabled && !isNowCompleted) {
-      const nextStep = updatedSteps[nextIdx];
-      if (nextStep) {
-        sendNotification(
-          nextStep.shortName,
-          `Next step: ${nextStep.name}. Duration: ${nextStep.durationMinutes}m`
-        );
-      }
-    }
-  }, [activeSession, soundEnabled, notificationsEnabled, playStepChime, playSuccessCelebration, sendNotification]);
+  }, [activeSession, soundEnabled, playStepChime, playSuccessCelebration]);
 
   /**
    * Jump to specific step index
@@ -518,11 +500,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       });
 
       if (soundEnabled) playStepChime();
-      if (notificationsEnabled) {
-        sendNotification('Fermentation Complete', 'Proceeding immediately to next step!');
-      }
     }
-  }, [activeSession, soundEnabled, notificationsEnabled, playStepChime, sendNotification]);
+  }, [activeSession, soundEnabled, playStepChime]);
 
   /**
    * "I'm Running Behind" intelligent handler
