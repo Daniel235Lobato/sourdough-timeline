@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircle, 
   Clock, 
@@ -43,6 +43,21 @@ export const NowCard: React.FC<NowCardProps> = ({
     isPushSubscribed,
     subscribeToPushNotifications
   } = useSourdough();
+
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll window to top of card when the step changes
+  useEffect(() => {
+    // Small timeout ensures DOM layout is updated before scrolling
+    const timer = setTimeout(() => {
+      if (cardRef.current) {
+        cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [currentStep.id, currentStep.index]);
 
   // Check if this step is a zero-duration milestone (e.g. Starter Peaked / Checkpoint)
   const isZeroDurationStep = currentStep.durationMinutes === 0;
@@ -114,7 +129,7 @@ export const NowCard: React.FC<NowCardProps> = ({
       : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
-    <div className={`rounded-3xl bg-white dark:bg-stone-900 border-2 bg-gradient-to-b ${getPhaseColorClass()} p-5 shadow-xl transition-all relative overflow-hidden`}>
+    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-stone-900 border-2 bg-gradient-to-b ${getPhaseColorClass()} p-5 shadow-xl transition-all relative overflow-hidden`}>
       {/* Top Banner Tag */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
