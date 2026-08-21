@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X, Clock, Calendar, ArrowRight, Snowflake, Sparkles } from 'lucide-react';
+import { X, Clock, Calendar, ArrowRight, Snowflake, Sparkles, FlaskConical } from 'lucide-react';
 import { format, addDays, addMinutes, setHours, setMinutes } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
+import { calculateStarterFeeding } from '../../engine/starterCalculator';
+import { Recipe } from '../../types/timeline';
 
 interface StartWhenModalProps {
   isOpen: boolean;
@@ -64,6 +66,15 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
 
   const [selectedDateStr, setSelectedDateStr] = useState<string>(format(defaultDate, 'yyyy-MM-dd'));
   const [coldRetardHours, setColdRetardHours] = useState<number>(selectedRecipe.defaultRetardHours || 14);
+  const [seedGrams, setSeedGrams] = useState<number | undefined>(15); // Default to 15g minimum
+  const [customSeedInput, setCustomSeedInput] = useState<string>('');
+
+  const loaves = selectedRecipe.loavesCount || 1;
+  const starterPerLoaf = Math.round((selectedRecipe.starterGrams || 100) / loaves);
+
+  const feedingCalc = useMemo(() => {
+    return calculateStarterFeeding(loaves, starterPerLoaf, 15, seedGrams);
+  }, [loaves, starterPerLoaf, seedGrams]);
 
   const suggestedTimes = useMemo(() => {
     return getSuggestedStartTimes(selectedDateStr);
@@ -96,7 +107,12 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
     const [year, month, day] = selectedDateStr.split('-').map(Number);
     const startDate = new Date(year, month - 1, day, hours, minutes, 0);
 
-    startNewBake('start-when', startDate, coldRetardHours);
+    const recipeToUse: Recipe = {
+      ...selectedRecipe,
+      customSeedGrams: seedGrams
+    };
+
+    startNewBake('start-when', startDate, coldRetardHours, recipeToUse);
     onTimelineBuilt();
     onClose();
   };
@@ -204,6 +220,101 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
               onChange={(e) => setSelectedTimeStr(e.target.value)}
               className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
+          </div>
+
+          {/* Starting Seed Starter Amount */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center space-x-1.5">
+                <FlaskConical className="w-3.5 h-3.5 text-amber-500" />
+                <span>Starting Seed Starter Amount</span>
+              </label>
+              <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+                {feedingCalc.seedStarterGrams}g seed
+              </span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              {[15, 20, 30].map(grams => (
+                <button
+                  key={grams}
+                  type="button"
+                  onClick={() => {
+                    setSeedGrams(grams);
+                    setCustomSeedInput('');
+                  }}
+                  className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center ${
+                    seedGrams === grams
+                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm ring-1 ring-amber-500/30'
+                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                  }`}
+                >
+                  {grams}g {grams === 15 ? '(Min)' : ''}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setSeedGrams(undefined);
+                  setCustomSeedInput('');
+                }}
+                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center ${
+                  seedGrams === undefined
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm ring-1 ring-amber-500/30'
+                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
+                }`}
+              >
+                Auto
+              </button>
+            </div>
+
+            {/* Custom Input */}
+            <div className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 mb-2">
+              <span className="text-stone-500 dark:text-stone-400 text-[11px]">Or exact seed available:</span>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="number"
+                  min="5"
+                  max="200"
+                  placeholder={String(feedingCalc.seedStarterGrams)}
+                  value={customSeedInput}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomSeedInput(val);
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num) && num >= 5) {
+                      setSeedGrams(num);
+                    } else if (val === '') {
+                      setSeedGrams(undefined);
+                    }
+                  }}
+                  className="w-14 px-2 py-0.5 text-center text-xs font-bold rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                />
+                <span className="text-stone-400 font-semibold text-[11px]">g</span>
+              </div>
+            </div>
+
+            {/* Live Feeding Calculation Breakdown Card */}
+            <div className="p-3 bg-amber-50/70 dark:bg-stone-800/80 rounded-2xl border border-amber-200/60 dark:border-stone-700/60 text-xs space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 dark:text-stone-400">Feeding Formula:</span>
+                <span className="font-bold text-amber-800 dark:text-amber-300">
+                  {feedingCalc.seedStarterGrams}g seed + {feedingCalc.waterGrams}g water + {feedingCalc.flourGrams}g flour ({feedingCalc.feedRatio})
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 dark:text-stone-400">Total Yield:</span>
+                <span className="font-semibold text-stone-800 dark:text-stone-200">
+                  {feedingCalc.totalLevainYield}g ({feedingCalc.starterNeededForDough}g dough + {feedingCalc.reserveForRepopulation}g jar reserve)
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-stone-500 dark:text-stone-400">Time to Peak:</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  ⏱️ ~{feedingCalc.estimatedHours} hours
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Cold Retard Slider */}

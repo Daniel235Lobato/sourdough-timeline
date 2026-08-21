@@ -1,21 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { 
   Clock, 
   Calendar, 
   ArrowRight, 
   Play, 
-  ChevronRight,
-  Sparkles,
-  ChevronDown,
-  ChevronUp,
-  FlaskConical,
-  Scale
+  ChevronRight
 } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
 import { StartWhenModal } from './StartWhenModal';
 import { BakeByModal } from './BakeByModal';
 import { StartFromStepModal } from '../timeline/StartFromStepModal';
-import { calculateStarterFeeding } from '../../engine/starterCalculator';
 
 interface HomeViewProps {
   onNavigateToTimeline: () => void;
@@ -26,31 +20,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onNavigateToTimeline,
   onNavigateToRecipes
 }) => {
-  const { selectedRecipe, scaleRecipeLoaves, updateCustomSeedGrams, startNewBake } = useSourdough();
+  const { selectedRecipe, scaleRecipeLoaves, startNewBake } = useSourdough();
 
   const [isStartWhenOpen, setIsStartWhenOpen] = useState<boolean>(false);
   const [isBakeByOpen, setIsBakeByOpen] = useState<boolean>(false);
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState<boolean>(false);
-  const [showStarterBuilder, setShowStarterBuilder] = useState<boolean>(false);
-  const [customSeedInput, setCustomSeedInput] = useState<string>('');
-
-  const loaves = selectedRecipe.loavesCount || 1;
-  const starterPerLoaf = Math.round((selectedRecipe.starterGrams || 100) / loaves);
-
-  const feedingCalc = useMemo(() => {
-    return calculateStarterFeeding(loaves, starterPerLoaf, 15, selectedRecipe.customSeedGrams);
-  }, [loaves, starterPerLoaf, selectedRecipe.customSeedGrams]);
-
-  const handleCustomSeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setCustomSeedInput(val);
-    const num = parseInt(val, 10);
-    if (!isNaN(num) && num >= 5) {
-      updateCustomSeedGrams(selectedRecipe.id, num);
-    } else if (val === '') {
-      updateCustomSeedGrams(selectedRecipe.id, undefined);
-    }
-  };
 
   const handleQuickStartNow = () => {
     // Start forward schedule right now
@@ -193,100 +167,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Starter & Levain Builder Sub-Option */}
-        <div className="mt-2 pt-2.5 border-t border-stone-100 dark:border-stone-800">
-          <button
-            type="button"
-            onClick={() => setShowStarterBuilder(!showStarterBuilder)}
-            className="flex items-center justify-between w-full text-xs font-semibold text-stone-600 dark:text-stone-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors py-1"
-          >
-            <div className="flex items-center space-x-1.5">
-              <FlaskConical className="w-3.5 h-3.5 text-amber-500" />
-              <span>Low on seed starter? (15g min build)</span>
-            </div>
-            <div className="flex items-center space-x-1 text-[11px] text-amber-600 dark:text-amber-400 font-bold">
-              <span>{selectedRecipe.customSeedGrams ? `${selectedRecipe.customSeedGrams}g seed` : 'Standard 1:2:2'}</span>
-              {showStarterBuilder ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-            </div>
-          </button>
-
-          {showStarterBuilder && (
-            <div className="mt-2.5 p-3 rounded-2xl bg-amber-50/70 dark:bg-stone-800/80 border border-amber-200/60 dark:border-stone-700/60 space-y-2.5 animate-fade-in">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-stone-700 dark:text-stone-200">
-                  Available Seed Starter:
-                </span>
-                <div className="flex items-center space-x-1">
-                  {[15, 20, 30].map(grams => (
-                    <button
-                      key={grams}
-                      type="button"
-                      onClick={() => updateCustomSeedGrams(selectedRecipe.id, grams)}
-                      className={`px-2 py-1 rounded-lg text-xs font-bold transition-all ${
-                        selectedRecipe.customSeedGrams === grams
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'bg-white dark:bg-stone-700 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-600 hover:border-amber-400'
-                      }`}
-                    >
-                      {grams}g {grams === 15 ? '(Min)' : ''}
-                    </button>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => updateCustomSeedGrams(selectedRecipe.id, undefined)}
-                    className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      !selectedRecipe.customSeedGrams
-                        ? 'bg-stone-800 dark:bg-stone-600 text-white'
-                        : 'bg-white dark:bg-stone-700 text-stone-500'
-                    }`}
-                  >
-                    Auto
-                  </button>
-                </div>
-              </div>
-
-              {/* Custom Exact Grams Input */}
-              <div className="flex items-center justify-between text-xs pt-1 border-t border-amber-200/40 dark:border-stone-700/40">
-                <span className="text-stone-600 dark:text-stone-400 text-[11px]">Or exact seed available:</span>
-                <div className="flex items-center space-x-1">
-                  <input
-                    type="number"
-                    min="5"
-                    max="200"
-                    placeholder={String(feedingCalc.seedStarterGrams)}
-                    value={customSeedInput}
-                    onChange={handleCustomSeedChange}
-                    className="w-16 px-2 py-1 text-center text-xs font-bold rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 focus:outline-none focus:ring-1 focus:ring-amber-500 text-stone-900 dark:text-stone-100"
-                  />
-                  <span className="text-[11px] text-stone-400 font-semibold">g</span>
-                </div>
-              </div>
-
-              {/* Live Calculation Breakdown Box */}
-              <div className="p-2.5 bg-white dark:bg-stone-900/90 rounded-xl border border-amber-100 dark:border-stone-700/60 text-xs space-y-1.5 shadow-2xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-stone-500">Calculated Ratio:</span>
-                  <span className="font-bold text-amber-700 dark:text-amber-400">
-                    {feedingCalc.feedRatio} ({feedingCalc.seedStarterGrams}g seed + {feedingCalc.waterGrams}g water + {feedingCalc.flourGrams}g flour)
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-stone-500">Total Levain Yield:</span>
-                  <span className="font-bold text-stone-800 dark:text-stone-200">
-                    {feedingCalc.totalLevainYield}g ({feedingCalc.starterNeededForDough}g for {loaves === 1 ? '1 loaf' : `${loaves} loaves`} + {feedingCalc.reserveForRepopulation}g jar reserve)
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-stone-500">Estimated Peak Time:</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                    ⏱️ ~{feedingCalc.estimatedHours} hours to peak
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Direct Start Baking Button */}
