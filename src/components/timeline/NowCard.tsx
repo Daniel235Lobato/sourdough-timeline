@@ -44,6 +44,9 @@ export const NowCard: React.FC<NowCardProps> = ({
     subscribeToPushNotifications
   } = useSourdough();
 
+  // Check if this step is a zero-duration milestone (e.g. Starter Peaked / Checkpoint)
+  const isZeroDurationStep = currentStep.durationMinutes === 0;
+
   // Check if this step was already started
   const isAlreadyStarted = Boolean(currentStep.actualStartTime);
   const [hasStartedCurrentStep, setHasStartedCurrentStep] = useState(isAlreadyStarted);
@@ -62,6 +65,11 @@ export const NowCard: React.FC<NowCardProps> = ({
   );
 
   const handleActionClick = () => {
+    if (isZeroDurationStep) {
+      completeCurrentStep();
+      return;
+    }
+
     if (!hasStartedCurrentStep && !isAlreadyStarted) {
       setHasStartedCurrentStep(true);
       startCurrentStepNow();
@@ -99,9 +107,11 @@ export const NowCard: React.FC<NowCardProps> = ({
 
   // Determine display time in Hour:Min:Second format
   const isTimerRunning = hasStartedCurrentStep || isAlreadyStarted;
-  const timeDisplay = isTimerRunning 
-    ? countdown.formattedCountdown 
-    : formatDurationToHMS(currentStep.durationMinutes);
+  const timeDisplay = isZeroDurationStep
+    ? 'Milestone'
+    : isTimerRunning 
+      ? countdown.formattedCountdown 
+      : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
     <div className={`rounded-3xl bg-white dark:bg-stone-900 border-2 bg-gradient-to-b ${getPhaseColorClass()} p-5 shadow-xl transition-all relative overflow-hidden`}>
@@ -138,20 +148,48 @@ export const NowCard: React.FC<NowCardProps> = ({
         {/* Biological Cues Callout if Applicable */}
         {currentStep.isBiologicalEstimate && (
           <div className="mt-2.5 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-medium text-amber-800 dark:text-amber-300">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-            <span>Watch the dough, not just the clock! {currentStep.targetRisePercentage || ''}</span>
+            <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+            <span>Biological Cues Apply</span>
+          </div>
+        )}
+
+        {currentStep.flourWeight && (
+          <div className="mt-2 text-xs font-semibold text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800/80 px-2.5 py-1 rounded-lg inline-block">
+            Target Dough: {currentStep.flourWeight}g
           </div>
         )}
       </div>
 
-      {/* Phase Specific Micro-Animation */}
-      <div className="mb-4">
-        {currentStep.phase === 'starter' && <StarterBubbles />}
-        {currentStep.phase === 'ferment' && <DoughExpanding targetRise={currentStep.targetRisePercentage} />}
-        {currentStep.phase === 'retard' && <FridgeColdEffect hours={activeSession?.coldRetardHours} />}
-        {currentStep.phase === 'bake' && <OvenHeatGlow temp={currentStep.temperatureNote} />}
-        {currentStep.phase === 'cool' && <SteamEffect />}
-      </div>
+      {/* Phase Specific Visual Animation */}
+      {currentStep.phase === 'starter' && (
+        <div className="mb-4 bg-emerald-950/20 dark:bg-emerald-950/40 rounded-2xl p-4 border border-emerald-500/20 overflow-hidden">
+          <StarterBubbles />
+        </div>
+      )}
+
+      {currentStep.phase === 'ferment' && (
+        <div className="mb-4 bg-amber-950/20 dark:bg-amber-950/40 rounded-2xl p-4 border border-amber-500/20 overflow-hidden">
+          <DoughExpanding />
+        </div>
+      )}
+
+      {currentStep.phase === 'retard' && (
+        <div className="mb-4 bg-sky-950/20 dark:bg-sky-950/40 rounded-2xl p-4 border border-sky-500/20 overflow-hidden">
+          <FridgeColdEffect />
+        </div>
+      )}
+
+      {currentStep.phase === 'bake' && (
+        <div className="mb-4 bg-orange-950/20 dark:bg-orange-950/40 rounded-2xl p-4 border border-orange-500/20 overflow-hidden">
+          <OvenHeatGlow />
+        </div>
+      )}
+
+      {currentStep.phase === 'cool' && (
+        <div className="mb-4 bg-indigo-950/20 dark:bg-indigo-950/40 rounded-2xl p-4 border border-indigo-500/20 overflow-hidden">
+          <SteamEffect />
+        </div>
+      )}
 
       {/* Ingredients Used Pills */}
       {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
@@ -200,16 +238,20 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       )}
 
-      {/* Live Countdown & Next Step Indicator with Hour:Min:Second format */}
+      {/* Live Countdown & Next Step Indicator */}
       <div className="space-y-1.5 py-2 border-t border-stone-200/60 dark:border-stone-800/80 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Clock className={`w-4 h-4 ${isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
+            <Clock className={`w-4 h-4 ${!isZeroDurationStep && isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
             <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
-              {isTimerRunning ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') : 'Step duration: '}
+              {isZeroDurationStep 
+                ? 'Type: ' 
+                : isTimerRunning 
+                  ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') 
+                  : 'Step duration: '}
             </span>
             <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100 tracking-wider">
-              {timeDisplay}
+              {isZeroDurationStep ? 'Milestone Checkpoint' : timeDisplay}
             </span>
           </div>
 
@@ -223,29 +265,31 @@ export const NowCard: React.FC<NowCardProps> = ({
           )}
         </div>
 
-        {/* Step push alert pill */}
-        <div className="flex items-center justify-between text-[11px] pt-1">
-          {isPushSubscribed ? (
-            <span className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <BellRing className="w-3 h-3 animate-pulse" />
-              <span>Push alert scheduled for next step</span>
-            </span>
-          ) : (
-            <button
-              onClick={subscribeToPushNotifications}
-              className="inline-flex items-center space-x-1 text-amber-700 dark:text-amber-400 hover:underline font-medium"
-            >
-              <Bell className="w-3 h-3" />
-              <span>Enable push alert when timer ends</span>
-            </button>
-          )}
+        {/* Step push alert pill (only shown for timed steps) */}
+        {!isZeroDurationStep && (
+          <div className="flex items-center justify-between text-[11px] pt-1">
+            {isPushSubscribed ? (
+              <span className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                <BellRing className="w-3 h-3 animate-pulse" />
+                <span>Push alert scheduled for next step</span>
+              </span>
+            ) : (
+              <button
+                onClick={subscribeToPushNotifications}
+                className="inline-flex items-center space-x-1 text-amber-700 dark:text-amber-400 hover:underline font-medium"
+              >
+                <Bell className="w-3 h-3" />
+                <span>Enable push alert when timer ends</span>
+              </button>
+            )}
 
-          {nextStep && (
-            <span className="text-[10px] text-stone-400">
-              Starts at {nextStep.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-          )}
-        </div>
+            {nextStep && (
+              <span className="text-[10px] text-stone-400">
+                Starts at {nextStep.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Primary Action Buttons */}
@@ -253,12 +297,17 @@ export const NowCard: React.FC<NowCardProps> = ({
         <button
           onClick={handleActionClick}
           className={`w-full py-4 px-4 rounded-2xl font-bold text-base flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98] shadow-lg ${
-            isTimerRunning
+            isZeroDurationStep || isTimerRunning
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
               : 'bg-stone-900 dark:bg-amber-600 hover:bg-black dark:hover:bg-amber-700 text-white shadow-stone-900/20'
           }`}
         >
-          {isTimerRunning ? (
+          {isZeroDurationStep ? (
+            <>
+              <CheckCircle className="w-5 h-5" />
+              <span>COMPLETE STEP ✓</span>
+            </>
+          ) : isTimerRunning ? (
             <>
               <CheckCircle className="w-5 h-5" />
               <span>STEP COMPLETE ✓</span>
