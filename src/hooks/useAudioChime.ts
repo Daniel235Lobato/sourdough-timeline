@@ -7,27 +7,47 @@ export function useAudioChime() {
       if (!AudioContextClass) return;
 
       const ctx = new AudioContextClass();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
       const now = ctx.currentTime;
 
-      // Create a warm two-tone chime (E5 -> B5)
-      const frequencies = [659.25, 987.77];
+      // Master volume for the bell
+      const masterGain = ctx.createGain();
+      masterGain.gain.setValueAtTime(0.85, now);
+      masterGain.connect(ctx.destination);
 
-      frequencies.forEach((freq, index) => {
+      // Classic Kitchen Oven Bell harmonic partials (Metallic Brass Bell)
+      // Fundamental pitch ~1200 Hz with authentic acoustic bell ratios & decay curves
+      const partials = [
+        { freqRatio: 1.00, gain: 0.45, decay: 2.2 },  // Fundamental / Prime
+        { freqRatio: 1.21, gain: 0.30, decay: 1.6 },  // Tierce (Minor 3rd)
+        { freqRatio: 1.50, gain: 0.22, decay: 1.4 },  // Quint (Fifth)
+        { freqRatio: 2.00, gain: 0.18, decay: 1.0 },  // Nominal (Octave)
+        { freqRatio: 2.76, gain: 0.12, decay: 0.7 },  // Supernominal (Metallic shimmer)
+        { freqRatio: 4.07, gain: 0.08, decay: 0.35 }, // High strike ping
+        { freqRatio: 5.42, gain: 0.05, decay: 0.15 }  // Initial hammer transient
+      ];
+
+      const baseFreq = 1200; // Bright, audible kitchen oven bell tone
+
+      partials.forEach(partial => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + index * 0.14);
+        osc.frequency.setValueAtTime(baseFreq * partial.freqRatio, now);
 
-        gain.gain.setValueAtTime(0.001, now + index * 0.14);
-        gain.gain.exponentialRampToValueAtTime(0.2, now + index * 0.14 + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + index * 0.14 + 0.8);
+        // Immediate crisp strike attack (<3ms) and exponential metallic decay
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(partial.gain, now + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + partial.decay);
 
         osc.connect(gain);
-        gain.connect(ctx.destination);
+        gain.connect(masterGain);
 
-        osc.start(now + index * 0.14);
-        osc.stop(now + index * 0.14 + 0.85);
+        osc.start(now);
+        osc.stop(now + partial.decay + 0.05);
       });
     } catch {
       // Audio context might be restricted before user gesture
