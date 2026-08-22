@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X, Clock, Calendar, ArrowRight, Snowflake, Sparkles, FlaskConical, Edit3 } from 'lucide-react';
+import { X, Clock, Calendar, ArrowRight, Snowflake, Sparkles, FlaskConical } from 'lucide-react';
 import { format, addDays, addMinutes, setHours, setMinutes } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
-import { calculateStarterFeeding } from '../../engine/starterCalculator';
 import { Recipe } from '../../types/timeline';
 
 interface StartWhenModalProps {
@@ -66,18 +65,11 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
   const [selectedDateStr, setSelectedDateStr] = useState<string>(format(defaultDate, 'yyyy-MM-dd'));
   const [coldRetardHours, setColdRetardHours] = useState<number>(selectedRecipe.defaultRetardHours || 14);
   
-  // Starter seed selection & custom input mode
+  // Seed amount selection: 15, 20, 30, or custom
   const [selectedSeedPreset, setSelectedSeedPreset] = useState<number | 'custom'>(15);
   const [customSeedGrams, setCustomSeedGrams] = useState<number>(25);
 
   const activeSeedAmount = selectedSeedPreset === 'custom' ? customSeedGrams : selectedSeedPreset;
-
-  const loaves = selectedRecipe.loavesCount || 1;
-  const starterPerLoaf = Math.round((selectedRecipe.starterGrams || 100) / loaves);
-
-  const feedingCalc = useMemo(() => {
-    return calculateStarterFeeding(loaves, starterPerLoaf, 15, activeSeedAmount);
-  }, [loaves, starterPerLoaf, activeSeedAmount]);
 
   const suggestedTimes = useMemo(() => {
     return getSuggestedStartTimes(selectedDateStr);
@@ -123,7 +115,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md" cardClass="p-5 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-stone-100 dark:border-stone-800">
+      <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/60 flex items-center justify-center shadow-xs">
             <Clock className="w-5 h-5" />
@@ -146,17 +138,17 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
         </button>
       </div>
 
-      <div className="mt-4 space-y-4">
+      <div className="mt-4 space-y-3.5">
         {/* Date Selection */}
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
             Start Date
           </label>
           <div className="grid grid-cols-3 gap-2 mb-2">
             <button
               type="button"
               onClick={() => handleQuickDate(0)}
-              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+              className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
                 selectedDateStr === format(new Date(), 'yyyy-MM-dd')
                   ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
                   : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -167,7 +159,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             <button
               type="button"
               onClick={() => handleQuickDate(1)}
-              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+              className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
                 selectedDateStr === format(addDays(new Date(), 1), 'yyyy-MM-dd')
                   ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
                   : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -178,7 +170,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             <button
               type="button"
               onClick={() => handleQuickDate(2)}
-              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+              className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
                 selectedDateStr === format(addDays(new Date(), 2), 'yyyy-MM-dd')
                   ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
                   : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -191,13 +183,13 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             type="date"
             value={selectedDateStr}
             onChange={(e) => setSelectedDateStr(e.target.value)}
-            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
         </div>
 
         {/* Time Selection */}
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
             Start Time (Feed Starter)
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
@@ -206,7 +198,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
                 key={value}
                 type="button"
                 onClick={() => setSelectedTimeStr(value)}
-                className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center active-press ${
+                className={`w-full py-2 px-1.5 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center active-press ${
                   selectedTimeStr === value
                     ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
                     : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60'
@@ -220,23 +212,22 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             type="time"
             value={selectedTimeStr}
             onChange={(e) => setSelectedTimeStr(e.target.value)}
-            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
         </div>
 
-        {/* Starter Feeding Calculation Breakdown Card */}
-        <div className="p-4 bg-amber-50/80 dark:bg-stone-800/80 rounded-2xl border border-amber-200/80 dark:border-stone-700/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 flex items-center space-x-1.5">
-              <FlaskConical className="w-4 h-4 text-amber-600" />
-              <span>Starting Seed Starter Amount</span>
-            </span>
+        {/* Starting Seed Starter Amount (Compact 1-Row Selection) */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center space-x-1.5">
+              <FlaskConical className="w-3.5 h-3.5 text-amber-600" />
+              <span>Starting Seed Starter</span>
+            </label>
             <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400">
-              {feedingCalc.seedStarterGrams}g seed
+              {activeSeedAmount}g seed
             </span>
           </div>
 
-          {/* Seed amount presets + Custom input button */}
           <div className="grid grid-cols-4 gap-2">
             {[15, 20, 30].map(grams => (
               <button
@@ -245,86 +236,55 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
                 onClick={() => setSelectedSeedPreset(grams)}
                 className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press ${
                   selectedSeedPreset === grams
-                    ? 'border-amber-500 bg-white dark:bg-stone-900 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
-                    : 'border-amber-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 bg-white/60 dark:bg-stone-800/60'
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 bg-stone-50/50 dark:bg-stone-800/50 hover:bg-stone-100'
                 }`}
               >
-                {grams}g {grams === 15 ? '(Min)' : ''}
+                {grams}g
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => setSelectedSeedPreset('custom')}
-              className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press flex items-center justify-center space-x-1 ${
-                selectedSeedPreset === 'custom'
-                  ? 'border-amber-500 bg-white dark:bg-stone-900 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
-                  : 'border-amber-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 bg-white/60 dark:bg-stone-800/60'
-              }`}
-            >
-              <Edit3 className="w-3 h-3 text-amber-600" />
-              <span>Custom</span>
-            </button>
-          </div>
 
-          {/* Custom Seed Input Row (shown when Custom is selected or always editable) */}
-          {selectedSeedPreset === 'custom' && (
-            <div className="p-3 bg-white dark:bg-stone-900 rounded-xl border border-amber-300 dark:border-stone-600 flex items-center justify-between animate-fade-in">
-              <div className="text-xs">
-                <span className="font-bold text-stone-800 dark:text-stone-200">Type Your Seed Amount:</span>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400">Ratio & peak time will calculate live</p>
-              </div>
-              <div className="flex items-center space-x-1.5">
+            {/* Custom Option: Button or Active Inline Input */}
+            {selectedSeedPreset === 'custom' ? (
+              <div className="py-1 px-1 rounded-xl border border-amber-500 bg-white dark:bg-stone-900 shadow-xs ring-1 ring-amber-500/30 flex items-center justify-center">
                 <input
                   type="number"
                   min="5"
                   max="200"
+                  autoFocus
                   value={customSeedGrams}
                   onChange={(e) => {
                     const val = parseInt(e.target.value, 10);
-                    if (!isNaN(val) && val >= 5) {
+                    if (!isNaN(val) && val >= 1) {
                       setCustomSeedGrams(val);
                     } else if (e.target.value === '') {
                       setCustomSeedGrams(15);
                     }
                   }}
-                  className="w-16 px-2.5 py-1.5 text-center text-sm font-mono font-extrabold rounded-lg bg-amber-50/60 dark:bg-stone-800 border border-amber-300 dark:border-stone-600 text-amber-900 dark:text-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-8 text-center font-mono font-bold text-xs bg-transparent text-amber-900 dark:text-amber-200 focus:outline-none"
                 />
-                <span className="text-xs font-bold text-stone-500 dark:text-stone-400">grams</span>
+                <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400">g</span>
               </div>
-            </div>
-          )}
-
-          {/* Live Dynamic Calculated Formula & Timing Summary */}
-          <div className="pt-2.5 border-t border-amber-200/60 dark:border-stone-700 space-y-1.5 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-stone-600 dark:text-stone-400">Calculated Ratio:</span>
-              <span className="font-mono font-bold text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-md bg-amber-100/70 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800 text-[11px]">
-                {feedingCalc.feedRatio}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-stone-600 dark:text-stone-400">Feeding Formula:</span>
-              <span className="font-bold text-amber-900 dark:text-amber-300">
-                {feedingCalc.seedStarterGrams}g seed + {feedingCalc.waterGrams}g water + {feedingCalc.flourGrams}g flour
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-stone-600 dark:text-stone-400">Yield & Peak Time:</span>
-              <span className="font-semibold text-stone-800 dark:text-stone-200">
-                {feedingCalc.totalLevainYield}g yield • <span className="text-emerald-700 dark:text-emerald-400 font-bold">⏱️ ~{feedingCalc.estimatedHours}h to peak</span>
-              </span>
-            </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSelectedSeedPreset('custom')}
+                className="py-2 px-1 rounded-xl text-xs font-bold border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 bg-stone-50/50 dark:bg-stone-800/50 hover:bg-stone-100 transition-all text-center active-press"
+              >
+                Custom
+              </button>
+            )}
           </div>
         </div>
 
         {/* Cold Retard Slider */}
-        <div className="p-3.5 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-200/80 dark:border-stone-700 space-y-2">
+        <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-2xl border border-stone-200/80 dark:border-stone-700 space-y-1.5">
           <div className="flex items-center justify-between">
             <span className="flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-              <Snowflake className="w-4 h-4 text-sky-500" />
+              <Snowflake className="w-3.5 h-3.5 text-sky-500" />
               <span>Cold Retard Duration</span>
             </span>
-            <span className="text-xs font-bold font-mono px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+            <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
               {coldRetardHours} Hours
             </span>
           </div>
@@ -338,15 +298,11 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             onChange={(e) => setColdRetardHours(Number(e.target.value))}
             className="w-full h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
           />
-          <div className="flex justify-between text-[10px] text-stone-400 font-semibold">
-            <span>12h (Min)</span>
-            <span>48h (Max)</span>
-          </div>
         </div>
       </div>
 
       {/* Primary Action Button (52px Touch Target) */}
-      <div className="mt-5">
+      <div className="mt-4">
         <button
           onClick={handleBuildTimeline}
           className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 via-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold text-sm sm:text-base shadow-md shadow-amber-600/30 flex items-center justify-center space-x-2 transition-all active-press"
