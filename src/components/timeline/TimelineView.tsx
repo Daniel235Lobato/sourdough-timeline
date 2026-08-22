@@ -37,18 +37,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   if (!activeSession || activeSession.steps.length === 0) {
     return (
       <div className="py-20 px-4 text-center max-w-md mx-auto space-y-4">
-        <div className="w-16 h-16 rounded-3xl bg-amber-100 dark:bg-stone-800 text-amber-700 dark:text-amber-400 mx-auto flex items-center justify-center text-3xl">
+        <div className="w-16 h-16 rounded-3xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/60 mx-auto flex items-center justify-center text-3xl shadow-card">
           🧭
         </div>
         <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">
           No Active Bake Timeline
         </h2>
-        <p className="text-sm text-stone-500 dark:text-stone-400">
+        <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400">
           Start a new timeline by setting your start time or target bake-by time.
         </p>
         <button
           onClick={onNavigateHome}
-          className="mt-2 py-3 px-6 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold text-sm shadow-md transition-all"
+          className="mt-2 py-3.5 px-6 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold text-xs shadow-md shadow-amber-600/30 transition-all active-press"
         >
           Plan a Sourdough Bake
         </button>
@@ -65,7 +65,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   };
 
   return (
-    <div className="pb-28 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
+    <div className="pb-28 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in">
       {/* "NOW" Prominent Experience Card */}
       {!activeSession.isCompleted && (
         <NowCard
@@ -75,19 +75,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
         />
       )}
 
-      {/* Quick Action Toolbar */}
+      {/* Quick Action Toolbar (44px Minimum Touch Targets) */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
         <button
           onClick={() => setIsRunningBehindOpen(true)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 font-medium text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-2xs"
+          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press"
         >
-          <Clock className="w-3.5 h-3.5 text-amber-500" />
+          <Clock className="w-3.5 h-3.5 text-amber-600" />
           <span>I'm Running Behind</span>
         </button>
 
         <button
           onClick={() => setIsAdjustRetardOpen(!isAdjustRetardOpen)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 font-medium text-stone-700 dark:text-stone-300 hover:border-sky-500 shadow-2xs"
+          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-sky-500 shadow-card transition-all active-press"
         >
           <Snowflake className="w-3.5 h-3.5 text-sky-500" />
           <span>Retard: {activeSession.coldRetardHours}h</span>
@@ -95,7 +95,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
 
         <button
           onClick={() => setIsStartFromStepOpen(true)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 font-medium text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-2xs"
+          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press"
         >
           <Play className="w-3.5 h-3.5 text-amber-600" />
           <span>Jump Step</span>
@@ -108,7 +108,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
               onNavigateHome();
             }
           }}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 font-medium text-stone-400 hover:text-red-500 shadow-2xs"
+          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-400 hover:text-red-500 shadow-card transition-all active-press"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset</span>
@@ -117,13 +117,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
 
       {/* Expandable Cold Retard Adjuster */}
       {isAdjustRetardOpen && (
-        <div className="p-4 rounded-2xl bg-sky-50/70 dark:bg-stone-900 border border-sky-200 dark:border-stone-800 space-y-3 animate-fade-in">
-          <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-sky-900 dark:text-sky-300 flex items-center space-x-1">
-              <Snowflake className="w-3.5 h-3.5 text-sky-500" />
+        <div className="p-4 sm:p-5 rounded-3xl bg-sky-50/70 dark:bg-[#181614] border border-sky-200/80 dark:border-stone-800/80 shadow-card space-y-3 animate-fade-in">
+          <div className="flex items-center justify-between text-xs font-bold">
+            <span className="text-sky-900 dark:text-sky-300 flex items-center space-x-1.5">
+              <Snowflake className="w-4 h-4 text-sky-500" />
               <span>Adjust Cold Retard Duration:</span>
             </span>
-            <span className="font-mono text-sky-700 dark:text-sky-400">{retardSliderVal} Hours</span>
+            <span className="font-mono text-sky-700 dark:text-sky-400 text-sm">{retardSliderVal} Hours</span>
           </div>
           <input
             type="range"
@@ -138,7 +138,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
             <span className="text-stone-400 text-[11px]">12h min – 48h max</span>
             <button
               onClick={handleApplyRetardChange}
-              className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold text-xs"
+              className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold text-xs shadow-xs transition-all active-press"
             >
               Update Timeline
             </button>
@@ -149,15 +149,15 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
       {/* Main Vertical Timeline */}
       <div className="space-y-4 pt-2">
         <div className="flex items-center justify-between px-1">
-          <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100 flex items-center space-x-2">
+          <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100 flex items-center space-x-2">
             <span>Sourdough Journey</span>
           </h3>
-          <span className="text-xs text-stone-400 font-medium">
+          <span className="text-xs text-stone-400 font-bold">
             {activeSession.steps.length} Milestones
           </span>
         </div>
 
-        <div className="space-y-3 pl-1">
+        <div className="space-y-3.5 pl-1">
           {activeSession.steps.map((step, idx) => (
             <TimelineItem
               key={step.id}

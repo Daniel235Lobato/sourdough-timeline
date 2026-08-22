@@ -125,38 +125,38 @@ export const LoafSuccessModal: React.FC<LoafSuccessModalProps> = ({ isOpen, onBa
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10px] font-semibold text-stone-400 uppercase">Room Temp (°F)</label>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Room Temp (°F)</label>
                 <input
                   type="number"
                   value={ambientTemp}
                   onChange={(e) => setAmbientTemp(Number(e.target.value))}
-                  className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg p-2 text-xs text-stone-800 dark:text-stone-200"
+                  className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2.5 text-xs font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-semibold text-stone-400 uppercase">Flour Used</label>
+                <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1">Flour Used</label>
                 <input
                   type="text"
                   value={flourType}
                   onChange={(e) => setFlourType(e.target.value)}
-                  className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg p-2 text-xs text-stone-800 dark:text-stone-200"
+                  className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2.5 text-xs font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
             </div>
 
             <button
               onClick={handleSave}
-              className="w-full py-3.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md transition-all"
+              className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 shadow-md shadow-amber-600/30 transition-all active-press"
             >
               <Bookmark className="w-4 h-4" />
-              <span>SAVE TO BAKE HISTORY</span>
+              <span className="tracking-wide">SAVE TO BAKE HISTORY</span>
             </button>
           </div>
         ) : (
-          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-center space-y-1 mb-4">
-            <div className="flex items-center justify-center space-x-1.5 text-emerald-700 dark:text-emerald-300 font-bold text-xs">
+          <div className="p-4 bg-emerald-50/80 dark:bg-emerald-950/60 rounded-2xl border border-emerald-200/80 dark:border-emerald-800 text-center space-y-1 mb-4">
+            <div className="flex items-center justify-center space-x-1.5 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
               <Check className="w-4 h-4" />
               <span>Saved to your Bake Archive!</span>
             </div>
@@ -170,10 +170,10 @@ export const LoafSuccessModal: React.FC<LoafSuccessModalProps> = ({ isOpen, onBa
         <div className="mt-4 pt-4 border-t border-stone-100 dark:border-stone-800">
           <button
             onClick={handleRestart}
-            className="w-full py-3 bg-stone-900 dark:bg-stone-800 hover:bg-black text-white rounded-2xl font-semibold text-xs flex items-center justify-center space-x-2 transition-colors"
+            className="w-full py-3.5 bg-stone-900 dark:bg-[#181614] border border-stone-800 hover:bg-black text-white rounded-2xl font-bold text-xs flex items-center justify-center space-x-2 transition-all active-press shadow-sm"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>PLAN ANOTHER BAKE</span>
+            <span className="tracking-wide">PLAN ANOTHER BAKE</span>
           </button>
         </div>
     </Modal>

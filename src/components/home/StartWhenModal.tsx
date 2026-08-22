@@ -120,252 +120,250 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md">
       {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
-                Start Feeding
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                Calculate your schedule forward from starter feeding
-              </p>
-            </div>
+      <div className="flex items-center justify-between pb-3.5 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/60 flex items-center justify-center shadow-xs">
+            <Clock className="w-5 h-5" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div>
+            <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
+              Start Feeding
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Calculate your schedule forward from starter feeding
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* Date Selection */}
+      <div className="mt-4 space-y-4">
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+            Start Date
+          </label>
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => handleQuickDate(0)}
+              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+                selectedDateStr === format(new Date(), 'yyyy-MM-dd')
+                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                  : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+              }`}
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDate(1)}
+              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+                selectedDateStr === format(addDays(new Date(), 1), 'yyyy-MM-dd')
+                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                  : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+              }`}
+            >
+              Tomorrow
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDate(2)}
+              className={`w-full py-2.5 px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
+                selectedDateStr === format(addDays(new Date(), 2), 'yyyy-MM-dd')
+                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                  : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+              }`}
+            >
+              {format(addDays(new Date(), 2), 'EEE, MMM d')}
+            </button>
+          </div>
+          <input
+            type="date"
+            value={selectedDateStr}
+            onChange={(e) => setSelectedDateStr(e.target.value)}
+            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
         </div>
 
-        {/* Date Selection */}
-        <div className="mt-4 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-              Start Date
+        {/* Time Selection */}
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+            Start Time (Feed Starter)
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+            {suggestedTimes.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setSelectedTimeStr(value)}
+                className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center active-press ${
+                  selectedTimeStr === value
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <input
+            type="time"
+            value={selectedTimeStr}
+            onChange={(e) => setSelectedTimeStr(e.target.value)}
+            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+        </div>
+
+        {/* Starting Seed Starter Amount */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center space-x-1.5">
+              <FlaskConical className="w-3.5 h-3.5 text-amber-600" />
+              <span>Starting Seed Starter Amount</span>
             </label>
-            <div className="grid grid-cols-3 gap-2 mb-2.5">
-              <button
-                type="button"
-                onClick={() => handleQuickDate(0)}
-                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
-                  selectedDateStr === format(new Date(), 'yyyy-MM-dd')
-                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                Today
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDate(1)}
-                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
-                  selectedDateStr === format(addDays(new Date(), 1), 'yyyy-MM-dd')
-                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                Tomorrow
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDate(2)}
-                className={`min-w-0 w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-semibold border transition-all text-center truncate ${
-                  selectedDateStr === format(addDays(new Date(), 2), 'yyyy-MM-dd')
-                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                {format(addDays(new Date(), 2), 'EEE, MMM d')}
-              </button>
-            </div>
-            <div className="relative">
-              <input
-                type="date"
-                value={selectedDateStr}
-                onChange={(e) => setSelectedDateStr(e.target.value)}
-                className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-          </div>
-
-          {/* Time Selection */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-              Start Time (Feed Starter)
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2.5">
-              {suggestedTimes.map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setSelectedTimeStr(value)}
-                  className={`min-w-0 w-full py-2.5 px-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center ${
-                    selectedTimeStr === value
-                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <input
-              type="time"
-              value={selectedTimeStr}
-              onChange={(e) => setSelectedTimeStr(e.target.value)}
-              className="w-full min-w-0 max-w-full box-border bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-
-          {/* Starting Seed Starter Amount */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center space-x-1.5">
-                <FlaskConical className="w-3.5 h-3.5 text-amber-500" />
-                <span>Starting Seed Starter Amount</span>
-              </label>
-              <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
-                {feedingCalc.seedStarterGrams}g seed
-              </span>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              {[15, 20, 30].map(grams => (
-                <button
-                  key={grams}
-                  type="button"
-                  onClick={() => {
-                    setSeedGrams(grams);
-                    setCustomSeedInput('');
-                  }}
-                  className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center ${
-                    seedGrams === grams
-                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm ring-1 ring-amber-500/30'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                  }`}
-                >
-                  {grams}g {grams === 15 ? '(Min)' : ''}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => {
-                  setSeedGrams(undefined);
-                  setCustomSeedInput('');
-                }}
-                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center ${
-                  seedGrams === undefined
-                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 shadow-sm ring-1 ring-amber-500/30'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                }`}
-              >
-                Auto
-              </button>
-            </div>
-
-            {/* Custom Input */}
-            <div className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 mb-2">
-              <span className="text-stone-500 dark:text-stone-400 text-[11px]">Or exact seed available:</span>
-              <div className="flex items-center space-x-1">
-                <input
-                  type="number"
-                  min="5"
-                  max="200"
-                  placeholder={String(feedingCalc.seedStarterGrams)}
-                  value={customSeedInput}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setCustomSeedInput(val);
-                    const num = parseInt(val, 10);
-                    if (!isNaN(num) && num >= 5) {
-                      setSeedGrams(num);
-                    } else if (val === '') {
-                      setSeedGrams(undefined);
-                    }
-                  }}
-                  className="w-14 px-2 py-0.5 text-center text-xs font-bold rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
-                />
-                <span className="text-stone-400 font-semibold text-[11px]">g</span>
-              </div>
-            </div>
-
-            {/* Live Feeding Calculation Breakdown Card */}
-            <div className="p-3 bg-amber-50/70 dark:bg-stone-800/80 rounded-2xl border border-amber-200/60 dark:border-stone-700/60 text-xs space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 dark:text-stone-400">Feeding Formula:</span>
-                <span className="font-bold text-amber-800 dark:text-amber-300">
-                  {feedingCalc.seedStarterGrams}g seed + {feedingCalc.waterGrams}g water + {feedingCalc.flourGrams}g flour ({feedingCalc.feedRatio})
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 dark:text-stone-400">Total Yield:</span>
-                <span className="font-semibold text-stone-800 dark:text-stone-200">
-                  {feedingCalc.totalLevainYield}g ({feedingCalc.starterNeededForDough}g dough + {feedingCalc.reserveForRepopulation}g jar reserve)
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-stone-500 dark:text-stone-400">Time to Peak:</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  ⏱️ ~{feedingCalc.estimatedHours} hours
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Cold Retard Slider */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-2">
-              <span className="flex items-center space-x-1.5 text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-                <Snowflake className="w-3.5 h-3.5 text-sky-500" />
-                <span>Cold Retard Duration</span>
-              </span>
-              <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-                {coldRetardHours} Hours
-              </span>
-            </div>
-            <input
-              type="range"
-              min="12"
-              max="48"
-              step="1"
-              value={coldRetardHours}
-              onChange={(e) => setColdRetardHours(Number(e.target.value))}
-              className="w-full h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
-            />
-            <div className="flex justify-between text-[11px] text-stone-400 mt-1">
-              <span>12h (Minimum)</span>
-              <span>16h (Optimal)</span>
-              <span>48h (Maximum)</span>
-            </div>
-          </div>
-
-          {/* Recipe Info Pill */}
-          <div className="bg-flour-100 dark:bg-stone-800/60 rounded-2xl p-3 border border-stone-200/70 dark:border-stone-800 flex items-center justify-between">
-            <div className="text-xs">
-              <span className="text-stone-500 dark:text-stone-400">Recipe:</span>{' '}
-              <span className="font-semibold text-stone-800 dark:text-stone-200">{selectedRecipe.name}</span>
-            </div>
-            <span className="text-xs font-mono font-medium text-amber-600 dark:text-amber-400">
-              {selectedRecipe.hydration}% Hydration
+            <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400">
+              {feedingCalc.seedStarterGrams}g seed
             </span>
           </div>
+
+          <div className="grid grid-cols-4 gap-2 mb-2">
+            {[15, 20, 30].map(grams => (
+              <button
+                key={grams}
+                type="button"
+                onClick={() => {
+                  setSeedGrams(grams);
+                  setCustomSeedInput('');
+                }}
+                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press ${
+                  seedGrams === grams
+                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+                }`}
+              >
+                {grams}g {grams === 15 ? '(Min)' : ''}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setSeedGrams(undefined);
+                setCustomSeedInput('');
+              }}
+              className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press ${
+                seedGrams === undefined
+                  ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 shadow-xs ring-1 ring-amber-500/30'
+                  : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+              }`}
+            >
+              Auto
+            </button>
+          </div>
+
+          {/* Custom Input */}
+          <div className="flex items-center justify-between text-xs py-1.5 px-3 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200 dark:border-stone-700 mb-2">
+            <span className="text-stone-500 dark:text-stone-400 text-[11px]">Or exact seed available:</span>
+            <div className="flex items-center space-x-1">
+              <input
+                type="number"
+                min="5"
+                max="200"
+                placeholder={String(feedingCalc.seedStarterGrams)}
+                value={customSeedInput}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCustomSeedInput(val);
+                  const num = parseInt(val, 10);
+                  if (!isNaN(num) && num >= 5) {
+                    setSeedGrams(num);
+                  } else if (val === '') {
+                    setSeedGrams(undefined);
+                  }
+                }}
+                className="w-14 px-2 py-0.5 text-center text-xs font-bold rounded-lg bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              />
+              <span className="text-stone-400 font-semibold text-[11px]">g</span>
+            </div>
+          </div>
+
+          {/* Live Feeding Calculation Breakdown Card */}
+          <div className="p-3.5 bg-amber-50/80 dark:bg-stone-800/90 rounded-2xl border border-amber-200/80 dark:border-stone-700/80 text-xs space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-stone-500 dark:text-stone-400">Feeding Formula:</span>
+              <span className="font-bold text-amber-900 dark:text-amber-300">
+                {feedingCalc.seedStarterGrams}g seed + {feedingCalc.waterGrams}g water + {feedingCalc.flourGrams}g flour ({feedingCalc.feedRatio})
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-stone-500 dark:text-stone-400">Total Yield:</span>
+              <span className="font-semibold text-stone-800 dark:text-stone-200">
+                {feedingCalc.totalLevainYield}g ({feedingCalc.starterNeededForDough}g dough + {feedingCalc.reserveForRepopulation}g reserve)
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-stone-500 dark:text-stone-400">Time to Peak:</span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                ⏱️ ~{feedingCalc.estimatedHours} hours
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Action Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleBuildTimeline}
-            className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-600 via-crust-600 to-amber-700 hover:from-amber-700 hover:to-crust-800 text-white rounded-2xl font-semibold shadow-lg shadow-amber-600/20 hover:shadow-amber-600/30 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98]"
-          >
-            <span>BUILD MY TIMELINE</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        {/* Cold Retard Slider */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+              <Snowflake className="w-3.5 h-3.5 text-sky-500" />
+              <span>Cold Retard Duration</span>
+            </span>
+            <span className="text-xs font-bold font-mono px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+              {coldRetardHours} Hours
+            </span>
+          </div>
+          <input
+            type="range"
+            min="12"
+            max="48"
+            step="1"
+            value={coldRetardHours}
+            onChange={(e) => setColdRetardHours(Number(e.target.value))}
+            className="w-full h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
+          />
+          <div className="flex justify-between text-[11px] text-stone-400 mt-1">
+            <span>12h (Minimum)</span>
+            <span>16h (Optimal)</span>
+            <span>48h (Maximum)</span>
+          </div>
         </div>
+
+        {/* Recipe Info Pill */}
+        <div className="bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-3 border border-stone-200/80 dark:border-stone-700 flex items-center justify-between">
+          <div className="text-xs">
+            <span className="text-stone-500 dark:text-stone-400">Recipe:</span>{' '}
+            <span className="font-semibold text-stone-800 dark:text-stone-200">{selectedRecipe.name}</span>
+          </div>
+          <span className="text-xs font-mono font-medium text-amber-700 dark:text-amber-400">
+            {selectedRecipe.hydration}% Hydration
+          </span>
+        </div>
+      </div>
+
+      {/* Action Button (52px Touch Target) */}
+      <div className="mt-5">
+        <button
+          onClick={handleBuildTimeline}
+          className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 via-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold shadow-md shadow-amber-600/30 flex items-center justify-center space-x-2 transition-all active-press"
+        >
+          <span className="tracking-wide">BUILD MY TIMELINE</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
     </Modal>
   );
 };

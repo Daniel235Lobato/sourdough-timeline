@@ -65,112 +65,107 @@ export const RunningBehindModal: React.FC<RunningBehindModalProps> = ({ isOpen, 
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md">
       {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Clock className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
-                I'm Running Behind
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                Intelligent biological rescheduling
-              </p>
-            </div>
+      <div className="flex items-center justify-between pb-3.5 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/60 flex items-center justify-center shadow-xs">
+            <Clock className="w-5 h-5" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div>
+            <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
+              I'm Running Behind
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Intelligent biological rescheduling
+            </p>
+          </div>
         </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
 
-        {/* Reason Selector */}
-        <div className="mt-4 space-y-2.5">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
-            What's happening?
-          </label>
+      {/* Reason Selector */}
+      <div className="mt-4 space-y-2">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+          What's happening?
+        </label>
 
-          {reasons.map((r) => {
-            const isSelected = selectedReason === r.id;
-            return (
+        {reasons.map((r) => {
+          const isSelected = selectedReason === r.id;
+          return (
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => {
+                setSelectedReason(r.id);
+                setCustomMinutes(r.defaultMinutes);
+              }}
+              className={`w-full text-left p-3.5 rounded-2xl border transition-all flex items-center justify-between active-press ${
+                isSelected
+                  ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/50 text-stone-900 dark:text-stone-100 shadow-xs ring-1 ring-amber-500/30'
+                  : 'border-stone-200/80 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 text-stone-600 dark:text-stone-300'
+              }`}
+            >
+              <div>
+                <div className="font-bold text-sm font-serif">{r.title}</div>
+                <div className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{r.subtitle}</div>
+              </div>
+              {isSelected && (
+                <div className="w-5 h-5 rounded-full bg-amber-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                  <Check className="w-3.5 h-3.5" />
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Time adjustment slider for this reason */}
+      {selectedReason !== 'started_late' && (
+        <div className="mt-4 pt-3.5 border-t border-stone-100 dark:border-stone-800 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-stone-600 dark:text-stone-300">
+              Adjustment Duration:
+            </span>
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900">
+              {customMinutes >= 60 ? `+${customMinutes / 60}h` : `+${customMinutes}m`}
+            </span>
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[30, 45, 60, 120].map((mins) => (
               <button
-                key={r.id}
+                key={mins}
                 type="button"
-                onClick={() => {
-                  setSelectedReason(r.id);
-                  setCustomMinutes(r.defaultMinutes);
-                }}
-                className={`w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between ${
-                  isSelected
-                    ? 'border-amber-500 bg-amber-50/70 dark:bg-amber-950/40 text-stone-900 dark:text-stone-100 shadow-sm'
-                    : 'border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800/60 text-stone-600 dark:text-stone-300'
+                onClick={() => setCustomMinutes(mins)}
+                className={`py-2 rounded-xl text-xs font-bold border transition-all active-press ${
+                  customMinutes === mins
+                    ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                    : 'bg-stone-50 dark:bg-stone-800/60 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-100'
                 }`}
               >
-                <div>
-                  <div className="font-medium text-sm font-serif">{r.title}</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{r.subtitle}</div>
-                </div>
-                {isSelected && (
-                  <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0">
-                    <Check className="w-3 h-3" />
-                  </div>
-                )}
+                +{mins >= 60 ? `${mins / 60}h` : `${mins}m`}
               </button>
-            );
-          })}
-        </div>
-
-        {/* Time adjustment slider for this reason */}
-        {selectedReason !== 'started_late' && (
-          <div className="mt-4 pt-4 border-t border-stone-100 dark:border-stone-800">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-stone-600 dark:text-stone-300">
-                Adjustment Duration:
-              </span>
-              <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-amber-700 dark:text-amber-400">
-                {customMinutes >= 60 ? `+${customMinutes / 60}h` : `+${customMinutes}m`}
-              </span>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {[30, 45, 60, 120].map((mins) => (
-                <button
-                  key={mins}
-                  type="button"
-                  onClick={() => setCustomMinutes(mins)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-semibold border transition-all ${
-                    customMinutes === mins
-                      ? 'border-amber-500 bg-amber-500 text-white'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300'
-                  }`}
-                >
-                  {mins >= 60 ? `${mins / 60}h` : `${mins}m`}
-                </button>
-              ))}
-            </div>
+            ))}
           </div>
-        )}
-
-        {/* Biological Safety Explanation */}
-        <div className="mt-4 p-3 rounded-2xl bg-amber-50/60 dark:bg-stone-800/60 border border-amber-200/60 dark:border-stone-700 text-xs text-amber-900 dark:text-amber-200 flex items-start space-x-2">
-          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            {currentOption.explanation}
+          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed italic bg-stone-50 dark:bg-stone-800/50 p-3 rounded-2xl border border-stone-200/60 dark:border-stone-700/60">
+            💡 {currentOption.explanation}
           </p>
         </div>
+      )}
 
-        {/* Action Button */}
-        <div className="mt-5">
-          <button
-            onClick={handleApply}
-            className="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold shadow-lg shadow-amber-600/20 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98]"
-          >
-            <span>RECALCULATE SCHEDULE</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+      {/* Action Button (52px Touch Target) */}
+      <div className="mt-5">
+        <button
+          onClick={handleApply}
+          className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold shadow-md shadow-amber-600/30 flex items-center justify-center space-x-2 transition-all active-press"
+        >
+          <span className="tracking-wide">UPDATE MY SCHEDULE</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
     </Modal>
   );
 };

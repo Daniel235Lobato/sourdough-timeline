@@ -70,15 +70,15 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
 
   return (
     <div className="relative flex items-start space-x-3.5 sm:space-x-4 group">
-      {/* Vertical Connecting Line */}
+      {/* Continuous Vertical Connecting Line */}
       {!isLast && (
         <div 
-          className={`absolute left-[19px] sm:left-[21px] top-9 bottom-0 w-0.5 transition-colors ${
+          className={`absolute left-[19px] sm:left-[21px] top-10 bottom-0 w-[3px] rounded-full transition-colors duration-300 ${
             isCompleted 
-              ? 'bg-emerald-500/80 dark:bg-emerald-600/80' 
+              ? 'bg-emerald-500/90 dark:bg-emerald-500/80 shadow-glow-emerald' 
               : isActive 
-                ? 'bg-gradient-to-b from-amber-500 to-stone-300 dark:to-stone-700' 
-                : 'bg-stone-200 dark:bg-stone-800'
+                ? 'bg-gradient-to-b from-amber-500 to-stone-200 dark:to-stone-800' 
+                : 'bg-stone-200/80 dark:bg-stone-800/80'
           }`}
         />
       )}
@@ -86,49 +86,49 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
       {/* Node Bullet Icon */}
       <div className="relative z-10 flex-shrink-0 mt-0.5">
         {isCompleted ? (
-          <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/25 border-2 border-emerald-500/40 transition-transform group-hover:scale-105">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         ) : isActive ? (
-          <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 ring-4 ring-amber-500/20 animate-pulse">
+          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 ring-4 ring-amber-500/20 border-2 border-amber-400 animate-pulse">
             <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: '8s' }} />
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-full bg-white dark:bg-stone-900 border-2 border-stone-300 dark:border-stone-700 text-stone-400 flex items-center justify-center">
-            <Circle className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-2xl bg-white dark:bg-[#181614] border border-stone-300 dark:border-stone-700 text-stone-400 flex items-center justify-center shadow-2xs">
+            <Circle className="w-3.5 h-3.5" />
           </div>
         )}
       </div>
 
       {/* Step Card Content */}
       <div 
-        className={`flex-1 rounded-2xl p-4 transition-all border ${
+        className={`flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-5 transition-all duration-200 border ${
           isActive 
-            ? 'bg-white dark:bg-stone-900 border-amber-400 dark:border-amber-500 shadow-md ring-1 ring-amber-400/30' 
+            ? 'bg-white dark:bg-[#181614] border-amber-500/80 dark:border-amber-500 shadow-card-hover ring-1 ring-amber-500/20' 
             : isCompleted 
-              ? 'bg-stone-50/60 dark:bg-stone-900/40 border-stone-200/80 dark:border-stone-800/80 opacity-90' 
-              : 'bg-white dark:bg-stone-900/90 border-stone-200 dark:border-stone-800'
+              ? 'bg-white/70 dark:bg-[#161513]/70 border-stone-200/70 dark:border-stone-800/70 opacity-90 shadow-2xs' 
+              : 'bg-white dark:bg-[#181614] border-stone-200/80 dark:border-stone-800/80 shadow-card'
         }`}
       >
         {/* Card Header: Time & Phase Badge */}
         <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center space-x-2">
-            <span className="font-mono text-xs font-bold text-stone-900 dark:text-stone-100">
+            <span className="font-mono text-xs sm:text-[13px] font-extrabold text-stone-900 dark:text-stone-100">
               {formatStepTime(step.startTime)}
             </span>
             {step.isOvernightTransition && (
-              <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 shadow-2xs">
                 {step.dayLabel || 'Tomorrow'}
               </span>
             )}
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${badge.color}`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border shadow-2xs ${badge.color}`}>
               {badge.label}
             </span>
             {step.durationMinutes > 0 && (
-              <span className="text-[11px] font-medium text-stone-400 flex items-center space-x-0.5">
+              <span className="text-[11px] font-bold text-stone-500 dark:text-stone-400 flex items-center space-x-0.5">
                 <Clock className="w-3 h-3" />
                 <span>
                   {step.durationMinutes >= 60 
@@ -141,8 +141,8 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         </div>
 
         {/* Step Name */}
-        <div className="flex items-start justify-between">
-          <h4 className={`font-serif text-base font-bold leading-snug ${
+        <div className="flex items-start justify-between gap-2">
+          <h4 className={`font-serif text-base sm:text-lg font-bold leading-snug ${
             isCompleted 
               ? 'text-stone-600 dark:text-stone-400 line-through decoration-emerald-500/50' 
               : 'text-stone-900 dark:text-stone-100'
@@ -152,29 +152,29 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+            className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
 
         {/* Short Summary Description */}
-        <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+        <p className="text-xs sm:text-[13px] text-stone-600 dark:text-stone-400 mt-1 leading-relaxed">
           {step.description}
         </p>
 
         {/* Expandable Details */}
         {isExpanded && (
-          <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-800 space-y-2.5 animate-fade-in">
+          <div className="mt-3 pt-3 border-t border-stone-100 dark:border-stone-800 space-y-3 animate-fade-in">
             {/* Ingredients used */}
             {step.ingredientsUsed && step.ingredientsUsed.length > 0 && (
               <div>
                 <span className="text-[10px] font-bold uppercase text-stone-400 tracking-wider block mb-1">
                   Ingredients:
                 </span>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {step.ingredientsUsed.map((ing, idx) => (
-                    <span key={idx} className="text-xs px-2 py-0.5 bg-stone-100 dark:bg-stone-800 rounded-lg text-stone-700 dark:text-stone-300 font-medium">
+                    <span key={idx} className="text-xs px-2.5 py-1 bg-stone-100 dark:bg-stone-800 rounded-xl text-stone-700 dark:text-stone-300 font-semibold border border-stone-200/60 dark:border-stone-700/60">
                       {ing.amount}{ing.unit} {ing.name}
                     </span>
                   ))}
@@ -188,7 +188,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
                 <span className="text-[10px] font-bold uppercase text-stone-400 tracking-wider block mb-1">
                   Instructions:
                 </span>
-                <ol className="list-decimal list-inside space-y-1 text-xs text-stone-600 dark:text-stone-300">
+                <ol className="list-decimal list-inside space-y-1.5 text-xs text-stone-600 dark:text-stone-300">
                   {step.detailedInstructions.map((inst, idx) => (
                     <li key={idx} className="leading-relaxed">{inst}</li>
                   ))}
@@ -198,10 +198,10 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
 
             {/* Jump to step button if not active */}
             {!isActive && (
-              <div className="pt-2">
+              <div className="pt-1">
                 <button
                   onClick={() => onSelectStep(step.index)}
-                  className="w-full py-1.5 px-2 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 text-xs font-semibold text-stone-700 dark:text-stone-200 transition-colors"
+                  className="w-full py-2.5 px-3 rounded-xl bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-xs font-bold text-stone-800 dark:text-stone-200 transition-all active-press"
                 >
                   Set as Current Step
                 </button>

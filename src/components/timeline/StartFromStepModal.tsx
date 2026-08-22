@@ -34,77 +34,77 @@ export const StartFromStepModal: React.FC<StartFromStepModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md">
       {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-stone-100 dark:border-stone-800">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <Play className="w-5 h-5 fill-amber-600 dark:fill-amber-400" />
-            </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
-                Start From Step
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                Jump directly into an ongoing bake
-              </p>
-            </div>
+      <div className="flex items-center justify-between pb-3.5 border-b border-stone-100 dark:border-stone-800">
+        <div className="flex items-center space-x-2.5">
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/60 flex items-center justify-center shadow-xs">
+            <Play className="w-5 h-5 fill-amber-600 dark:fill-amber-400" />
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Step Selector */}
-        <div className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-              Select Your Current Step:
-            </label>
-            <div className="space-y-1.5 max-h-52 overflow-y-auto pr-1">
-              {selectedRecipe.steps.map((step, idx) => (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => setSelectedStepIndex(idx)}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-all flex items-center justify-between ${
-                    selectedStepIndex === idx
-                      ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-100 font-bold shadow-sm'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
-                  }`}
-                >
-                  <span className="truncate">{idx + 1}. {step.name}</span>
-                  <span className="text-[10px] text-stone-400 uppercase">{step.phase}</span>
-                </button>
-              ))}
-            </div>
+            <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
+              Start From Step
+            </h3>
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              Jump directly into an ongoing bake
+            </p>
           </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
 
-          {/* Time Picker */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
-              What time did this step begin?
-            </label>
-            <input
-              type="time"
-              value={currentTimeStr}
-              onChange={(e) => setCurrentTimeStr(e.target.value)}
-              className="w-full bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
+      {/* Step Selector */}
+      <div className="mt-4 space-y-4">
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+            Select Your Current Step:
+          </label>
+          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            {selectedRecipe.steps.map((step, idx) => (
+              <button
+                key={step.id}
+                type="button"
+                onClick={() => setSelectedStepIndex(idx)}
+                className={`w-full text-left px-4 py-3 rounded-2xl border text-xs font-bold transition-all flex items-center justify-between active-press ${
+                  selectedStepIndex === idx
+                    ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 shadow-xs ring-1 ring-amber-500/30'
+                    : 'border-stone-200/80 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+                }`}
+              >
+                <span className="truncate">{idx + 1}. {step.name}</span>
+                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">{step.phase}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Submit */}
-        <div className="mt-6">
-          <button
-            onClick={handleStartFromSelected}
-            className="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold shadow-lg shadow-amber-600/25 flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98]"
-          >
-            <span>GENERATE REMAINING TIMELINE</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        {/* Time Picker */}
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+            What time did this step begin?
+          </label>
+          <input
+            type="time"
+            value={currentTimeStr}
+            onChange={(e) => setCurrentTimeStr(e.target.value)}
+            className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
         </div>
+      </div>
+
+      {/* Submit (52px Touch Target) */}
+      <div className="mt-5">
+        <button
+          onClick={handleStartFromSelected}
+          className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold shadow-md shadow-amber-600/30 flex items-center justify-center space-x-2 transition-all active-press"
+        >
+          <span className="tracking-wide">GENERATE REMAINING TIMELINE</span>
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </div>
     </Modal>
   );
 };

@@ -81,9 +81,9 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
   };
 
   return (
-    <div className="pb-28 pt-2 px-4 max-w-xl mx-auto space-y-6 animate-fade-in">
+    <div className="pb-24 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in">
       <div>
-        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-[1.2]">
+        <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
           Baker's Percentages & Hydration
         </h2>
         <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
@@ -92,7 +92,7 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
       </div>
 
       {/* Main Formula Card */}
-      <div className="bg-white dark:bg-stone-900 rounded-3xl p-5 border border-stone-200 dark:border-stone-800 shadow-sm space-y-5">
+      <div className="bg-white dark:bg-[#181614] rounded-3xl p-5 sm:p-6 border border-stone-200/80 dark:border-stone-800/80 shadow-card space-y-5">
         {/* Hydration Slider */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -100,7 +100,7 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
               <Droplets className="w-4 h-4 text-sky-500" />
               <span>Dough Hydration</span>
             </span>
-            <span className="font-serif text-2xl font-extrabold text-amber-600 dark:text-amber-400">
+            <span className="font-serif text-2xl sm:text-3xl font-extrabold text-amber-700 dark:text-amber-400">
               {hydrationPercent}%
             </span>
           </div>
@@ -113,7 +113,7 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
             onChange={(e) => setHydrationPercent(Number(e.target.value))}
             className="w-full h-2.5 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-amber-600"
           />
-          <div className="flex justify-between text-[11px] text-stone-400 mt-1">
+          <div className="flex justify-between text-[11px] text-stone-400 font-semibold mt-1">
             <span>60% (Stiff)</span>
             <span>70% (Classic)</span>
             <span>85% (Super Wet)</span>
@@ -121,9 +121,9 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
         </div>
 
         {/* Handling Cue Badge */}
-        <div className="p-3.5 rounded-2xl bg-flour-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700/80 space-y-1">
+        <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 space-y-1.5 shadow-2xs">
           <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full ${handling.badgeColor}`}>
+            <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${handling.badgeColor}`}>
               {handling.level}
             </span>
           </div>
@@ -136,9 +136,9 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
         <div className="space-y-4 pt-2 border-t border-stone-100 dark:border-stone-800">
           {/* Flour */}
           <div>
-            <div className="flex justify-between text-xs font-semibold mb-1">
+            <div className="flex justify-between text-xs font-bold mb-1.5">
               <span className="text-stone-500">Total Flour (100% Base):</span>
-              <span className="font-mono font-bold text-stone-800 dark:text-stone-200">{flourGrams}g</span>
+              <span className="font-mono font-extrabold text-stone-800 dark:text-stone-200">{flourGrams}g</span>
             </div>
             <input
               type="range"
@@ -153,9 +153,9 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
 
           {/* Starter % */}
           <div>
-            <div className="flex justify-between text-xs font-semibold mb-1">
+            <div className="flex justify-between text-xs font-bold mb-1.5">
               <span className="text-stone-500">Starter Inoculation (% of flour):</span>
-              <span className="font-mono font-bold text-stone-800 dark:text-stone-200">{starterPercent}% ({starterGrams}g)</span>
+              <span className="font-mono font-extrabold text-stone-800 dark:text-stone-200">{starterPercent}% ({starterGrams}g)</span>
             </div>
             <input
               type="range"
@@ -170,9 +170,9 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
 
           {/* Salt % */}
           <div>
-            <div className="flex justify-between text-xs font-semibold mb-1">
+            <div className="flex justify-between text-xs font-bold mb-1.5">
               <span className="text-stone-500">Salt (% of flour):</span>
-              <span className="font-mono font-bold text-stone-800 dark:text-stone-200">{saltPercent}% ({saltGrams}g)</span>
+              <span className="font-mono font-extrabold text-stone-800 dark:text-stone-200">{saltPercent}% ({saltGrams}g)</span>
             </div>
             <input
               type="range"
@@ -187,47 +187,47 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
         </div>
 
         {/* Result Breakdown Card */}
-        <div className="rounded-2xl bg-stone-900 dark:bg-stone-950 text-white p-4 space-y-3">
+        <div className="rounded-2xl bg-stone-900 dark:bg-[#121110] text-white p-4 sm:p-5 space-y-3 shadow-card border border-stone-800">
           <div className="flex items-center justify-between border-b border-stone-800 pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
               Formula Breakdown
             </span>
-            <span className="text-xs font-mono text-stone-400">
+            <span className="text-xs font-mono font-bold text-stone-400">
               Total Dough: {totalDoughWeight}g
             </span>
           </div>
 
           <div className="grid grid-cols-4 gap-2 text-center text-xs">
-            <div className="bg-stone-800/80 rounded-xl p-2">
-              <span className="text-[9px] uppercase text-stone-400 block">Flour</span>
-              <span className="font-mono font-bold text-sm">{flourGrams}g</span>
+            <div className="bg-stone-800/70 rounded-xl p-2.5 border border-stone-700/60">
+              <span className="text-[9px] uppercase text-stone-400 block font-bold tracking-wider">Flour</span>
+              <span className="font-mono font-extrabold text-sm sm:text-base">{flourGrams}g</span>
             </div>
-            <div className="bg-stone-800/80 rounded-xl p-2">
-              <span className="text-[9px] uppercase text-stone-400 block">Water</span>
-              <span className="font-mono font-bold text-sm text-sky-300">{waterGrams}g</span>
+            <div className="bg-stone-800/70 rounded-xl p-2.5 border border-stone-700/60">
+              <span className="text-[9px] uppercase text-stone-400 block font-bold tracking-wider">Water</span>
+              <span className="font-mono font-extrabold text-sm sm:text-base text-sky-300">{waterGrams}g</span>
             </div>
-            <div className="bg-stone-800/80 rounded-xl p-2">
-              <span className="text-[9px] uppercase text-stone-400 block">Starter</span>
-              <span className="font-mono font-bold text-sm text-emerald-300">{starterGrams}g</span>
+            <div className="bg-stone-800/70 rounded-xl p-2.5 border border-stone-700/60">
+              <span className="text-[9px] uppercase text-stone-400 block font-bold tracking-wider">Starter</span>
+              <span className="font-mono font-extrabold text-sm sm:text-base text-emerald-300">{starterGrams}g</span>
             </div>
-            <div className="bg-stone-800/80 rounded-xl p-2">
-              <span className="text-[9px] uppercase text-stone-400 block">Salt</span>
-              <span className="font-mono font-bold text-sm text-stone-300">{saltGrams}g</span>
+            <div className="bg-stone-800/70 rounded-xl p-2.5 border border-stone-700/60">
+              <span className="text-[9px] uppercase text-stone-400 block font-bold tracking-wider">Salt</span>
+              <span className="font-mono font-extrabold text-sm sm:text-base text-stone-300">{saltGrams}g</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-stone-400 pt-1">
+          <div className="flex items-center justify-between text-xs text-stone-400 pt-1 font-semibold">
             <span>Yield: {loavesCount} loaves</span>
             <span>~{perLoafWeight}g per loaf</span>
           </div>
         </div>
 
-        {/* Action Button */}
+        {/* Action Button (52px Touch Target) */}
         <button
           onClick={handleCreateFromFormula}
-          className="w-full py-3.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md transition-all"
+          className="w-full py-4 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md shadow-amber-600/30 transition-all active-press"
         >
-          <span>BUILD TIMELINE WITH THIS FORMULA</span>
+          <span className="tracking-wide">BUILD TIMELINE WITH THIS FORMULA</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

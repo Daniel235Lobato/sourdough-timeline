@@ -4,19 +4,27 @@
 
 @layer base {
   :root {
-    --color-bg: #fbfaf8;
+    --color-bg: #FBF9F5;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     background-color: var(--color-bg);
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
+    letter-spacing: -0.01em;
   }
 
   /* Support for iOS bottom safe area */
   .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 12px);
   }
 
   /* Normalize native date and time inputs on mobile WebKit/iOS Safari */
@@ -54,13 +62,18 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tactile micro-press feedback */
+.active-press:active {
+  transform: scale(0.975);
 }
 
 /* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -68,7 +81,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(168, 162, 158, 0.4);
+  background: rgba(168, 162, 158, 0.35);
   border-radius: 9999px;
 }
 

@@ -132,14 +132,14 @@ export const NowCard: React.FC<NowCardProps> = ({
       : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
-    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-stone-900 border-2 bg-gradient-to-b ${getPhaseColorClass()} p-5 shadow-xl transition-all relative overflow-hidden`}>
+    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-5 sm:p-6 shadow-card-hover transition-all relative overflow-hidden`}>
       {/* Top Banner Tag */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-3.5">
         <div className="flex items-center space-x-2">
-          <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white font-extrabold text-xs tracking-wider shadow-sm animate-pulse">
-            NOW
+          <span className="px-3 py-1 rounded-full bg-amber-500 text-white font-extrabold text-[11px] tracking-wider shadow-xs animate-pulse">
+            NOW ACTIVE
           </span>
-          <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
+          <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
             Step {currentStep.index + 1} of {activeSession?.steps.length}
           </span>
         </div>
@@ -147,7 +147,7 @@ export const NowCard: React.FC<NowCardProps> = ({
         {/* Running Behind Quick Trigger */}
         <button
           onClick={onOpenRunningBehind}
-          className="flex items-center space-x-1 text-[11px] font-semibold text-stone-500 dark:text-stone-400 hover:text-amber-600 dark:hover:text-amber-400 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="flex items-center space-x-1 text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 px-2.5 py-1.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 transition-all active-press"
         >
           <Clock className="w-3.5 h-3.5" />
           <span>I'm Behind</span>
@@ -159,13 +159,13 @@ export const NowCard: React.FC<NowCardProps> = ({
         <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
           {currentStep.name}
         </h2>
-        <p className="text-sm text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
           {currentStep.description}
         </p>
 
         {/* Biological Cues Callout if Applicable */}
         {currentStep.isBiologicalEstimate && (
-          <div className="mt-2.5 inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-medium text-amber-800 dark:text-amber-300">
+          <div className="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-900 dark:text-amber-300 shadow-2xs">
             <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <span>Biological Cues Apply</span>
           </div>
@@ -205,7 +205,7 @@ export const NowCard: React.FC<NowCardProps> = ({
 
       {/* Ingredients Used Pills */}
       {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
-        <div className="mb-4 bg-flour-50 dark:bg-stone-800/80 rounded-2xl p-3 border border-stone-200/80 dark:border-stone-700">
+        <div className="mb-4 bg-stone-50 dark:bg-stone-800/80 rounded-2xl p-3.5 border border-stone-200/80 dark:border-stone-700">
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-1.5">
             Ingredients to Add:
           </span>
@@ -213,7 +213,7 @@ export const NowCard: React.FC<NowCardProps> = ({
             {currentStep.ingredientsUsed.map((ing, i) => (
               <span 
                 key={i} 
-                className="px-2.5 py-1 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-200 shadow-2xs"
+                className="px-3 py-1 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-xs font-bold text-stone-800 dark:text-stone-200 shadow-2xs"
               >
                 {ing.amount}{ing.unit} <span className="font-normal text-stone-500">{ing.name}</span>
               </span>
@@ -224,13 +224,13 @@ export const NowCard: React.FC<NowCardProps> = ({
 
       {/* Fermentation Visual Checklist Box */}
       {currentStep.fermentationCues && (
-        <div className="mb-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-3.5 border border-stone-200 dark:border-stone-700/80">
+        <div className="mb-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-4 border border-stone-200 dark:border-stone-700/80">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center space-x-1.5">
-              <CheckCircle className="w-4 h-4 text-amber-500" />
+              <CheckCircle className="w-4 h-4 text-amber-600" />
               <span>{currentStep.fermentationCues.title}</span>
             </span>
-            <span className="text-[10px] font-medium text-stone-400">Visual Cues</span>
+            <span className="text-[10px] font-bold uppercase text-stone-400">Visual Cues</span>
           </div>
 
           <ul className="space-y-1.5">
@@ -243,91 +243,95 @@ export const NowCard: React.FC<NowCardProps> = ({
           </ul>
 
           {currentStep.fermentationCues.proTip && (
-            <div className="mt-2.5 pt-2 border-t border-stone-200/50 dark:border-stone-700/50 text-[11px] italic text-amber-800 dark:text-amber-300">
+            <div className="mt-2.5 pt-2.5 border-t border-stone-200/50 dark:border-stone-700/50 text-[11px] italic text-amber-900 dark:text-amber-300">
               💡 {currentStep.fermentationCues.proTip}
             </div>
           )}
         </div>
       )}
 
-      {/* Live Countdown & Next Step Indicator */}
-      <div className="space-y-1.5 py-2 border-t border-stone-200/60 dark:border-stone-800/80 mb-4">
+      {/* Prominent Kitchen Glanceable Timer Box */}
+      <div className="p-4 rounded-2xl bg-stone-50/80 dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700/80 mb-4 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Clock className={`w-4 h-4 ${!isZeroDurationStep && isTimerRunning ? 'text-amber-500 animate-pulse' : 'text-stone-400'}`} />
-            <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
+            <Clock className={`w-4 h-4 ${!isZeroDurationStep && isTimerRunning ? 'text-amber-600 animate-pulse' : 'text-stone-400'}`} />
+            <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               {isZeroDurationStep 
-                ? 'Type: ' 
+                ? 'Checkpoint' 
                 : isTimerRunning 
-                  ? (countdown.isPast ? 'Target reached' : 'Time remaining: ') 
-                  : 'Step duration: '}
-            </span>
-            <span className="font-mono text-sm font-bold text-stone-900 dark:text-stone-100 tracking-wider">
-              {isZeroDurationStep ? 'Milestone Checkpoint' : timeDisplay}
+                  ? (countdown.isPast ? 'Target reached' : 'Time Remaining') 
+                  : 'Step Duration'}
             </span>
           </div>
 
           {nextStep && (
             <div className="text-right text-[11px] text-stone-500 dark:text-stone-400">
               <span>Next: </span>
-              <span className="font-medium text-stone-800 dark:text-stone-200 truncate max-w-[120px] inline-block align-bottom">
+              <span className="font-bold text-stone-800 dark:text-stone-200 truncate max-w-[130px] inline-block align-bottom">
                 {nextStep.shortName}
               </span>
             </div>
           )}
         </div>
 
+        {/* Large High-Contrast Digital Countdown */}
+        <div className="text-center py-1">
+          <span className="font-mono text-3xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-wider">
+            {isZeroDurationStep ? 'Milestone' : timeDisplay}
+          </span>
+        </div>
+
         {/* Step push alert pill (only shown for timed steps) */}
         {!isZeroDurationStep && (
-          <div className="flex items-center justify-between text-[11px] pt-1">
+          <div className="flex items-center justify-between text-[11px] pt-1 border-t border-stone-200/60 dark:border-stone-700/60">
             {isPushSubscribed ? (
-              <span className="inline-flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                <BellRing className="w-3 h-3 animate-pulse" />
-                <span>Push alert scheduled for next step</span>
+              <span className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 font-semibold">
+                <BellRing className="w-3.5 h-3.5 animate-pulse" />
+                <span>Alert & chime armed</span>
               </span>
             ) : (
               <button
                 onClick={subscribeToPushNotifications}
-                className="inline-flex items-center space-x-1 text-amber-700 dark:text-amber-400 hover:underline font-medium"
+                className="inline-flex items-center space-x-1 text-amber-700 dark:text-amber-400 hover:underline font-semibold"
               >
-                <Bell className="w-3 h-3" />
-                <span>Enable push alert when timer ends</span>
+                <Bell className="w-3.5 h-3.5" />
+                <span>Enable step alerts</span>
               </button>
             )}
 
             {nextStep && (
-              <span className="text-[10px] text-stone-400">
-                Starts at {nextStep.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <span className="text-[10px] text-stone-400 font-mono">
+                Starts {nextStep.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Primary Action Buttons */}
+      {/* Primary Action Buttons (52px Touch Target) */}
       <div className="space-y-2.5">
         <button
           onClick={handleActionClick}
-          className={`w-full py-4 px-4 rounded-2xl font-bold text-base flex items-center justify-center space-x-2 transition-all transform active:scale-[0.98] shadow-lg ${
+          className={`w-full py-4 px-5 rounded-2xl font-bold text-base flex items-center justify-center space-x-2 transition-all duration-200 active-press shadow-md ${
             isZeroDurationStep || isTimerRunning
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
-              : 'bg-stone-900 dark:bg-amber-600 hover:bg-black dark:hover:bg-amber-700 text-white shadow-stone-900/20'
+              ? 'bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white shadow-emerald-600/30'
+              : 'bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 dark:from-amber-600 dark:via-amber-500 dark:to-amber-600 hover:from-black hover:to-black text-white shadow-stone-900/20 dark:shadow-amber-600/30'
           }`}
         >
           {isZeroDurationStep ? (
             <>
               <CheckCircle className="w-5 h-5" />
-              <span>COMPLETE STEP ✓</span>
+              <span className="tracking-wide">COMPLETE STEP ✓</span>
             </>
           ) : isTimerRunning ? (
             <>
               <CheckCircle className="w-5 h-5" />
-              <span>STEP COMPLETE ✓</span>
+              <span className="tracking-wide">STEP COMPLETE ✓</span>
             </>
           ) : (
             <>
               <Play className="w-5 h-5 fill-white" />
-              <span>START STEP</span>
+              <span className="tracking-wide">START STEP</span>
             </>
           )}
         </button>
@@ -336,9 +340,9 @@ export const NowCard: React.FC<NowCardProps> = ({
         {currentStep.canOverrideCompletion && (
           <button
             onClick={handleBiologicalOverride}
-            className="w-full py-2.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800/80 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+            className="w-full py-3 px-3 rounded-2xl bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-800/80 text-xs font-bold flex items-center justify-center space-x-1.5 transition-all active-press"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <Sparkles className="w-4 h-4 text-amber-600" />
             <span>
               {currentStep.phase === 'starter' ? 'STARTER IS PEAKED NOW' : 'BULK IS READY NOW (Dough is ready)'}
             </span>
