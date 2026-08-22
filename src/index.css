@@ -62,47 +62,19 @@
   }
 }
 
-/* Animations & Spring utilities */
+/* Animations & utilities */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
-}
-
-@keyframes springIn {
-  0% { opacity: 0; transform: scale(0.94) translateY(8px); }
-  70% { opacity: 1; transform: scale(1.01) translateY(-1px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes bounceSubtle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
-}
-
-@keyframes pulseSubtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.85; transform: scale(0.98); }
 }
 
 .animate-fade-in {
   animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-spring-in {
-  animation: springIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-bounce-subtle {
-  animation: bounceSubtle 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Tactile spring micro-press feedback */
-.active-press {
-  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s ease;
-}
-
+/* Tactile micro-press feedback */
 .active-press:active {
-  transform: scale(0.965);
+  transform: scale(0.975);
 }
 
 /* Custom minimal scrollbar */
