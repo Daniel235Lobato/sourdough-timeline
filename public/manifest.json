@@ -1,7 +1,7 @@
 {
-  "name": "Levain — Sourdough Timeline",
+  "name": "Levain — Sourdough Baking Made Easy",
   "short_name": "Levain",
-  "description": "Minimalist sourdough baking schedule, intelligent biological fermentation tracking, and timers.",
+  "description": "Sourdough Baking Made Easy. Intelligent biological fermentation tracking, and timers.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

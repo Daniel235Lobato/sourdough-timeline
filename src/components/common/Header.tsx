@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               Levain
             </span>
             <p className="font-serif italic text-[11px] text-stone-500 dark:text-stone-400 tracking-wide mt-1 leading-none">
-              Sourdough Baking Schedule
+              Sourdough Baking Made Easy
             </p>
           </div>
         </button>
