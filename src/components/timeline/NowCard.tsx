@@ -6,6 +6,8 @@ import {
   AlertTriangle, 
   Play, 
   ChevronRight, 
+  ChevronDown,
+  ChevronUp,
   Info, 
   HelpCircle,
   TrendingUp,
@@ -62,6 +64,7 @@ export const NowCard: React.FC<NowCardProps> = ({
 
   // Check if this step is a zero-duration milestone (e.g. Starter Peaked / Checkpoint)
   const isZeroDurationStep = currentStep.durationMinutes === 0;
+  const [isCuesOpen, setIsCuesOpen] = useState(false);
 
   // Check if this step was already started
   const isAlreadyStarted = Boolean(currentStep.actualStartTime);
@@ -234,29 +237,44 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       )}
 
-      {/* Fermentation Visual Checklist Box */}
+      {/* Pre-Collapsed Fermentation Visual Cues / Questions Helper */}
       {currentStep.fermentationCues && (
-        <div className="mb-4 bg-stone-50 dark:bg-stone-800/60 rounded-2xl p-4 border border-stone-200 dark:border-stone-700/80">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-stone-800 dark:text-stone-200 flex items-center space-x-1.5">
-              <CheckCircle className="w-4 h-4 text-amber-600" />
-              <span>{currentStep.fermentationCues.title}</span>
-            </span>
-            <span className="text-[10px] font-bold uppercase text-stone-400">Visual Cues</span>
-          </div>
+        <div className="mb-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 overflow-hidden shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setIsCuesOpen(!isCuesOpen)}
+            className="w-full px-4 py-3 text-left flex items-center justify-between text-xs font-bold text-amber-950 dark:text-amber-200 hover:bg-amber-100/60 dark:hover:bg-amber-950/70 transition-all active-press"
+          >
+            <div className="flex items-center space-x-2 min-w-0">
+              <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span className="truncate">Unsure if ready? Check visual cues ({currentStep.fermentationCues.title.replace(':', '')})</span>
+            </div>
+            <div className="flex items-center space-x-1.5 flex-shrink-0 text-[11px] text-amber-800 dark:text-amber-400 font-semibold pl-2">
+              <span>{isCuesOpen ? 'Hide' : 'Visual Cues'}</span>
+              {isCuesOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
+          </button>
 
-          <ul className="space-y-1.5">
-            {currentStep.fermentationCues.checklist.map((item, idx) => (
-              <li key={idx} className="text-xs text-stone-600 dark:text-stone-300 flex items-start space-x-2">
-                <span className="text-amber-500 font-bold">•</span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          {isCuesOpen && (
+            <div className="p-4 pt-2.5 border-t border-amber-200/60 dark:border-amber-900/60 bg-white/70 dark:bg-[#181614]/70 space-y-2 animate-fade-in">
+              <p className="text-xs font-bold text-stone-800 dark:text-stone-200">
+                👀 {currentStep.fermentationCues.visualCue}
+              </p>
 
-          {currentStep.fermentationCues.proTip && (
-            <div className="mt-2.5 pt-2.5 border-t border-stone-200/50 dark:border-stone-700/50 text-[11px] italic text-amber-900 dark:text-amber-300">
-              💡 {currentStep.fermentationCues.proTip}
+              <ul className="space-y-1.5 pt-1">
+                {currentStep.fermentationCues.checklist.map((item, idx) => (
+                  <li key={idx} className="text-xs text-stone-600 dark:text-stone-300 flex items-start space-x-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {currentStep.fermentationCues.proTip && (
+                <div className="mt-2.5 pt-2.5 border-t border-amber-200/40 dark:border-stone-800 text-[11px] italic text-amber-900 dark:text-amber-300 font-medium">
+                  💡 {currentStep.fermentationCues.proTip}
+                </div>
+              )}
             </div>
           )}
         </div>

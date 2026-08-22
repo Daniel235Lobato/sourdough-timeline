@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   X, 
   Clock, 
@@ -9,7 +9,10 @@ import {
   AlertCircle,
   Thermometer,
   Layers,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ScheduledStep } from '../../types/timeline';
@@ -33,6 +36,8 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
     advanceToStepIndex, 
     completeCurrentStep 
   } = useSourdough();
+
+  const [isCuesOpen, setIsCuesOpen] = useState(false);
 
   if (!isOpen || !step) return null;
 
@@ -182,29 +187,44 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
           </div>
         )}
 
-        {/* Fermentation Visual Cues Checklist */}
+        {/* Pre-Collapsed Fermentation Visual Cues Checklist */}
         {step.fermentationCues && (
-          <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/80 space-y-2">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
-                {step.fermentationCues.title}
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">
-              {step.fermentationCues.visualCue}
-            </p>
-            <ul className="space-y-1.5 pt-1">
-              {step.fermentationCues.checklist.map((item, idx) => (
-                <li key={idx} className="text-xs text-stone-700 dark:text-stone-300 flex items-start space-x-2">
-                  <span className="text-emerald-600 font-bold">•</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            {step.fermentationCues.proTip && (
-              <div className="mt-2 pt-2 border-t border-emerald-200/60 dark:border-emerald-800/60 text-[11px] italic text-emerald-900 dark:text-emerald-300">
-                💡 {step.fermentationCues.proTip}
+          <div className="rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/80 overflow-hidden shadow-2xs">
+            <button
+              type="button"
+              onClick={() => setIsCuesOpen(!isCuesOpen)}
+              className="w-full px-4 py-3 text-left flex items-center justify-between text-xs font-bold text-emerald-950 dark:text-emerald-200 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/60 transition-all active-press"
+            >
+              <div className="flex items-center space-x-2 min-w-0">
+                <HelpCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <span className="truncate">Unsure if ready? Check visual cues ({step.fermentationCues.title.replace(':', '')})</span>
+              </div>
+              <div className="flex items-center space-x-1.5 flex-shrink-0 text-[11px] text-emerald-800 dark:text-emerald-400 font-semibold pl-2">
+                <span>{isCuesOpen ? 'Hide' : 'Visual Cues'}</span>
+                {isCuesOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </div>
+            </button>
+
+            {isCuesOpen && (
+              <div className="p-4 pt-2.5 border-t border-emerald-200/60 dark:border-emerald-800/60 bg-white/70 dark:bg-[#181614]/70 space-y-2 animate-fade-in">
+                <p className="text-xs font-bold text-stone-800 dark:text-stone-200">
+                  👀 {step.fermentationCues.visualCue}
+                </p>
+
+                <ul className="space-y-1.5 pt-1">
+                  {step.fermentationCues.checklist.map((item, idx) => (
+                    <li key={idx} className="text-xs text-stone-700 dark:text-stone-300 flex items-start space-x-2">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {step.fermentationCues.proTip && (
+                  <div className="mt-2.5 pt-2.5 border-t border-emerald-200/50 dark:border-stone-800 text-[11px] italic text-emerald-900 dark:text-emerald-300 font-medium">
+                    💡 {step.fermentationCues.proTip}
+                  </div>
+                )}
               </div>
             )}
           </div>
