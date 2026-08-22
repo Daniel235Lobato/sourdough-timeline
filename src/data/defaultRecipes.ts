@@ -57,7 +57,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'starter-peak',
-        name: 'Levain Ready (Peaked)',
+        name: 'Levain Peaked',
         shortName: 'Levain Peaked',
         phase: 'starter',
         icon: 'Peak',
@@ -75,7 +75,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'mix-dough',
-        name: 'Mix Dough (Autolyse)',
+        name: 'Mix Dough & Autolyse',
         shortName: 'Mix Dough',
         phase: 'mix',
         icon: 'Mix',
@@ -141,8 +141,8 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'stretch-fold-3',
-        name: 'Stretch & Fold #3 (Final Fold & Rest)',
-        shortName: 'Fold #3 & Bulk',
+        name: 'Stretch & Fold #3',
+        shortName: 'Fold #3',
         phase: 'ferment',
         icon: 'Stretch',
         durationMinutes: 150, // 2.5 hours bulk fermentation rest after final fold
@@ -158,8 +158,8 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'bulk-complete',
-        name: 'Bulk Fermentation Complete',
-        shortName: 'Bulk Complete',
+        name: 'Bulk Fermentation',
+        shortName: 'Bulk Ferment',
         phase: 'ferment',
         icon: 'Ferment',
         durationMinutes: 0,
@@ -197,7 +197,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'cold-retard',
-        name: 'Cold Retard (Refrigerator Proof)',
+        name: 'Cold Retard',
         shortName: 'Cold Retard',
         phase: 'retard',
         icon: 'Proof',
@@ -223,7 +223,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'preheat-oven',
-        name: 'Preheat Oven & Dutch Oven',
+        name: 'Preheat Oven',
         shortName: 'Preheat Oven',
         phase: 'bake',
         icon: 'Preheat',
@@ -237,7 +237,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'score-bake',
-        name: 'Score & Bake Loaves',
+        name: 'Score & Bake',
         shortName: 'Score & Bake',
         phase: 'bake',
         icon: 'Score',
@@ -254,7 +254,7 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'cool-loaves',
-        name: 'Cool Loaves on Wire Rack',
+        name: 'Cool Loaves',
         shortName: 'Cooling',
         phase: 'cool',
         icon: 'Cool',
@@ -277,8 +277,8 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'loaf-ready',
-        name: 'Loaves Ready to Enjoy',
-        shortName: 'Loaves Ready',
+        name: 'Slice & Enjoy',
+        shortName: 'Slice Bread',
         phase: 'complete',
         icon: 'Slice',
         durationMinutes: 0,

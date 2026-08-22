@@ -135,8 +135,8 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
               )}
             </div>
 
-            {/* Short Action Name */}
-            <h3 className={`font-serif text-base sm:text-xl font-bold leading-tight truncate ${
+            {/* Short Action Name (Cleanly fitted without ellipsis ...) */}
+            <h3 className={`font-serif text-[15px] sm:text-lg font-bold leading-snug break-words ${
               isCompleted 
                 ? 'text-stone-500 dark:text-stone-400 line-through decoration-emerald-500/50' 
                 : 'text-stone-900 dark:text-stone-100'

@@ -75,11 +75,11 @@ export const StartFromStepModal: React.FC<StartFromStepModalProps> = ({
                     : 'border-stone-200/80 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
                 }`}
               >
-                <div className="flex items-center space-x-2.5 min-w-0">
+                <div className="flex items-center space-x-2.5 min-w-0 flex-1">
                   <div className="w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center flex-shrink-0 text-stone-600 dark:text-stone-300">
                     <StepInstructionIcon stepId={step.id} stepName={step.name} phase={step.phase} size={15} />
                   </div>
-                  <span className="truncate">{idx + 1}. {step.name}</span>
+                  <span className="break-words leading-snug">{idx + 1}. {step.name}</span>
                 </div>
                 <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider flex-shrink-0 ml-2">{step.phase}</span>
               </button>
