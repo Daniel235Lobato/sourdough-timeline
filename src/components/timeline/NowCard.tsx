@@ -125,7 +125,7 @@ export const NowCard: React.FC<NowCardProps> = ({
   // Determine display time in Hour:Min:Second format
   const isTimerRunning = hasStartedCurrentStep || isAlreadyStarted;
   const timeDisplay = isZeroDurationStep
-    ? 'Milestone'
+    ? 'Ready Now'
     : isTimerRunning 
       ? countdown.formattedCountdown 
       : formatDurationToHMS(currentStep.durationMinutes);
@@ -242,7 +242,7 @@ export const NowCard: React.FC<NowCardProps> = ({
             <Clock className={`w-3.5 h-3.5 ${!isZeroDurationStep && isTimerRunning ? 'text-amber-600 animate-pulse' : 'text-stone-400'}`} />
             <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               {isZeroDurationStep 
-                ? 'Checkpoint' 
+                ? 'Action Ready' 
                 : isTimerRunning 
                   ? (countdown.isPast ? 'Target reached' : 'Time Remaining') 
                   : 'Step Duration'}
@@ -259,10 +259,10 @@ export const NowCard: React.FC<NowCardProps> = ({
           )}
         </div>
 
-        {/* Large High-Contrast Digital Countdown */}
+        {/* Large High-Contrast Digital Countdown / Action Status */}
         <div className="text-center py-0.5">
           <span className="font-mono text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 tracking-wider">
-            {isZeroDurationStep ? 'Milestone' : timeDisplay}
+            {timeDisplay}
           </span>
         </div>
 
