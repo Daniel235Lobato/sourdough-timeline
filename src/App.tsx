@@ -67,12 +67,12 @@ const MainAppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(activeSession ? 'timeline' : 'home');
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 flex flex-col font-sans transition-colors selection:bg-amber-200 selection:text-amber-900">
+    <div className="min-h-screen bg-[#FBF9F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 flex flex-col font-sans transition-colors selection:bg-amber-200 selection:text-amber-900 w-full max-w-full overflow-x-hidden">
       {/* Sticky Header */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Main Tab Screen Container */}
-      <main className="flex-1 w-full max-w-xl mx-auto pt-2 pb-24 px-1 sm:px-0">
+      <main className="flex-1 w-full max-w-xl mx-auto pt-2 pb-24 px-3 sm:px-4 min-w-0 overflow-x-hidden box-border">
         {/* Device & PWA Step Notification Banner */}
         <NotificationBanner />
 

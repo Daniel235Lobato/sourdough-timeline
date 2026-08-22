@@ -70,7 +70,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
   const badge = getPhaseBadge();
 
   return (
-    <div className="relative flex items-start space-x-3.5 sm:space-x-4 group">
+    <div className="relative flex items-start space-x-3 sm:space-x-4 group w-full max-w-full min-w-0">
       {/* Continuous Vertical Connecting Line */}
       {!isLast && (
         <div 
@@ -103,7 +103,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
 
       {/* Step Card Content */}
       <div 
-        className={`flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-5 transition-all duration-200 border ${
+        className={`flex-1 min-w-0 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 transition-all duration-200 border ${
           isActive 
             ? 'bg-white dark:bg-[#181614] border-amber-500/80 dark:border-amber-500 shadow-card-hover ring-1 ring-amber-500/20' 
             : isCompleted 

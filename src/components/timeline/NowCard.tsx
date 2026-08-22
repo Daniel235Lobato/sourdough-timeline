@@ -133,7 +133,7 @@ export const NowCard: React.FC<NowCardProps> = ({
       : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
-    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-5 sm:p-6 shadow-card-hover transition-all relative overflow-hidden`}>
+    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-4 sm:p-6 shadow-card-hover transition-all relative overflow-hidden w-full max-w-full min-w-0 box-border`}>
       {/* Top Banner Tag */}
       <div className="flex items-center justify-between mb-3.5">
         <div className="flex items-center space-x-2">

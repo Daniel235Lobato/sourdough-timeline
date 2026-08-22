@@ -65,7 +65,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   };
 
   return (
-    <div className="pb-28 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in">
+    <div className="pb-28 pt-1 w-full max-w-full overflow-x-hidden min-w-0 space-y-5 animate-fade-in">
       {/* "NOW" Prominent Experience Card */}
       {!activeSession.isCompleted && (
         <NowCard
@@ -75,30 +75,30 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
         />
       )}
 
-      {/* Quick Action Toolbar (44px Minimum Touch Targets) */}
-      <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+      {/* Quick Action Toolbar (Responsive Grid, Never Overflows on iPhone) */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-xs">
         <button
           onClick={() => setIsRunningBehindOpen(true)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press truncate"
         >
-          <Clock className="w-3.5 h-3.5 text-amber-600" />
-          <span>I'm Running Behind</span>
+          <Clock className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+          <span className="truncate">Running Behind</span>
         </button>
 
         <button
           onClick={() => setIsAdjustRetardOpen(!isAdjustRetardOpen)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-sky-500 shadow-card transition-all active-press"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-sky-500 shadow-card transition-all active-press truncate"
         >
-          <Snowflake className="w-3.5 h-3.5 text-sky-500" />
-          <span>Retard: {activeSession.coldRetardHours}h</span>
+          <Snowflake className="w-3.5 h-3.5 text-sky-500 flex-shrink-0" />
+          <span className="truncate">Retard ({activeSession.coldRetardHours}h)</span>
         </button>
 
         <button
           onClick={() => setIsStartFromStepOpen(true)}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-700 dark:text-stone-300 hover:border-amber-500 shadow-card transition-all active-press truncate"
         >
-          <Play className="w-3.5 h-3.5 text-amber-600" />
-          <span>Jump Step</span>
+          <Play className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+          <span className="truncate">Jump Step</span>
         </button>
 
         <button
@@ -108,10 +108,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
               onNavigateHome();
             }
           }}
-          className="flex-shrink-0 flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-400 hover:text-red-500 shadow-card transition-all active-press"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-white dark:bg-[#181614] border border-stone-200/80 dark:border-stone-800/80 font-bold text-stone-400 hover:text-red-500 shadow-card transition-all active-press truncate"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset</span>
+          <RotateCcw className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">Reset</span>
         </button>
       </div>
 
