@@ -126,24 +126,6 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
             <span className="font-mono text-sky-700 dark:text-sky-400 text-sm">{retardSliderVal} Hours</span>
           </div>
 
-          {/* Quick Retard Preset Pills */}
-          <div className="grid grid-cols-4 gap-1.5">
-            {[12, 14, 24, 48].map((hrs) => (
-              <button
-                key={hrs}
-                type="button"
-                onClick={() => setRetardSliderVal(hrs)}
-                className={`py-1.5 px-1 rounded-xl text-xs font-bold border transition-all active-press text-center truncate ${
-                  retardSliderVal === hrs
-                    ? 'bg-sky-600 text-white border-sky-600 shadow-xs'
-                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-sky-200 dark:border-stone-700 hover:bg-sky-100'
-                }`}
-              >
-                {hrs === 12 ? '12h Min' : hrs === 14 ? '14h Standard' : hrs === 24 ? '24h (1 Day)' : '48h Max'}
-              </button>
-            ))}
-          </div>
-
           <input
             type="range"
             min="12"

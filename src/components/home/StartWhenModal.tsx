@@ -327,24 +327,6 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             </span>
           </div>
 
-          {/* Quick Retard Preset Pills */}
-          <div className="grid grid-cols-4 gap-1.5 mb-2.5">
-            {[12, 14, 24, 48].map((hrs) => (
-              <button
-                key={hrs}
-                type="button"
-                onClick={() => setColdRetardHours(hrs)}
-                className={`py-1.5 px-1 rounded-xl text-xs font-bold border transition-all active-press text-center truncate ${
-                  coldRetardHours === hrs
-                    ? 'bg-sky-600 text-white border-sky-600 shadow-xs'
-                    : 'bg-stone-50 dark:bg-stone-800/60 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:bg-stone-100'
-                }`}
-              >
-                {hrs === 12 ? '12h Min' : hrs === 14 ? '14h Standard' : hrs === 24 ? '24h (1 Day)' : '48h Max'}
-              </button>
-            ))}
-          </div>
-
           <input
             type="range"
             min="12"
