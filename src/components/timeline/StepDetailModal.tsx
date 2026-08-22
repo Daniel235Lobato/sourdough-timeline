@@ -3,7 +3,6 @@ import {
   X, 
   Clock, 
   CheckCircle, 
-  Play, 
   Thermometer,
   Sparkles,
   HelpCircle,
@@ -28,7 +27,6 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
 }) => {
   const { 
     activeSession, 
-    advanceToStepIndex, 
     completeCurrentStep 
   } = useSourdough();
 
@@ -68,16 +66,8 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
 
   const badge = getPhaseBadge();
 
-  const handleMakeActive = () => {
-    advanceToStepIndex(stepIndex);
-    onClose();
-  };
-
   const handleCompleteThisStep = () => {
     if (isCurrentActive) {
-      completeCurrentStep();
-    } else {
-      advanceToStepIndex(stepIndex);
       completeCurrentStep();
     }
     onClose();
@@ -190,9 +180,9 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
           </div>
         )}
 
-        {/* Bottom Actions: Primary CTA + Bottom Close Button */}
+        {/* Bottom Actions: Active Action CTA (if active) + Bottom Close Button */}
         <div className="pt-2 space-y-2">
-          {isCurrentActive ? (
+          {isCurrentActive && (
             <button
               onClick={handleCompleteThisStep}
               className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-2xl font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/30 flex items-center justify-center space-x-1.5 transition-all active-press"
@@ -200,15 +190,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
               <CheckCircle className="w-4 h-4" />
               <span>MARK STEP COMPLETE ✓</span>
             </button>
-          ) : !isCompleted ? (
-            <button
-              onClick={handleMakeActive}
-              className="w-full py-3.5 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-2xl font-bold text-xs sm:text-sm shadow-md shadow-amber-600/30 flex items-center justify-center space-x-1.5 transition-all active-press"
-            >
-              <Play className="w-4 h-4 fill-white" />
-              <span>Jump & Start This Step</span>
-            </button>
-          ) : null}
+          )}
 
           {/* Bottom Close Button to Exit Back to Timeline */}
           <button
