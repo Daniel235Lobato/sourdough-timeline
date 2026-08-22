@@ -33,7 +33,7 @@ const getSuggestedStartTimes = (dateStr: string) => {
     const suggestions: { value: string; label: string }[] = [];
     const baseDate = setMinutes(setHours(new Date(), startHour), startMinute);
 
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 3; i++) {
       const slot = addMinutes(baseDate, i * 30);
       suggestions.push({
         value: format(slot, 'HH:mm'),
@@ -45,8 +45,7 @@ const getSuggestedStartTimes = (dateStr: string) => {
     return [
       { value: '07:00', label: '7:00 AM' },
       { value: '07:30', label: '7:30 AM' },
-      { value: '08:00', label: '8:00 AM' },
-      { value: '08:30', label: '8:30 AM' },
+      { value: '08:00', label: '8:00 AM' }
     ];
   }
 };
@@ -192,7 +191,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
           <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
             Start Time (Feed Starter)
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             {suggestedTimes.map(({ value, label }) => (
               <button
                 key={value}
