@@ -3,6 +3,7 @@ import { X, Play, Clock, Sparkles, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
+import { StepInstructionIcon } from '../icons/StepIcons';
 
 interface StartFromStepModalProps {
   isOpen: boolean;
@@ -68,14 +69,19 @@ export const StartFromStepModal: React.FC<StartFromStepModalProps> = ({
                 key={step.id}
                 type="button"
                 onClick={() => setSelectedStepIndex(idx)}
-                className={`w-full text-left px-4 py-3 rounded-2xl border text-xs font-bold transition-all flex items-center justify-between active-press ${
+                className={`w-full text-left px-3.5 py-2.5 rounded-2xl border text-xs font-bold transition-all flex items-center justify-between active-press ${
                   selectedStepIndex === idx
                     ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/60 text-amber-950 dark:text-amber-100 shadow-xs ring-1 ring-amber-500/30'
                     : 'border-stone-200/80 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
                 }`}
               >
-                <span className="truncate">{idx + 1}. {step.name}</span>
-                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider">{step.phase}</span>
+                <div className="flex items-center space-x-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center flex-shrink-0 text-stone-600 dark:text-stone-300">
+                    <StepInstructionIcon stepId={step.id} stepName={step.name} phase={step.phase} size={15} />
+                  </div>
+                  <span className="truncate">{idx + 1}. {step.name}</span>
+                </div>
+                <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider flex-shrink-0 ml-2">{step.phase}</span>
               </button>
             ))}
           </div>

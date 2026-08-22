@@ -17,6 +17,7 @@ import {
   Compass
 } from 'lucide-react';
 import { ScheduledStep } from '../../types/timeline';
+import { StepInstructionIcon } from '../icons/StepIcons';
 
 interface TimelineItemProps {
   step: ScheduledStep;
@@ -140,19 +141,24 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
           </div>
         </div>
 
-        {/* Step Name */}
+        {/* Step Name with Instructional Line-Art Icon */}
         <div className="flex items-start justify-between gap-2">
-          <h4 className={`font-serif text-base sm:text-lg font-bold leading-snug ${
-            isCompleted 
-              ? 'text-stone-600 dark:text-stone-400 line-through decoration-emerald-500/50' 
-              : 'text-stone-900 dark:text-stone-100'
-          }`}>
-            {step.name}
-          </h4>
+          <div className="flex items-center space-x-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-stone-100 dark:bg-stone-800/80 border border-stone-200/70 dark:border-stone-700/70 flex items-center justify-center flex-shrink-0 text-stone-700 dark:text-stone-300">
+              <StepInstructionIcon stepId={step.id} stepName={step.name} phase={step.phase} size={18} />
+            </div>
+            <h4 className={`font-serif text-base sm:text-lg font-bold leading-snug truncate ${
+              isCompleted 
+                ? 'text-stone-600 dark:text-stone-400 line-through decoration-emerald-500/50' 
+                : 'text-stone-900 dark:text-stone-100'
+            }`}>
+              {step.name}
+            </h4>
+          </div>
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors flex-shrink-0"
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>

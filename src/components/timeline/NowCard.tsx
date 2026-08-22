@@ -23,6 +23,7 @@ import { DoughExpanding } from '../animations/DoughExpanding';
 import { FridgeColdEffect } from '../animations/FridgeColdEffect';
 import { OvenHeatGlow } from '../animations/OvenHeatGlow';
 import { SteamEffect } from '../animations/SteamEffect';
+import { StepInstructionIcon } from '../icons/StepIcons';
 
 interface NowCardProps {
   currentStep: ScheduledStep;
@@ -154,22 +155,27 @@ export const NowCard: React.FC<NowCardProps> = ({
         </button>
       </div>
 
-      {/* Main Step Title & Description */}
-      <div className="mb-4">
-        <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
-          {currentStep.name}
-        </h2>
-        <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
-          {currentStep.description}
-        </p>
+      {/* Main Step Title & Instructional Icon Header */}
+      <div className="mb-4 flex items-start space-x-3.5">
+        <div className="w-12 h-12 rounded-2xl bg-amber-100/70 dark:bg-[#24201c] border border-amber-200/80 dark:border-stone-700 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-xs">
+          <StepInstructionIcon stepId={currentStep.id} stepName={currentStep.name} phase={currentStep.phase} size={28} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
+            {currentStep.name}
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
+            {currentStep.description}
+          </p>
 
-        {/* Biological Cues Callout if Applicable */}
-        {currentStep.isBiologicalEstimate && (
-          <div className="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-900 dark:text-amber-300 shadow-2xs">
-            <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-            <span>Biological Cues Apply</span>
-          </div>
-        )}
+          {/* Biological Cues Callout if Applicable */}
+          {currentStep.isBiologicalEstimate && (
+            <div className="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-900 dark:text-amber-300 shadow-2xs">
+              <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span>Biological Cues Apply</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Phase Specific Visual Animation */}

@@ -23,17 +23,17 @@ export const DEFAULT_RECIPES: Recipe[] = [
     steps: [
       {
         id: 'feed-starter',
-        name: '🌱 Feed Starter',
+        name: 'Feed Starter',
         shortName: 'Feed Starter',
         phase: 'starter',
-        icon: 'Sprout',
+        icon: 'Feed',
         durationMinutes: 330, // 5.5 hours
-        description: 'Build 115g active levain for 1 loaf (100g for dough + 15g starter reserve).',
+        description: 'Build active levain with flour and water for your bake.',
         detailedInstructions: [
-          'In a clean glass jar, measure 23g active seed starter.',
-          'Add 46g lukewarm water (~78°F / 25°C) and stir to disperse.',
-          'Add 46g bread flour (or 50:50 white/wheat blend) and mix until thoroughly combined.',
-          'Mark jar level with a rubber band. Yields 115g total: 100g for dough + 15g left over to repopulate starter.',
+          'In a clean glass jar, measure active seed starter.',
+          'Add lukewarm water (~78°F / 25°C) and stir to disperse.',
+          'Add bread flour (or 50:50 white/wheat blend) and mix until thoroughly combined.',
+          'Mark jar level with a rubber band to monitor height expansion.',
           'Leave in a warm spot (75°F–80°F / 24°C–27°C) for 5–6 hours until peaked.'
         ],
         ingredientsUsed: [
@@ -57,10 +57,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'starter-peak',
-        name: '🫧 Starter Ready / Levain Peaked',
+        name: 'Levain Ready (Peaked)',
         shortName: 'Levain Peaked',
         phase: 'starter',
-        icon: 'Sparkles',
+        icon: 'Peak',
         durationMinutes: 0,
         description: 'Levain is at peak vitality. Time to mix the main dough.',
         canOverrideCompletion: true,
@@ -68,22 +68,22 @@ export const DEFAULT_RECIPES: Recipe[] = [
           title: 'Levain Peak Milestone',
           visualCue: 'Dome-shaped crest with maximum expansion.',
           checklist: [
-            '100g needed for dough (keep 5-10g remaining to feed for your next bake)',
+            'Measure needed levain for dough; keep 15g starter reserve in jar for next bake',
             'Do not wait until starter starts collapsing back down'
           ]
         }
       },
       {
         id: 'mix-dough',
-        name: '🥣 Mix Dough (Autolyse)',
+        name: 'Mix Dough (Autolyse)',
         shortName: 'Mix Dough',
         phase: 'mix',
-        icon: 'ChefHat',
+        icon: 'Mix',
         durationMinutes: 30, // 30 min rest before salt
         description: 'Combine flour, water, and active starter. Allow flour to hydrate.',
         detailedInstructions: [
-          'In a mixing bowl, disperse 100g peaked starter into 325g warm water.',
-          'Add 500g flour. Mix by hand or dough scraper until all flour is fully hydrated (shaggy mass).',
+          'In a mixing bowl, disperse peaked starter into warm water.',
+          'Add flour. Mix by hand or dough scraper until all flour is fully hydrated (shaggy mass).',
           'Cover bowl with a damp towel and rest for 30 minutes to develop gluten and enzymatic activity.'
         ],
         ingredientsUsed: [
@@ -94,14 +94,14 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'add-salt',
-        name: '🧂 Add Salt',
+        name: 'Add Salt',
         shortName: 'Add Salt',
         phase: 'mix',
-        icon: 'Sparkle',
+        icon: 'Salt',
         durationMinutes: 30, // 30 min rest before S&F 1
         description: 'Incorporate salt to strengthen gluten and control fermentation.',
         detailedInstructions: [
-          'Sprinkle 10g fine sea salt evenly over the dough surface (optionally with 5g splash of water).',
+          'Sprinkle fine sea salt evenly over the dough surface (optionally with 5g splash of water).',
           'Dimple and pinch the salt into the dough with your fingers.',
           'Perform slap-and-folds or bowl squeezes for 2–3 minutes until smooth and elastic.',
           'Cover and rest for 30 minutes before the first Stretch & Fold.'
@@ -112,10 +112,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'stretch-fold-1',
-        name: '🤲 Stretch & Fold #1',
+        name: 'Stretch & Fold #1',
         shortName: 'Fold #1',
         phase: 'ferment',
-        icon: 'Layers',
+        icon: 'Stretch',
         durationMinutes: 30,
         description: 'First structural fold to build gluten tension.',
         detailedInstructions: [
@@ -127,12 +127,12 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'stretch-fold-2',
-        name: '🤲 Stretch & Fold #2',
+        name: 'Stretch & Fold #2',
         shortName: 'Fold #2',
         phase: 'ferment',
-        icon: 'Layers',
+        icon: 'Stretch',
         durationMinutes: 30,
-        description: 'Second structural fold.',
+        description: 'Second structural fold to build elasticity.',
         detailedInstructions: [
           'Wet hands and repeat 4-corner stretch and fold.',
           'Notice how the dough begins to feel smoother and more cohesive.',
@@ -141,10 +141,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'stretch-fold-3',
-        name: '🤲 Stretch & Fold #3 (Final Fold & Rest)',
+        name: 'Stretch & Fold #3 (Final Fold & Rest)',
         shortName: 'Fold #3 & Bulk',
         phase: 'ferment',
-        icon: 'Layers',
+        icon: 'Stretch',
         durationMinutes: 150, // 2.5 hours bulk fermentation rest after final fold
         description: 'Third and final fold. Leave dough undisturbed for 2.5 hours of bulk fermentation.',
         detailedInstructions: [
@@ -158,10 +158,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'bulk-complete',
-        name: '🌡️ Bulk Fermentation Complete',
+        name: 'Bulk Fermentation Complete',
         shortName: 'Bulk Complete',
         phase: 'ferment',
-        icon: 'TrendingUp',
+        icon: 'Ferment',
         durationMinutes: 0,
         description: 'Dough has reached optimal fermentation with 50-75% rise.',
         isBiologicalEstimate: true,
@@ -181,12 +181,12 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'shape-loaves',
-        name: '🍞 Shape Loaf',
+        name: 'Shape Loaf',
         shortName: 'Shape Loaf',
         phase: 'shape',
-        icon: 'PackageCheck',
+        icon: 'Shape',
         durationMinutes: 30,
-        description: 'Pre-shape, rest, and final shape into banneton.',
+        description: 'Pre-shape, bench rest, and final shape into banneton.',
         detailedInstructions: [
           'Turn dough out onto a lightly dusted work surface.',
           'Pre-shape into a loose round; let bench rest uncovered for 15 minutes.',
@@ -197,10 +197,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'cold-retard',
-        name: '❄️ Cold Retard (Refrigerator Proof)',
+        name: 'Cold Retard (Refrigerator Proof)',
         shortName: 'Cold Retard',
         phase: 'retard',
-        icon: 'Snowflake',
+        icon: 'Proof',
         durationMinutes: 840, // 14 hours default (12h - 48h range)
         isColdRetard: true,
         minDurationMinutes: 720, // 12h
@@ -223,10 +223,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'preheat-oven',
-        name: '🔥 Preheat Oven & Dutch Oven',
+        name: 'Preheat Oven & Dutch Oven',
         shortName: 'Preheat Oven',
         phase: 'bake',
-        icon: 'Flame',
+        icon: 'Preheat',
         durationMinutes: 45,
         temperatureNote: '475°F / 245°C',
         description: 'Heat oven and heavy Dutch oven/combo cooker to saturated baking temperature.',
@@ -237,10 +237,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'score-bake',
-        name: '🔪 Score & Bake Loaves',
+        name: 'Score & Bake Loaves',
         shortName: 'Score & Bake',
         phase: 'bake',
-        icon: 'Sparkles',
+        icon: 'Score',
         durationMinutes: 45, // 20m covered + 25m uncovered
         description: 'Score with a razor blade (lame) and bake with trapped steam.',
         detailedInstructions: [
@@ -254,10 +254,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'cool-loaves',
-        name: '🌬️ Cool Loaves on Wire Rack',
+        name: 'Cool Loaves on Wire Rack',
         shortName: 'Cooling',
         phase: 'cool',
-        icon: 'Wind',
+        icon: 'Cool',
         durationMinutes: 120, // 2 hours
         isCoolingStep: true,
         description: 'Allow internal steam to stabilize and crumb structure to set.',
@@ -277,10 +277,10 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'loaf-ready',
-        name: '🎉 LOAVES READY TO ENJOY!',
+        name: 'Loaves Ready to Enjoy',
         shortName: 'Loaves Ready',
         phase: 'complete',
-        icon: 'Trophy',
+        icon: 'Slice',
         durationMinutes: 0,
         isFinalMilestone: true,
         description: 'Slice with a serrated bread knife and admire your artisan open crumb!',

@@ -3,6 +3,7 @@ import { X, Plus, Trash2, Save, Sparkles, Layers, Clock } from 'lucide-react';
 import { Recipe, RecipeStep, StepPhase } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
+import { StepInstructionIcon } from '../icons/StepIcons';
 
 interface RecipeBuilderModalProps {
   isOpen: boolean;
@@ -34,10 +35,10 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
     return [
       {
         id: `step-${Date.now()}-1`,
-        name: '🌱 Feed Starter',
+        name: 'Feed Starter',
         shortName: 'Feed Starter',
         phase: 'starter',
-        icon: 'Sprout',
+        icon: 'Feed',
         durationMinutes: 360,
         description: 'Levain feeding to reach double/peak volume.',
         isBiologicalEstimate: true,
@@ -45,37 +46,37 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
       },
       {
         id: `step-${Date.now()}-2`,
-        name: '🥣 Mix Dough & Autolyse',
+        name: 'Mix Dough & Autolyse',
         shortName: 'Mix Dough',
         phase: 'mix',
-        icon: 'ChefHat',
+        icon: 'Mix',
         durationMinutes: 30,
         description: 'Incorporate flour, water, and active starter.'
       },
       {
         id: `step-${Date.now()}-3`,
-        name: '🧂 Add Salt',
+        name: 'Add Salt',
         shortName: 'Add Salt',
         phase: 'mix',
-        icon: 'Sparkle',
+        icon: 'Salt',
         durationMinutes: 30,
         description: 'Incorporate sea salt.'
       },
       {
         id: `step-${Date.now()}-4`,
-        name: '🤲 Stretch & Fold Sets',
+        name: 'Stretch & Fold Sets',
         shortName: 'Stretch & Folds',
         phase: 'ferment',
-        icon: 'Layers',
+        icon: 'Stretch',
         durationMinutes: 120,
         description: 'Gluten structure development folds.'
       },
       {
         id: `step-${Date.now()}-5`,
-        name: '🌡️ Bulk Fermentation',
+        name: 'Bulk Fermentation',
         shortName: 'Bulk Ferment',
         phase: 'ferment',
-        icon: 'TrendingUp',
+        icon: 'Ferment',
         durationMinutes: 150,
         description: 'Watch for 50-75% rise.',
         isBiologicalEstimate: true,
@@ -83,19 +84,19 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
       },
       {
         id: `step-${Date.now()}-6`,
-        name: '🍞 Divide & Shape',
+        name: 'Divide & Shape',
         shortName: 'Shape',
         phase: 'shape',
-        icon: 'PackageCheck',
+        icon: 'Shape',
         durationMinutes: 30,
         description: 'Pre-shape and final shape into bannetons.'
       },
       {
         id: `step-${Date.now()}-7`,
-        name: '❄️ Cold Retardation',
+        name: 'Cold Retardation',
         shortName: 'Cold Retard',
         phase: 'retard',
-        icon: 'Snowflake',
+        icon: 'Proof',
         durationMinutes: 840,
         isColdRetard: true,
         minDurationMinutes: 720,
@@ -104,30 +105,30 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
       },
       {
         id: `step-${Date.now()}-8`,
-        name: '🔥 Preheat & Bake',
+        name: 'Preheat & Bake',
         shortName: 'Bake',
         phase: 'bake',
-        icon: 'Flame',
+        icon: 'Bake',
         durationMinutes: 45,
         isBakeStep: true,
         description: 'Bake covered with steam then uncovered for crust.'
       },
       {
         id: `step-${Date.now()}-9`,
-        name: '🌬️ Cool Completely',
+        name: 'Cool Completely',
         shortName: 'Cooling',
         phase: 'cool',
-        icon: 'Wind',
+        icon: 'Cool',
         durationMinutes: 120,
         isCoolingStep: true,
         description: 'Rest on wire rack.'
       },
       {
         id: `step-${Date.now()}-10`,
-        name: '🎉 Fresh Loaf Ready',
+        name: 'Fresh Loaf Ready',
         shortName: 'Ready',
         phase: 'complete',
-        icon: 'Trophy',
+        icon: 'Slice',
         durationMinutes: 0,
         isFinalMilestone: true,
         description: 'Slice and enjoy!'
@@ -309,11 +310,11 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
             {steps.map((step, idx) => (
               <div 
                 key={step.id || idx}
-                className="p-3 bg-stone-50 dark:bg-stone-800/70 rounded-2xl border border-stone-200/80 dark:border-stone-700 flex items-center gap-2"
+                className="p-3 bg-stone-50 dark:bg-stone-800/70 rounded-2xl border border-stone-200/80 dark:border-stone-700 flex items-center gap-2.5"
               >
-                <span className="font-mono text-xs font-bold text-stone-400 w-5">
-                  {idx + 1}.
-                </span>
+                <div className="w-8 h-8 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 flex items-center justify-center flex-shrink-0 text-stone-700 dark:text-stone-300">
+                  <StepInstructionIcon stepId={step.id} stepName={step.name} phase={step.phase} size={18} />
+                </div>
 
                 <div className="flex-1 space-y-1">
                   <input
