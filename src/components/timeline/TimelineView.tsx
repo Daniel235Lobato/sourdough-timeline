@@ -125,6 +125,25 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
             </span>
             <span className="font-mono text-sky-700 dark:text-sky-400 text-sm">{retardSliderVal} Hours</span>
           </div>
+
+          {/* Quick Retard Preset Pills */}
+          <div className="grid grid-cols-4 gap-1.5">
+            {[12, 14, 24, 48].map((hrs) => (
+              <button
+                key={hrs}
+                type="button"
+                onClick={() => setRetardSliderVal(hrs)}
+                className={`py-1.5 px-1 rounded-xl text-xs font-bold border transition-all active-press text-center truncate ${
+                  retardSliderVal === hrs
+                    ? 'bg-sky-600 text-white border-sky-600 shadow-xs'
+                    : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-sky-200 dark:border-stone-700 hover:bg-sky-100'
+                }`}
+              >
+                {hrs === 12 ? '12h Min' : hrs === 14 ? '14h Standard' : hrs === 24 ? '24h (1 Day)' : '48h Max'}
+              </button>
+            ))}
+          </div>
+
           <input
             type="range"
             min="12"
@@ -135,7 +154,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
             className="w-full h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
           />
           <div className="flex justify-between items-center text-xs">
-            <span className="text-stone-400 text-[11px]">12h min – 48h max</span>
+            <div className="flex space-x-2 text-stone-400 font-semibold text-[11px]">
+              <span>12h (Min)</span>
+              <span>•</span>
+              <span>48h (Max)</span>
+            </div>
             <button
               onClick={handleApplyRetardChange}
               className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-bold text-xs shadow-xs transition-all active-press"

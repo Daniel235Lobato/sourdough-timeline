@@ -115,7 +115,6 @@ export const HydrationCalculatorView: React.FC<HydrationCalculatorViewProps> = (
           />
           <div className="flex justify-between text-[11px] text-stone-400 font-semibold mt-1">
             <span>60% (Stiff)</span>
-            <span>70% (Classic)</span>
             <span>85% (Super Wet)</span>
           </div>
         </div>
