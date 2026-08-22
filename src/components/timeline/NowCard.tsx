@@ -126,10 +126,10 @@ export const NowCard: React.FC<NowCardProps> = ({
   return (
     <div 
       ref={cardRef} 
-      className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-4 sm:p-6 shadow-card-hover transition-all relative overflow-hidden w-full max-w-full min-w-0 box-border`}
+      className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-5 sm:p-6 shadow-card-hover transition-all relative overflow-hidden w-full max-w-full min-w-0 box-border`}
     >
-      {/* 1. Header: Single Progress Badge + "I'm Behind" Trigger */}
-      <div className="flex items-center justify-between mb-3.5">
+      {/* 1. Header: Single Progress Badge + Quiet Secondary "I'm Behind" Trigger */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white font-extrabold text-[10px] tracking-wider shadow-xs animate-pulse">
             NOW ACTIVE
@@ -141,15 +141,15 @@ export const NowCard: React.FC<NowCardProps> = ({
 
         <button
           onClick={onOpenRunningBehind}
-          className="flex items-center space-x-1 text-xs font-semibold text-stone-500 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 px-2.5 py-1 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 transition-all active-press"
+          className="flex items-center space-x-1 text-[11px] font-medium text-stone-400 dark:text-stone-500 hover:text-amber-700 dark:hover:text-amber-400 px-2 py-0.5 rounded-lg hover:bg-stone-100/60 dark:hover:bg-stone-800/40 transition-colors active-press"
         >
-          <Clock className="w-3.5 h-3.5" />
+          <Clock className="w-3 h-3 text-stone-400" />
           <span>I'm Behind</span>
         </button>
       </div>
 
-      {/* 2. Step Identity: Large Icon + Unclipped Title & Description */}
-      <div className="mb-3.5 flex items-start space-x-3.5 sm:space-x-4">
+      {/* 2. Step Identity: Large Hero Icon + Title & Natural Description */}
+      <div className="mb-4 flex items-start space-x-3.5 sm:space-x-4">
         <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-[#1f1d1a] border border-amber-300/80 dark:border-amber-700/80 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-xs p-2 mt-0.5">
           <StepInstructionIcon 
             stepId={currentStep.id} 
@@ -160,7 +160,7 @@ export const NowCard: React.FC<NowCardProps> = ({
           />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight break-words">
+          <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight break-words">
             {currentStep.name}
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
@@ -169,28 +169,28 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       </div>
 
-      {/* 3. Ingredients Presentation (Clean Editorial Style) */}
+      {/* 3. Ingredients Needed (Editorial Whitespace & Clean Typography) */}
       {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
-        <div className="my-3 py-2.5 px-3.5 rounded-2xl bg-amber-50/60 dark:bg-stone-800/50 border border-amber-200/60 dark:border-stone-700/60">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900/70 dark:text-amber-300/70 block mb-1.5">
-            Ingredients Needed
+        <div className="my-4 space-y-1.5">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500 block">
+            You'll need
           </span>
           <div className="space-y-1">
             {currentStep.ingredientsUsed.map((ing, i) => (
               <div key={i} className="flex items-baseline space-x-2 text-xs sm:text-sm text-stone-800 dark:text-stone-200">
-                <span className="font-mono font-extrabold text-amber-900 dark:text-amber-200 min-w-[44px]">
+                <span className="font-mono font-extrabold text-stone-900 dark:text-stone-100 min-w-[42px]">
                   {ing.amount}{ing.unit}
                 </span>
-                <span className="leading-snug">{ing.name}</span>
+                <span className="leading-snug text-stone-700 dark:text-stone-300">{ing.name}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* 4. Streamlined Timer (Calm & Integrated) */}
-      <div className="my-3 py-2 text-center">
-        <div className="text-[11px] font-medium text-stone-500 dark:text-stone-400 mb-0.5">
+      {/* 4. Streamlined Integrated Timer */}
+      <div className="my-4 py-1 text-center">
+        <div className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider mb-0.5">
           {isZeroDurationStep 
             ? 'Action Ready' 
             : isTimerRunning 
@@ -202,10 +202,10 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
         {nextStep && (
           <div className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-normal">
-            Next: <span className="font-semibold text-stone-800 dark:text-stone-200">{nextStep.shortName || nextStep.name}</span>
+            Next: <span className="font-semibold text-stone-700 dark:text-stone-300">{nextStep.shortName || nextStep.name}</span>
             {!isZeroDurationStep && (
               <span className="ml-1 text-stone-400 dark:text-stone-500">
-                · Starts {nextStep.startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                · {nextStep.startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
               </span>
             )}
           </div>
@@ -213,7 +213,7 @@ export const NowCard: React.FC<NowCardProps> = ({
       </div>
 
       {/* 5. One Obvious Primary Action Button */}
-      <div className="mt-3.5 space-y-2">
+      <div className="mt-4">
         <button
           onClick={handleActionClick}
           className={`w-full py-4 px-4 rounded-2xl font-bold text-sm sm:text-base flex items-center justify-center space-x-2 transition-all duration-200 active-press shadow-md ${
@@ -240,40 +240,42 @@ export const NowCard: React.FC<NowCardProps> = ({
           )}
         </button>
 
-        {/* Biological Early Override (Quiet Secondary Action) */}
+        {/* 6. Secondary Shortcut: Clear, Quiet Question Action */}
         {currentStep.canOverrideCompletion && (
-          <button
-            onClick={handleBiologicalOverride}
-            className="w-full py-1.5 px-3 text-xs font-semibold text-amber-800 dark:text-amber-300 hover:underline flex items-center justify-center space-x-1.5 transition-colors active-press"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>
-              {currentStep.phase === 'starter' ? 'Starter is peaked now' : 'Bulk fermentation is ready now'}
-            </span>
-          </button>
+          <div className="mt-2 text-center">
+            <button
+              onClick={handleBiologicalOverride}
+              className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 hover:underline inline-flex items-center space-x-1.5 py-1 px-2.5 transition-colors active-press"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>
+                {currentStep.phase === 'starter' ? 'Starter already peaked?' : 'Dough ready early?'}
+              </span>
+            </button>
+          </div>
         )}
       </div>
 
-      {/* 6. Expandable Guidance Tray (Wrap-friendly, No text clipping) */}
+      {/* 7. Optional Guidance Tray (Generous breathing room, wrap-friendly) */}
       {hasExtraInfo && (
-        <div className="mt-3 rounded-2xl bg-stone-50/80 dark:bg-stone-800/50 border border-stone-200/80 dark:border-stone-700/80 overflow-hidden">
+        <div className="mt-4 pt-3 border-t border-stone-200/50 dark:border-stone-800/60">
           <button
             type="button"
             onClick={() => setIsDetailsOpen(!isDetailsOpen)}
-            className="w-full px-3.5 py-2.5 text-left flex items-center justify-between text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100/80 dark:hover:bg-stone-800/80 transition-colors"
+            className="w-full py-2 px-2.5 text-left flex items-center justify-between text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-xl hover:bg-stone-100/60 dark:hover:bg-stone-800/40 transition-colors"
           >
             <div className="flex items-center space-x-2 min-w-0 pr-2">
-              <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <Info className="w-3.5 h-3.5 text-stone-400 dark:text-stone-500 flex-shrink-0" />
               <span className="leading-snug">Need guidance? View instructions & visuals</span>
             </div>
-            <div className="flex items-center space-x-1 text-[11px] text-stone-500 dark:text-stone-400 font-medium flex-shrink-0 pl-1">
+            <div className="flex items-center space-x-1 text-[11px] font-semibold flex-shrink-0 pl-1">
               <span>{isDetailsOpen ? 'Hide' : 'View'}</span>
               {isDetailsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </div>
           </button>
 
           {isDetailsOpen && (
-            <div className="p-3.5 pt-2.5 border-t border-stone-200/60 dark:border-stone-700/60 space-y-3 bg-white/70 dark:bg-[#181614]/70 animate-fade-in text-xs">
+            <div className="mt-2 p-3.5 rounded-2xl border border-stone-200/60 dark:border-stone-700/60 space-y-3 bg-stone-50/50 dark:bg-stone-900/50 animate-fade-in text-xs">
               {/* Step-by-Step Instructions */}
               {currentStep.detailedInstructions && currentStep.detailedInstructions.length > 0 && (
                 <div className="space-y-1.5">

@@ -68,7 +68,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   };
 
   return (
-    <div className="pb-28 pt-1 w-full max-w-full overflow-x-hidden min-w-0 space-y-5 animate-fade-in">
+    <div className="pb-36 pt-1 w-full max-w-full overflow-x-hidden min-w-0 space-y-5 animate-fade-in">
       {/* "NOW" Prominent Experience Card */}
       {!activeSession.isCompleted && (
         <NowCard
