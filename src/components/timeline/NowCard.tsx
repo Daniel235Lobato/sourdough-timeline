@@ -131,14 +131,14 @@ export const NowCard: React.FC<NowCardProps> = ({
       : formatDurationToHMS(currentStep.durationMinutes);
 
   return (
-    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-3.5 sm:p-5 shadow-card-hover transition-all relative overflow-hidden w-full max-w-full min-w-0 box-border`}>
+    <div ref={cardRef} className={`scroll-mt-4 rounded-3xl bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 bg-gradient-to-b ${getPhaseColorClass()} p-4 sm:p-6 shadow-card-hover transition-all relative overflow-hidden w-full max-w-full min-w-0 box-border`}>
       {/* Top Banner Tag */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-white font-extrabold text-[10px] sm:text-[11px] tracking-wider shadow-xs animate-pulse">
+          <span className="px-3 py-0.5 rounded-full bg-amber-500 text-white font-extrabold text-[11px] tracking-wider shadow-xs animate-pulse">
             NOW ACTIVE
           </span>
-          <span className="text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
+          <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
             Step {currentStep.index + 1} of {activeSession?.steps.length}
           </span>
         </div>
@@ -146,7 +146,7 @@ export const NowCard: React.FC<NowCardProps> = ({
         {/* Running Behind Quick Trigger */}
         <button
           onClick={onOpenRunningBehind}
-          className="flex items-center space-x-1 text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 px-2.5 py-1 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 transition-all active-press"
+          className="flex items-center space-x-1 text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-amber-700 dark:hover:text-amber-400 px-2.5 py-1.5 rounded-xl bg-stone-100/80 dark:bg-stone-800/60 transition-all active-press"
         >
           <Clock className="w-3.5 h-3.5" />
           <span>I'm Behind</span>
@@ -154,36 +154,36 @@ export const NowCard: React.FC<NowCardProps> = ({
       </div>
 
       {/* Main Step Title & Large Instructional Hero Icon Header */}
-      <div className="mb-2.5 flex items-center space-x-3 sm:space-x-4">
-        <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-2xl bg-white dark:bg-[#1f1d1a] border border-amber-300/80 dark:border-amber-700/80 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-xs p-2">
+      <div className="mb-3.5 flex items-center space-x-3.5 sm:space-x-4">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white dark:bg-[#1f1d1a] border border-amber-300/80 dark:border-amber-700/80 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-sm p-2.5">
           <StepInstructionIcon 
             stepId={currentStep.id} 
             stepName={currentStep.name} 
             phase={currentStep.phase} 
-            size={34}
-            className="w-8 h-8 sm:w-10 sm:h-10" 
+            size={38}
+            className="w-9 h-9 sm:w-11 sm:h-11" 
           />
         </div>
         <div className="flex-1 min-w-0">
-          <h2 className="font-serif text-lg sm:text-2xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight truncate">
+          <h2 className="font-serif text-xl sm:text-2xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
             {currentStep.name}
           </h2>
-          <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5 leading-snug line-clamp-1">
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-0.5 leading-snug line-clamp-2">
             {currentStep.description}
           </p>
         </div>
       </div>
 
-      {/* Ingredients Used Pills (Compact) */}
+      {/* Ingredients Used Pills */}
       {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
-        <div className="mb-2.5 flex flex-wrap gap-1.5 items-center">
+        <div className="mb-3 flex flex-wrap gap-1.5 items-center">
           <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mr-1">
             Add:
           </span>
           {currentStep.ingredientsUsed.map((ing, i) => (
             <span 
               key={i} 
-              className="px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-stone-800 border border-amber-200/80 dark:border-stone-700 text-[11px] font-bold text-stone-800 dark:text-stone-200 shadow-2xs"
+              className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-stone-800 border border-amber-200/80 dark:border-stone-700 text-xs font-bold text-stone-800 dark:text-stone-200 shadow-2xs"
             >
               <strong className="font-mono text-amber-700 dark:text-amber-400 mr-1">{ing.amount}{ing.unit}</strong>
               {ing.name}
