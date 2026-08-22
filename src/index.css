@@ -62,19 +62,39 @@
   }
 }
 
-/* Animations & utilities */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
+/* Animations & smooth interaction utilities */
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: screenFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Tactile micro-press feedback */
+/* Tactile micro-press feedback for buttons & interactive elements (100% -> 97.5% -> 100%) */
+button, 
+[role="button"], 
+.active-press {
+  transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active:not(:disabled), 
+[role="button"]:active, 
 .active-press:active {
   transform: scale(0.975);
+}
+
+/* Subtle hover transition smoothing across interactive elements */
+button, 
+[role="button"], 
+a, 
+input, 
+select {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 /* Custom minimal scrollbar */
