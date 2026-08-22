@@ -20,12 +20,9 @@ import {
 import { ScheduledStep } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
 import { useCountdown, formatDurationToHMS } from '../../hooks/useCountdown';
-import { StarterBubbles } from '../animations/StarterBubbles';
-import { DoughExpanding } from '../animations/DoughExpanding';
-import { FridgeColdEffect } from '../animations/FridgeColdEffect';
-import { OvenHeatGlow } from '../animations/OvenHeatGlow';
-import { SteamEffect } from '../animations/SteamEffect';
 import { StepInstructionIcon } from '../icons/StepIcons';
+import { ActionStepAnimation } from '../animations/ActionStepAnimation';
+import { StepCompletionSuccess } from '../animations/StepCompletionSuccess';
 
 interface NowCardProps {
   currentStep: ScheduledStep;
@@ -65,10 +62,11 @@ export const NowCard: React.FC<NowCardProps> = ({
   // Check if this step is a zero-duration milestone (e.g. Starter Peaked / Checkpoint)
   const isZeroDurationStep = currentStep.durationMinutes === 0;
   const [isCuesOpen, setIsCuesOpen] = useState(false);
+  const [completionOverlay, setCompletionOverlay] = useState<{ stepName: string; nextStepName?: string; isOverride?: boolean } | null>(null);
 
   // Check if this step was already started
   const isAlreadyStarted = Boolean(currentStep.actualStartTime);
-  const [hasStartedCurrentStep, setHasStartedCurrentStep] = useState(isAlreadyStarted);
+  const [hasStartedCurrentStep, setHasStartedCurrentStep] = useState<boolean>(isAlreadyStarted);
 
   // Sync state if step changes
   useEffect(() => {
@@ -85,8 +83,7 @@ export const NowCard: React.FC<NowCardProps> = ({
 
   const handleActionClick = () => {
     if (isZeroDurationStep) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      completeCurrentStep();
+      setCompletionOverlay({ stepName: currentStep.name, nextStepName: nextStep?.name });
       return;
     }
 
@@ -94,15 +91,23 @@ export const NowCard: React.FC<NowCardProps> = ({
       setHasStartedCurrentStep(true);
       startCurrentStepNow();
     } else {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-      completeCurrentStep();
-      setHasStartedCurrentStep(false);
+      setCompletionOverlay({ stepName: currentStep.name, nextStepName: nextStep?.name });
     }
   };
 
   const handleBiologicalOverride = () => {
+    setCompletionOverlay({ stepName: currentStep.name, nextStepName: nextStep?.name, isOverride: true });
+  };
+
+  const handleCompleteOverlayFinished = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    triggerBiologicalReady(currentStep.id);
+    if (completionOverlay?.isOverride) {
+      triggerBiologicalReady(currentStep.id);
+    } else {
+      completeCurrentStep();
+      setHasStartedCurrentStep(false);
+    }
+    setCompletionOverlay(null);
   };
 
   // Phase color theme
@@ -187,36 +192,14 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       </div>
 
-      {/* Phase Specific Visual Animation */}
-      {currentStep.phase === 'starter' && (
-        <div className="mb-4 bg-emerald-950/20 dark:bg-emerald-950/40 rounded-2xl p-4 border border-emerald-500/20 overflow-hidden">
-          <StarterBubbles />
-        </div>
-      )}
-
-      {currentStep.phase === 'ferment' && (
-        <div className="mb-4 bg-amber-950/20 dark:bg-amber-950/40 rounded-2xl p-4 border border-amber-500/20 overflow-hidden">
-          <DoughExpanding />
-        </div>
-      )}
-
-      {currentStep.phase === 'retard' && (
-        <div className="mb-4 bg-sky-950/20 dark:bg-sky-950/40 rounded-2xl p-4 border border-sky-500/20 overflow-hidden">
-          <FridgeColdEffect />
-        </div>
-      )}
-
-      {currentStep.phase === 'bake' && (
-        <div className="mb-4 bg-orange-950/20 dark:bg-orange-950/40 rounded-2xl p-4 border border-orange-500/20 overflow-hidden">
-          <OvenHeatGlow />
-        </div>
-      )}
-
-      {currentStep.phase === 'cool' && (
-        <div className="mb-4 bg-indigo-950/20 dark:bg-indigo-950/40 rounded-2xl p-4 border border-indigo-500/20 overflow-hidden">
-          <SteamEffect />
-        </div>
-      )}
+      {/* Purposeful Action-Correlated Sourdough Animation */}
+      <div className="mb-4">
+        <ActionStepAnimation 
+          phase={currentStep.phase} 
+          stepId={currentStep.id} 
+          stepName={currentStep.name} 
+        />
+      </div>
 
       {/* Ingredients Used Pills */}
       {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
@@ -379,6 +362,15 @@ export const NowCard: React.FC<NowCardProps> = ({
           </button>
         )}
       </div>
+
+      {/* Subtle Step Completion Modal */}
+      {completionOverlay && (
+        <StepCompletionSuccess
+          stepName={completionOverlay.stepName}
+          nextStepName={completionOverlay.nextStepName}
+          onFinished={handleCompleteOverlayFinished}
+        />
+      )}
     </div>
   );
 };

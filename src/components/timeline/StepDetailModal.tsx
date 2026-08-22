@@ -19,6 +19,7 @@ import { ScheduledStep } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
 import { StepInstructionIcon } from '../icons/StepIcons';
+import { ActionStepAnimation } from '../animations/ActionStepAnimation';
 
 interface StepDetailModalProps {
   step: ScheduledStep | null;
@@ -144,6 +145,13 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
             {step.description}
           </p>
         </div>
+
+        {/* Action-Correlated Physical Animation */}
+        <ActionStepAnimation 
+          phase={step.phase} 
+          stepId={step.id} 
+          stepName={step.name} 
+        />
 
         {/* Ingredients Used (if applicable) */}
         {step.ingredientsUsed && step.ingredientsUsed.length > 0 && (
