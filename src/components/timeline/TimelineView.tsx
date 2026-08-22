@@ -11,11 +11,13 @@ import {
   Play
 } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
+import { ScheduledStep } from '../../types/timeline';
 import { NowCard } from './NowCard';
 import { TimelineItem } from './TimelineItem';
 import { RunningBehindModal } from './RunningBehindModal';
 import { StartFromStepModal } from './StartFromStepModal';
 import { LoafSuccessModal } from './LoafSuccessModal';
+import { StepDetailModal } from './StepDetailModal';
 
 interface TimelineViewProps {
   onNavigateHome: () => void;
@@ -33,6 +35,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState(false);
   const [isAdjustRetardOpen, setIsAdjustRetardOpen] = useState(false);
   const [retardSliderVal, setRetardSliderVal] = useState<number>(activeSession?.coldRetardHours || 14);
+  const [selectedDetailStep, setSelectedDetailStep] = useState<ScheduledStep | null>(null);
 
   if (!activeSession || activeSession.steps.length === 0) {
     return (
@@ -171,12 +174,19 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
               isFirst={idx === 0}
               isLast={idx === activeSession.steps.length - 1}
               onSelectStep={(targetIdx) => advanceToStepIndex(targetIdx)}
+              onOpenDetail={(targetStep) => setSelectedDetailStep(targetStep)}
             />
           ))}
         </div>
       </div>
 
       {/* Modals */}
+      <StepDetailModal
+        step={selectedDetailStep}
+        isOpen={!!selectedDetailStep}
+        onClose={() => setSelectedDetailStep(null)}
+      />
+
       <RunningBehindModal
         isOpen={isRunningBehindOpen}
         onClose={() => setIsRunningBehindOpen(false)}

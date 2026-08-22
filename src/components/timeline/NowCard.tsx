@@ -155,22 +155,28 @@ export const NowCard: React.FC<NowCardProps> = ({
         </button>
       </div>
 
-      {/* Main Step Title & Instructional Icon Header */}
-      <div className="mb-4 flex items-start space-x-3.5">
-        <div className="w-12 h-12 rounded-2xl bg-amber-100/70 dark:bg-[#24201c] border border-amber-200/80 dark:border-stone-700 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-xs">
-          <StepInstructionIcon stepId={currentStep.id} stepName={currentStep.name} phase={currentStep.phase} size={28} />
+      {/* Main Step Title & Large Instructional Hero Icon Header */}
+      <div className="mb-4 flex items-center space-x-4 sm:space-x-5">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#1f1d1a] border border-amber-300/80 dark:border-amber-700/80 flex items-center justify-center flex-shrink-0 text-amber-800 dark:text-amber-300 shadow-md shadow-amber-900/5 p-2.5">
+          <StepInstructionIcon 
+            stepId={currentStep.id} 
+            stepName={currentStep.name} 
+            phase={currentStep.phase} 
+            size={44}
+            className="w-11 h-11 sm:w-14 sm:h-14" 
+          />
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
             {currentStep.name}
           </h2>
-          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1.5 leading-relaxed">
+          <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1 leading-relaxed line-clamp-2">
             {currentStep.description}
           </p>
 
           {/* Biological Cues Callout if Applicable */}
           {currentStep.isBiologicalEstimate && (
-            <div className="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[11px] font-bold text-amber-900 dark:text-amber-300 shadow-2xs">
+            <div className="mt-2 inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[10px] sm:text-[11px] font-bold text-amber-900 dark:text-amber-300 shadow-2xs">
               <TrendingUp className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
               <span>Biological Cues Apply</span>
             </div>
