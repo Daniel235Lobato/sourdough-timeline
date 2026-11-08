@@ -90,11 +90,11 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Progress Bar when Bake is Active */}
       {activeSession && !activeSession.isCompleted && (
         <div className="mt-2 pt-2 border-t border-[#D1C1A8]/70">
-          <div className="flex items-center justify-between text-[11px] font-medium text-[#2E1E14] mb-1">
-            <span className="truncate max-w-[200px] font-medium">
+          <div className="flex items-center justify-between text-[11px] font-medium text-[#2E1E14] mb-1 gap-2">
+            <span className="font-semibold text-[#2E1E14]">
               {activeSession.recipeName}
             </span>
-            <span className="font-mono text-[#986A4C] font-bold">
+            <span className="font-mono text-[#986A4C] font-bold shrink-0">
               {progressPercent}% complete
             </span>
           </div>
