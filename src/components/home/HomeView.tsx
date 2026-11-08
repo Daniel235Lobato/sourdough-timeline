@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { format, isToday, isTomorrow } from 'date-fns';
+import { format, isToday, isTomorrow, addMinutes } from 'date-fns';
 import { 
   Clock, 
   ArrowRight, 
@@ -41,6 +41,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     }
 
     const mixStep = steps.find(s => s.phase === 'mix') || steps[0];
+    const firstFoldStep = steps.find(s => s.id === 'stretch-fold-1' || (s.phase === 'ferment' && s.id.includes('fold')));
     const retardStep = steps.find(s => s.isColdRetard);
     const bakeStep = steps.find(s => s.isBakeStep);
     const lastStep = steps[steps.length - 1];
@@ -53,8 +54,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
       return { time, day: format(d, 'EEE, MMM d') };
     };
 
+    const firstFoldTime = firstFoldStep?.startTime || (mixStep?.startTime ? addMinutes(mixStep.startTime, mixStep.durationMinutes || 30) : undefined);
+    const foldPoint = formatSchedulePoint(firstFoldTime);
+    const mixPoint = formatSchedulePoint(mixStep?.startTime);
+
     return {
-      mix: startStage === 'peak' ? { time: 'Now', day: 'Immediate' } : formatSchedulePoint(mixStep?.startTime),
+      firstMilestone: startStage === 'peak'
+        ? { label: 'Fold #1', time: foldPoint.time, day: 'In 30 min' }
+        : { label: 'Mix Dough', time: mixPoint.time, day: mixPoint.day },
       fridge: formatSchedulePoint(retardStep?.startTime),
       bake: formatSchedulePoint(bakeStep?.startTime || lastStep?.endTime),
     };
@@ -240,13 +247,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="grid grid-cols-3 divide-x divide-[#D1C1A8]/70 pt-1 text-center">
             <div className="px-1">
               <span className="text-[9px] font-bold uppercase tracking-wider text-[#836A4D] block leading-none">
-                Mix Dough
+                {schedulePreview.firstMilestone.label}
               </span>
               <span className="text-xs font-extrabold text-[#2E1E14] mt-1 block leading-tight">
-                {schedulePreview.mix.time}
+                {schedulePreview.firstMilestone.time}
               </span>
               <span className="text-[10px] text-[#2E1E14]/70 block mt-0.5 leading-tight">
-                {schedulePreview.mix.day}
+                {schedulePreview.firstMilestone.day}
               </span>
             </div>
 
