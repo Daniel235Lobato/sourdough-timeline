@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Compass, 
   Clock, 
@@ -6,7 +6,6 @@ import {
   Sliders, 
   Snowflake, 
   Play,
-  ChevronDown,
   X
 } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
@@ -32,25 +31,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
   } = useSourdough();
 
   const [isOptionsMenuOpen, setIsOptionsMenuOpen] = useState(false);
-  const optionsMenuRef = useRef<HTMLDivElement>(null);
-
   const [isRunningBehindOpen, setIsRunningBehindOpen] = useState(false);
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState(false);
   const [isAdjustRetardOpen, setIsAdjustRetardOpen] = useState(false);
   const [retardSliderVal, setRetardSliderVal] = useState<number>(activeSession?.coldRetardHours || 14);
   const [selectedDetailStep, setSelectedDetailStep] = useState<ScheduledStep | null>(null);
-
-  // Close options menu on click outside
-  useEffect(() => {
-    if (!isOptionsMenuOpen) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (optionsMenuRef.current && !optionsMenuRef.current.contains(e.target as Node)) {
-        setIsOptionsMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOptionsMenuOpen]);
 
   if (!activeSession || activeSession.steps.length === 0) {
     return (
@@ -105,98 +90,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
             </span>
           </div>
 
-          {/* Options Dropdown Menu */}
-          <div className="relative" ref={optionsMenuRef}>
-            <button
-              type="button"
-              onClick={() => setIsOptionsMenuOpen(!isOptionsMenuOpen)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#E7CEB5] hover:bg-[#FAF5EE] border border-[#D1C1A8] text-xs font-bold text-[#2E1E14] transition-all shadow-2xs active-press"
-              aria-expanded={isOptionsMenuOpen}
-              aria-label="Bake options menu"
-            >
-              <Sliders className="w-3.5 h-3.5 text-[#986A4C]" />
-              <span>Options</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOptionsMenuOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {/* Floating Options Dropdown Menu */}
-            {isOptionsMenuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] shadow-lg p-1.5 z-40 animate-fade-in text-[#2E1E14]">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOptionsMenuOpen(false);
-                    setIsRunningBehindOpen(true);
-                  }}
-                  className="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl hover:bg-[#E7CEB5] transition-colors text-left text-xs font-bold text-[#2E1E14]"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] flex-shrink-0">
-                    <Clock className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div className="leading-tight">Adjust Schedule</div>
-                    <div className="text-[10px] text-[#2E1E14]/65 font-normal">Running behind / shift times</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOptionsMenuOpen(false);
-                    setIsAdjustRetardOpen(true);
-                  }}
-                  className="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl hover:bg-[#E7CEB5] transition-colors text-left text-xs font-bold text-[#2E1E14]"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] flex-shrink-0">
-                    <Snowflake className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div className="leading-tight">Fridge Retard</div>
-                    <div className="text-[10px] text-[#2E1E14]/65 font-normal">{activeSession.coldRetardHours}h window duration</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOptionsMenuOpen(false);
-                    setIsStartFromStepOpen(true);
-                  }}
-                  className="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl hover:bg-[#E7CEB5] transition-colors text-left text-xs font-bold text-[#2E1E14]"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] flex-shrink-0">
-                    <Play className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div className="leading-tight">Jump to Step</div>
-                    <div className="text-[10px] text-[#2E1E14]/65 font-normal">Fast-forward bake status</div>
-                  </div>
-                </button>
-
-                <div className="my-1 border-t border-[#D1C1A8]/60" />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOptionsMenuOpen(false);
-                    if (window.confirm('Are you sure you want to end this baking session?')) {
-                      resetSession();
-                      onNavigateHome();
-                    }
-                  }}
-                  className="w-full flex items-center space-x-2.5 px-3 py-2.5 rounded-xl hover:bg-[#E7CEB5] transition-colors text-left text-xs font-bold text-[#986A4C]"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] flex-shrink-0">
-                    <RotateCcw className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <div className="leading-tight">Reset Bake</div>
-                    <div className="text-[10px] text-[#2E1E14]/65 font-normal">End current session</div>
-                  </div>
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Options Button to open Centered Modal */}
+          <button
+            type="button"
+            onClick={() => setIsOptionsMenuOpen(true)}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#E7CEB5] hover:bg-[#FAF5EE] border border-[#D1C1A8] text-xs font-bold text-[#2E1E14] transition-all shadow-2xs active-press"
+            aria-haspopup="dialog"
+            aria-expanded={isOptionsMenuOpen}
+            aria-label="Open bake options menu"
+          >
+            <Sliders className="w-3.5 h-3.5 text-[#986A4C]" />
+            <span>Options</span>
+          </button>
         </div>
 
         {/* Milestone Steps */}
@@ -276,6 +181,115 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
           >
             Update Cold Retard
           </button>
+        </div>
+      </Modal>
+
+      {/* Centered Options Menu Modal Popup */}
+      <Modal
+        isOpen={isOptionsMenuOpen}
+        onClose={() => setIsOptionsMenuOpen(false)}
+        maxWidthClass="max-w-sm"
+      >
+        <div className="space-y-4 text-[#2E1E14]">
+          {/* Header */}
+          <div className="flex items-start justify-between pb-2 border-b border-[#D1C1A8]/70">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center shadow-2xs shrink-0">
+                <Sliders className="w-5 h-5 text-[#2E1E14]" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-[#2E1E14] leading-tight">
+                  Bake Options
+                </h3>
+                <p className="text-xs text-[#2E1E14]/70 mt-0.5">
+                  Adjust schedule, retard &amp; progress
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsOptionsMenuOpen(false)}
+              className="p-1.5 rounded-xl text-[#2E1E14]/60 hover:text-[#2E1E14] hover:bg-[#E7CEB5]/50 transition-colors"
+              aria-label="Close options"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Options List */}
+          <div className="space-y-2 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                setIsOptionsMenuOpen(false);
+                setIsRunningBehindOpen(true);
+              }}
+              className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#E7CEB5]/40 hover:bg-[#E7CEB5] border border-[#D1C1A8] transition-all text-left group active-press"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] shrink-0">
+                <Clock className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs sm:text-sm text-[#2E1E14]">Adjust Schedule</div>
+                <div className="text-[11px] text-[#2E1E14]/70">Running behind or shift times</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsOptionsMenuOpen(false);
+                setIsAdjustRetardOpen(true);
+              }}
+              className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#E7CEB5]/40 hover:bg-[#E7CEB5] border border-[#D1C1A8] transition-all text-left group active-press"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] shrink-0">
+                <Snowflake className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs sm:text-sm text-[#2E1E14]">Fridge Retard</div>
+                <div className="text-[11px] text-[#2E1E14]/70">{activeSession.coldRetardHours}h window duration</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsOptionsMenuOpen(false);
+                setIsStartFromStepOpen(true);
+              }}
+              className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#E7CEB5]/40 hover:bg-[#E7CEB5] border border-[#D1C1A8] transition-all text-left group active-press"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] shrink-0">
+                <Play className="w-4 h-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs sm:text-sm text-[#2E1E14]">Jump to Step</div>
+                <div className="text-[11px] text-[#2E1E14]/70">Fast-forward bake status</div>
+              </div>
+            </button>
+
+            <div className="pt-2 border-t border-[#D1C1A8]/60">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOptionsMenuOpen(false);
+                  if (window.confirm('Are you sure you want to end this baking session?')) {
+                    resetSession();
+                    onNavigateHome();
+                  }
+                }}
+                className="w-full flex items-center space-x-3 p-3 rounded-2xl bg-[#FAF5EE] hover:bg-[#E7CEB5]/60 border border-[#D1C1A8] transition-all text-left group active-press"
+              >
+                <div className="w-9 h-9 rounded-xl bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center text-[#986A4C] shrink-0">
+                  <RotateCcw className="w-4 h-4 text-[#986A4C]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-xs sm:text-sm text-[#986A4C]">Reset Bake</div>
+                  <div className="text-[11px] text-[#2E1E14]/70">End current session</div>
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </Modal>
 
