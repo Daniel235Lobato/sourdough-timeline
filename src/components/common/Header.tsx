@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = ({
             <Logo size={32} className="w-full h-full" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="font-serif font-extrabold text-[#2E1E14] text-[20px] tracking-tight leading-none">
+            <span className="font-serif font-extrabold text-xl sm:text-2xl text-[#2E1E14] tracking-tight leading-none">
               Levain
             </span>
           </div>

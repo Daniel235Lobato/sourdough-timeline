@@ -82,12 +82,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
       <div className="space-y-4 pt-1">
         <div className="flex items-center justify-between px-1 relative">
           <div>
-            <h3 className="font-serif text-lg sm:text-xl font-extrabold text-[#2E1E14]">
+            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
               Sourdough Journey
-            </h3>
-            <span className="text-xs text-[#2E1E14]/70 font-medium">
+            </h1>
+            <p className="text-sm text-[#2E1E14]/75 mt-0.5">
               {activeSession.steps.length} Milestones
-            </span>
+            </p>
           </div>
 
           {/* Options Button to open Centered Modal */}

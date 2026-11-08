@@ -43,10 +43,10 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#2E1E14] tracking-tight leading-tight">
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
             Sourdough Recipes
-          </h2>
-          <p className="text-xs text-[#2E1E14]/80 mt-0.5">
+          </h1>
+          <p className="text-sm sm:text-base text-[#2E1E14]/80 mt-1 leading-normal">
             Select a recipe or build your own custom formula
           </p>
         </div>

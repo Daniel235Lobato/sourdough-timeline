@@ -15,10 +15,10 @@ export const BakeHistoryView: React.FC = () => {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-[#2E1E14] tracking-tight leading-tight">
+          <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
             Bake Journal & Archive
-          </h2>
-          <p className="text-xs text-[#2E1E14]/75 mt-0.5">
+          </h1>
+          <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
             Track previous bakes, fermentation timing, and crumb ratings to master your bake
           </p>
         </div>

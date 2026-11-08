@@ -69,10 +69,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     <div className="w-full flex-1 flex flex-col justify-start max-w-md mx-auto space-y-3 animate-fade-in text-[#2E1E14]">
       {/* Screen Introduction & Prompt Header */}
       <div className="px-1 pt-0.5">
-        <h2 className="font-serif text-2xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
           Plan Your Bake
-        </h2>
-        <p className="text-xs text-[#2E1E14]/75 mt-0.5 leading-snug">
+        </h1>
+        <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
           Choose your starter point and recipe to begin your guided sourdough journey.
         </p>
       </div>
