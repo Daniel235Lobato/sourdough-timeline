@@ -178,38 +178,38 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
 
         {/* Recipe Metric Grid */}
-        <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5">
-          <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-3 text-center border border-[#D1C1A8]">
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#AD9677] tracking-wider block">Flour</span>
-            <p className="font-serif text-sm sm:text-lg font-extrabold text-[#2E1E14] mt-0.5">
+        <div className="grid grid-cols-5 gap-1 sm:gap-2">
+          <div className="bg-[#FAF5EE] rounded-xl sm:rounded-2xl px-1 py-2 sm:px-2 sm:py-3 text-center border border-[#D1C1A8] min-w-0 overflow-hidden">
+            <span className="text-[8.5px] sm:text-[10px] font-bold text-[#AD9677] tracking-tight sm:tracking-normal block truncate">Flour</span>
+            <p className="font-serif text-xs sm:text-base md:text-lg font-extrabold text-[#2E1E14] mt-0.5 truncate">
               {selectedRecipe.flourGrams}g
             </p>
           </div>
 
-          <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-3 text-center border border-[#D1C1A8]">
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#AD9677] tracking-wider block">Water</span>
-            <p className="font-serif text-sm sm:text-lg font-extrabold text-[#2E1E14] mt-0.5">
+          <div className="bg-[#FAF5EE] rounded-xl sm:rounded-2xl px-1 py-2 sm:px-2 sm:py-3 text-center border border-[#D1C1A8] min-w-0 overflow-hidden">
+            <span className="text-[8.5px] sm:text-[10px] font-bold text-[#AD9677] tracking-tight sm:tracking-normal block truncate">Water</span>
+            <p className="font-serif text-xs sm:text-base md:text-lg font-extrabold text-[#2E1E14] mt-0.5 truncate">
               {selectedRecipe.waterGrams}g
             </p>
           </div>
 
-          <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-3 text-center border border-[#D1C1A8]">
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#AD9677] tracking-wider block">Starter</span>
-            <p className="font-serif text-sm sm:text-lg font-extrabold text-[#2E1E14] mt-0.5">
+          <div className="bg-[#FAF5EE] rounded-xl sm:rounded-2xl px-1 py-2 sm:px-2 sm:py-3 text-center border border-[#D1C1A8] min-w-0 overflow-hidden">
+            <span className="text-[8.5px] sm:text-[10px] font-bold text-[#AD9677] tracking-tight sm:tracking-normal block truncate">Starter</span>
+            <p className="font-serif text-xs sm:text-base md:text-lg font-extrabold text-[#2E1E14] mt-0.5 truncate">
               {selectedRecipe.starterGrams}g
             </p>
           </div>
 
-          <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-3 text-center border border-[#D1C1A8]">
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#AD9677] tracking-wider block">Salt</span>
-            <p className="font-serif text-sm sm:text-lg font-extrabold text-[#2E1E14] mt-0.5">
+          <div className="bg-[#FAF5EE] rounded-xl sm:rounded-2xl px-1 py-2 sm:px-2 sm:py-3 text-center border border-[#D1C1A8] min-w-0 overflow-hidden">
+            <span className="text-[8.5px] sm:text-[10px] font-bold text-[#AD9677] tracking-tight sm:tracking-normal block truncate">Salt</span>
+            <p className="font-serif text-xs sm:text-base md:text-lg font-extrabold text-[#2E1E14] mt-0.5 truncate">
               {selectedRecipe.saltGrams ?? Math.round(selectedRecipe.flourGrams * 0.02)}g
             </p>
           </div>
 
-          <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-3 text-center border border-[#D1C1A8]">
-            <span className="text-[9px] sm:text-[10px] uppercase font-bold text-[#986A4C] tracking-wider block">Hydration</span>
-            <p className="font-serif text-sm sm:text-lg font-extrabold text-[#986A4C] mt-0.5">
+          <div className="bg-[#FAF5EE] rounded-xl sm:rounded-2xl px-1 py-2 sm:px-2 sm:py-3 text-center border border-[#D1C1A8] min-w-0 overflow-hidden">
+            <span className="text-[8.5px] sm:text-[10px] font-bold text-[#986A4C] tracking-tight sm:tracking-normal block truncate">Hydration</span>
+            <p className="font-serif text-xs sm:text-base md:text-lg font-extrabold text-[#986A4C] mt-0.5 truncate">
               {selectedRecipe.hydration}%
             </p>
           </div>
