@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { 
-  Clock, 
   ArrowRight, 
-  ChevronRight,
-  SlidersHorizontal
+  ChevronRight
 } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
 import { StartWhenModal } from './StartWhenModal';
@@ -29,18 +27,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
     onNavigateToTimeline();
   };
 
-  const saltGrams = selectedRecipe.saltGrams ?? Math.round(selectedRecipe.flourGrams * 0.02);
-
   return (
-    <div className="w-full flex-1 flex flex-col justify-center max-w-xl mx-auto animate-fade-in text-[#2E1E14]">
-      {/* Apple-Inspired Unified Main Card */}
-      <div className="relative rounded-[28px] bg-[#E7CEB5] p-4 sm:p-6 border border-[#D1C1A8] shadow-card overflow-hidden space-y-3.5 sm:space-y-4">
-        {/* Subtle Warm Highlight */}
-        <div className="absolute -top-24 -right-24 w-56 h-56 bg-[#FAF5EE]/60 rounded-full blur-3xl pointer-events-none" />
-
-        {/* 1. Compact Editorial Header */}
-        <div className="relative z-10 flex items-center space-x-3.5 px-0.5">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center shadow-2xs shrink-0">
+    <div className="w-full flex-1 flex flex-col justify-center max-w-md mx-auto animate-fade-in text-[#2E1E14]">
+      {/* Minimalist Main Card */}
+      <div className="rounded-[32px] bg-[#E7CEB5] p-6 sm:p-7 border border-[#D1C1A8] shadow-card space-y-5">
+        
+        {/* 1. Minimalist Centered Header */}
+        <div className="flex flex-col items-center text-center pt-1">
+          <div className="w-12 h-12 rounded-full bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center mb-3">
             <svg
               width="24"
               height="24"
@@ -91,94 +85,47 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </svg>
           </div>
 
-          <div className="min-w-0">
-            <h1 className="font-serif text-xl sm:text-2xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
-              Begin Your Bake
-            </h1>
-            <p className="text-xs text-[#2E1E14]/70 truncate mt-0.5">
-              Guided fermentation from starter to oven
-            </p>
-          </div>
+          <h1 className="font-serif text-2xl font-bold text-[#2E1E14] tracking-tight">
+            Begin Your Bake
+          </h1>
         </div>
 
-        {/* 2. Apple Inset Grouped Active Recipe Card */}
-        <div className="relative z-10 bg-[#FAF5EE] rounded-2xl p-3.5 sm:p-4 border border-[#D1C1A8] shadow-2xs space-y-3">
-          {/* Tappable Recipe Header Row */}
+        {/* 2. Clean Active Recipe & Loaves Card */}
+        <div className="bg-[#FAF5EE] rounded-2xl p-4 border border-[#D1C1A8] space-y-3">
           <button
             type="button"
             onClick={onNavigateToRecipes}
             className="w-full flex items-center justify-between text-left group active-press"
           >
             <div className="min-w-0 pr-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#986A4C] block leading-none mb-1">
-                Active Recipe
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#986A4C] block">
+                {selectedRecipe.hydration}% Hydration
               </span>
-              <h2 className="font-serif text-base sm:text-lg font-extrabold text-[#2E1E14] truncate leading-tight">
+              <h2 className="font-serif text-lg font-bold text-[#2E1E14] truncate mt-0.5">
                 {selectedRecipe.name}
               </h2>
             </div>
 
-            <div className="flex items-center space-x-1.5 shrink-0">
-              <span className="px-2.5 py-1 rounded-full bg-[#E7CEB5]/75 border border-[#D1C1A8] text-[11px] font-bold text-[#2E1E14]">
-                {selectedRecipe.hydration}% Hydration
-              </span>
-              <div className="w-7 h-7 rounded-full bg-[#E7CEB5]/50 group-hover:bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center transition-colors">
-                <ChevronRight className="w-3.5 h-3.5 text-[#2E1E14]" />
-              </div>
-            </div>
+            <span className="text-xs font-semibold text-[#986A4C] group-hover:text-[#2E1E14] flex items-center shrink-0 transition-colors">
+              <span>Change</span>
+              <ChevronRight className="w-4 h-4 ml-0.5" />
+            </span>
           </button>
 
-          {/* Clean 4-Column Hairline Formula Strip */}
-          <div className="grid grid-cols-4 divide-x divide-[#D1C1A8]/70 py-2.5 border-y border-[#D1C1A8]/60 text-center">
-            <div className="px-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#836A4D] block">
-                Flour
-              </span>
-              <span className="font-serif text-sm sm:text-base font-extrabold text-[#2E1E14] mt-0.5 block">
-                {selectedRecipe.flourGrams}g
-              </span>
-            </div>
-            <div className="px-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#836A4D] block">
-                Water
-              </span>
-              <span className="font-serif text-sm sm:text-base font-extrabold text-[#2E1E14] mt-0.5 block">
-                {selectedRecipe.waterGrams}g
-              </span>
-            </div>
-            <div className="px-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#836A4D] block">
-                Starter
-              </span>
-              <span className="font-serif text-sm sm:text-base font-extrabold text-[#2E1E14] mt-0.5 block">
-                {selectedRecipe.starterGrams}g
-              </span>
-            </div>
-            <div className="px-1">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#836A4D] block">
-                Salt
-              </span>
-              <span className="font-serif text-sm sm:text-base font-extrabold text-[#2E1E14] mt-0.5 block">
-                {saltGrams}g
-              </span>
-            </div>
-          </div>
-
-          {/* Batch Size Segmented Row */}
-          <div className="flex items-center justify-between pt-0.5">
-            <span className="text-xs font-bold text-[#2E1E14]/85">
-              Batch Size (Loaves)
+          <div className="pt-2.5 border-t border-[#D1C1A8]/60 flex items-center justify-between">
+            <span className="text-xs font-medium text-[#2E1E14]/75">
+              Loaves
             </span>
-            <div className="inline-flex p-0.5 rounded-xl bg-[#E7CEB5]/60 border border-[#D1C1A8]">
+            <div className="flex items-center space-x-1">
               {[1, 2, 3, 4].map(count => (
                 <button
                   key={count}
                   type="button"
                   onClick={() => scaleRecipeLoaves(selectedRecipe.id, count)}
-                  className={`w-8 h-7 rounded-[9px] text-xs font-bold transition-all active-press ${
+                  className={`w-8 h-7 rounded-lg text-xs font-bold transition-all active-press ${
                     selectedRecipe.loavesCount === count
-                      ? 'bg-[#2E1E14] text-[#FAF5EE] shadow-2xs'
-                      : 'text-[#2E1E14]/75 hover:text-[#2E1E14]'
+                      ? 'bg-[#2E1E14] text-[#FAF5EE]'
+                      : 'text-[#2E1E14]/65 hover:text-[#2E1E14] hover:bg-[#E7CEB5]/50'
                   }`}
                 >
                   {count}
@@ -188,75 +135,65 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </div>
 
-        {/* 3. iOS Segmented Sliding Toggle: Start from Feed vs Peak */}
-        <div className="relative z-10">
-          <div className="relative p-1 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] flex">
-            <div
-              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl bg-[#2E1E14] shadow-xs transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] pointer-events-none ${
-                startStage === 'peak' ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
-              }`}
-            />
+        {/* 3. Single-Line Animated Sliding Toggle */}
+        <div className="relative p-1 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] flex">
+          <div
+            className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl bg-[#2E1E14] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] pointer-events-none ${
+              startStage === 'peak' ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
+            }`}
+          />
 
-            <button
-              type="button"
-              onClick={() => setStartStage('feed')}
-              className={`relative z-10 w-1/2 py-2 px-2 text-center rounded-xl transition-colors duration-200 active-press select-none flex flex-col items-center justify-center ${
-                startStage === 'feed'
-                  ? 'text-[#FAF5EE]'
-                  : 'text-[#2E1E14]/75 hover:text-[#2E1E14]'
-              }`}
-            >
-              <span className="text-xs font-bold leading-tight">Start from Feed</span>
-              <span className={`text-[10px] leading-tight mt-0.5 transition-opacity ${startStage === 'feed' ? 'opacity-80' : 'opacity-60'}`}>
-                5–6h starter rise
-              </span>
-            </button>
+          <button
+            type="button"
+            onClick={() => setStartStage('feed')}
+            className={`relative z-10 w-1/2 py-2.5 text-center rounded-xl text-xs font-bold transition-colors duration-200 active-press select-none ${
+              startStage === 'feed'
+                ? 'text-[#FAF5EE]'
+                : 'text-[#2E1E14]/70 hover:text-[#2E1E14]'
+            }`}
+          >
+            Start from Feed
+          </button>
 
-            <button
-              type="button"
-              onClick={() => setStartStage('peak')}
-              className={`relative z-10 w-1/2 py-2 px-2 text-center rounded-xl transition-colors duration-200 active-press select-none flex flex-col items-center justify-center ${
-                startStage === 'peak'
-                  ? 'text-[#FAF5EE]'
-                  : 'text-[#2E1E14]/75 hover:text-[#2E1E14]'
-              }`}
-            >
-              <span className="text-xs font-bold leading-tight">Start from Peak</span>
-              <span className={`text-[10px] leading-tight mt-0.5 transition-opacity ${startStage === 'peak' ? 'opacity-80' : 'opacity-60'}`}>
-                Starter ripe, mix now
-              </span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setStartStage('peak')}
+            className={`relative z-10 w-1/2 py-2.5 text-center rounded-xl text-xs font-bold transition-colors duration-200 active-press select-none ${
+              startStage === 'peak'
+                ? 'text-[#FAF5EE]'
+                : 'text-[#2E1E14]/70 hover:text-[#2E1E14]'
+            }`}
+          >
+            Start from Peak
+          </button>
         </div>
 
-        {/* 4. Action Stack: Primary "Start Bake" + Symmetrical Secondary Row */}
-        <div className="relative z-10 space-y-2 pt-0.5">
+        {/* 4. Primary CTA & Minimalist Secondary Links */}
+        <div className="space-y-3.5 pt-1">
           <button
             type="button"
             onClick={handleQuickStartNow}
             className="group/btn w-full py-3.5 px-5 rounded-2xl bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] font-bold text-sm shadow-xs transition-all duration-200 active-press flex items-center justify-center space-x-2"
           >
-            <span className="tracking-wide">Start Bake</span>
+            <span>Start Bake</span>
             <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </button>
 
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center justify-center space-x-4 text-xs font-semibold text-[#2E1E14]/75">
             <button
               type="button"
               onClick={() => setIsStartWhenOpen(true)}
-              className="py-2.5 px-3 rounded-xl bg-[#FAF5EE] hover:bg-[#D1C1A8]/40 border border-[#D1C1A8] text-[#2E1E14] font-semibold text-xs flex items-center justify-center space-x-1.5 transition-all active-press"
+              className="hover:text-[#2E1E14] transition-colors active-press"
             >
-              <Clock className="w-3.5 h-3.5 text-[#986A4C] shrink-0" />
-              <span className="truncate">Schedule Time</span>
+              Schedule Time
             </button>
-
+            <span className="text-[#AD9677]">•</span>
             <button
               type="button"
               onClick={() => setIsStartFromStepOpen(true)}
-              className="py-2.5 px-3 rounded-xl bg-[#FAF5EE] hover:bg-[#D1C1A8]/40 border border-[#D1C1A8] text-[#2E1E14] font-semibold text-xs flex items-center justify-center space-x-1.5 transition-all active-press"
+              className="hover:text-[#2E1E14] transition-colors active-press"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#986A4C] shrink-0" />
-              <span className="truncate">Start at Step</span>
+              Start at Step
             </button>
           </div>
         </div>
