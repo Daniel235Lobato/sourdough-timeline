@@ -21,10 +21,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   const [isStartWhenOpen, setIsStartWhenOpen] = useState<boolean>(false);
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState<boolean>(false);
+  const [startStage, setStartStage] = useState<'feed' | 'peak'>('feed');
 
   const handleQuickStartNow = () => {
-    // Start forward schedule right now
-    startNewBake('start-when', new Date(), selectedRecipe.defaultRetardHours || 14);
+    // Start forward schedule right now from chosen starter stage
+    startNewBake('start-when', new Date(), selectedRecipe.defaultRetardHours || 14, selectedRecipe, startStage);
     onNavigateToTimeline();
   };
 
@@ -117,23 +118,38 @@ export const HomeView: React.FC<HomeViewProps> = ({
             A calm, step-by-step rhythm from starter feeding through folding, cold proof, and bake.
           </p>
 
-          {/* Subtle Minimalist Journey Flow */}
-          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 my-5 text-[11px] font-semibold text-[#2E1E14]">
-            <span className="px-2.5 py-1 rounded-full bg-[#FAF5EE] border border-[#D1C1A8]">
-              Feed
+          {/* Prior-to-Start Selection: Start from Feed vs Start from Peak */}
+          <div className="w-full max-w-sm my-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#986A4C] block mb-1.5 text-center">
+              Starter status prior to start:
             </span>
-            <span className="text-[#AD9677]">·</span>
-            <span className="px-2.5 py-1 rounded-full bg-[#FAF5EE] border border-[#D1C1A8]">
-              Fold
-            </span>
-            <span className="text-[#AD9677]">·</span>
-            <span className="px-2.5 py-1 rounded-full bg-[#FAF5EE] border border-[#D1C1A8]">
-              Cold Proof
-            </span>
-            <span className="text-[#AD9677]">·</span>
-            <span className="px-2.5 py-1 rounded-full bg-[#FAF5EE] border border-[#D1C1A8]">
-              Bake
-            </span>
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8]">
+              <button
+                type="button"
+                onClick={() => setStartStage('feed')}
+                className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-center flex flex-col items-center justify-center space-y-0.5 active-press ${
+                  startStage === 'feed'
+                    ? 'bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                    : 'text-[#2E1E14]/75 hover:text-[#2E1E14] hover:bg-[#E7CEB5]/50'
+                }`}
+              >
+                <span>🌾 Start from Feed</span>
+                <span className="text-[10px] font-normal opacity-75">5–6h starter rise</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStartStage('peak')}
+                className={`py-2 px-2.5 rounded-xl text-xs font-bold transition-all text-center flex flex-col items-center justify-center space-y-0.5 active-press ${
+                  startStage === 'peak'
+                    ? 'bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                    : 'text-[#2E1E14]/75 hover:text-[#2E1E14] hover:bg-[#E7CEB5]/50'
+                }`}
+              >
+                <span>⚡ Start from Peak</span>
+                <span className="text-[10px] font-normal opacity-75">Starter ripe, mix now</span>
+              </button>
+            </div>
           </div>
 
           {/* Soothing, Clean Actions */}
@@ -142,7 +158,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
               onClick={handleQuickStartNow}
               className="group/btn w-full py-3.5 px-6 rounded-2xl bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] font-bold text-sm sm:text-base shadow-sm transition-all duration-200 active-press flex items-center justify-center space-x-2"
             >
-              <span className="tracking-wide">Start Bake Now</span>
+              <span className="tracking-wide">
+                {startStage === 'peak' ? 'Start Bake Now (from Peak)' : 'Start Bake Now (from Feed)'}
+              </span>
               <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
             </button>
 

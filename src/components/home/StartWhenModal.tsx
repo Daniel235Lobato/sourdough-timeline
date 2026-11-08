@@ -15,7 +15,7 @@ import { format, addDays, addMinutes, setHours, setMinutes } from 'date-fns';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Modal } from '../common/Modal';
 import { Recipe } from '../../types/timeline';
-import { calculateForwardSchedule } from '../../engine/scheduler';
+import { calculateForwardSchedule, startFromChosenStep } from '../../engine/scheduler';
 
 interface StartWhenModalProps {
   isOpen: boolean;
@@ -88,6 +88,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
 
   const [selectedDateStr, setSelectedDateStr] = useState<string>(format(defaultDate, 'yyyy-MM-dd'));
   const [coldRetardHours, setColdRetardHours] = useState<number>(selectedRecipe.defaultRetardHours || 14);
+  const [startFrom, setStartFrom] = useState<'feed' | 'peak'>('feed');
   
   // Seed amount selection: 15, 20, 30, or custom
   const [selectedSeedPreset, setSelectedSeedPreset] = useState<number | 'custom'>(15);
@@ -117,10 +118,16 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
 
       const recipeToUse: Recipe = {
         ...selectedRecipe,
-        customSeedGrams: activeSeedAmount
+        customSeedGrams: startFrom === 'feed' ? activeSeedAmount : undefined
       };
 
-      const steps = calculateForwardSchedule(recipeToUse, startDate, coldRetardHours);
+      const mixIdx = selectedRecipe.steps.findIndex(s => s.phase === 'mix' || s.id === 'mix-dough');
+      const peakStepIdx = mixIdx !== -1 ? mixIdx : 2;
+
+      const steps = startFrom === 'peak'
+        ? startFromChosenStep(recipeToUse, peakStepIdx, startDate, coldRetardHours)
+        : calculateForwardSchedule(recipeToUse, startDate, coldRetardHours);
+
       if (!steps || steps.length === 0) return null;
 
       const retardIndex = steps.findIndex(s => s.isColdRetard);
@@ -128,7 +135,10 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
       const readyDate = readyStep?.endTime;
 
       // Active phase steps: after starter feeding and before dough rests in cold retard
-      const activeSteps = steps.filter((_, idx) => idx > 0 && (retardIndex === -1 || idx < retardIndex));
+      const activeSteps = startFrom === 'peak'
+        ? steps.filter((_, idx) => idx >= peakStepIdx && (retardIndex === -1 || idx < retardIndex))
+        : steps.filter((_, idx) => idx > 0 && (retardIndex === -1 || idx < retardIndex));
+
       const firstActiveStep = activeSteps[0];
       const lastActiveStep = activeSteps[activeSteps.length - 1];
       const fridgeStep = retardIndex !== -1 ? steps[retardIndex] : null;
@@ -156,7 +166,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
     } catch {
       return null;
     }
-  }, [selectedDateStr, selectedTimeStr, coldRetardHours, selectedRecipe, activeSeedAmount]);
+  }, [selectedDateStr, selectedTimeStr, coldRetardHours, selectedRecipe, activeSeedAmount, startFrom]);
 
   const handleApplyRecommendedWakeHours = () => {
     const tomorrow = addDays(new Date(), 1);
@@ -178,10 +188,10 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
 
     const recipeToUse: Recipe = {
       ...selectedRecipe,
-      customSeedGrams: activeSeedAmount
+      customSeedGrams: startFrom === 'feed' ? activeSeedAmount : undefined
     };
 
-    startNewBake('start-when', startDate, coldRetardHours, recipeToUse);
+    startNewBake('start-when', startDate, coldRetardHours, recipeToUse, startFrom);
     onTimelineBuilt();
     onClose();
   };
@@ -213,6 +223,50 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
       </div>
 
       <div className="mt-4 space-y-3.5">
+        {/* Starting Point Selection: Start from Feed vs Start from Peak */}
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] mb-1.5">
+            Starter Status Prior to Start
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setStartFrom('feed')}
+              className={`p-2.5 rounded-xl border transition-all text-left flex flex-col active-press ${
+                startFrom === 'feed'
+                  ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                  : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
+              }`}
+            >
+              <span className="font-bold text-xs flex items-center space-x-1">
+                <span>🌾</span>
+                <span>Start from Feed</span>
+              </span>
+              <span className={`text-[10px] mt-0.5 ${startFrom === 'feed' ? 'text-[#FAF5EE]/80' : 'text-[#2E1E14]/70'}`}>
+                Needs 5–6h levain rise
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStartFrom('peak')}
+              className={`p-2.5 rounded-xl border transition-all text-left flex flex-col active-press ${
+                startFrom === 'peak'
+                  ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                  : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
+              }`}
+            >
+              <span className="font-bold text-xs flex items-center space-x-1">
+                <span>⚡</span>
+                <span>Start from Peak</span>
+              </span>
+              <span className={`text-[10px] mt-0.5 ${startFrom === 'peak' ? 'text-[#FAF5EE]/80' : 'text-[#2E1E14]/70'}`}>
+                Starter is ripe; mix now
+              </span>
+            </button>
+          </div>
+        </div>
+
         {/* Date Selection */}
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] mb-1.5">
@@ -264,7 +318,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
         {/* Time Selection */}
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] mb-1.5">
-            Start Time (Feed Starter)
+            Start Time {startFrom === 'peak' ? '(Mix Dough)' : '(Feed Starter)'}
           </label>
           <div className="grid grid-cols-3 gap-2 mb-2">
             {suggestedTimes.map(({ value, label }) => (
@@ -290,68 +344,70 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
           />
         </div>
 
-        {/* Starting Seed Starter Amount (Compact 1-Row Selection) */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] flex items-center space-x-1.5">
-              <FlaskConical className="w-3.5 h-3.5 text-[#986A4C]" />
-              <span>Starting Seed Starter</span>
-            </label>
-            <span className="text-xs font-mono font-bold text-[#986A4C]">
-              {activeSeedAmount}g seed
-            </span>
-          </div>
+        {/* Starting Seed Starter Amount (Only needed if starting from Feed) */}
+        {startFrom === 'feed' && (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] flex items-center space-x-1.5">
+                <FlaskConical className="w-3.5 h-3.5 text-[#986A4C]" />
+                <span>Starting Seed Starter</span>
+              </label>
+              <span className="text-xs font-mono font-bold text-[#986A4C]">
+                {activeSeedAmount}g seed
+              </span>
+            </div>
 
-          <div className="grid grid-cols-4 gap-2">
-            {[15, 20, 30].map(grams => (
-              <button
-                key={grams}
-                type="button"
-                onClick={() => setSelectedSeedPreset(grams)}
-                className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press ${
-                  selectedSeedPreset === grams
-                    ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
-                    : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
-                }`}
-              >
-                {grams}g
-              </button>
-            ))}
+            <div className="grid grid-cols-4 gap-2">
+              {[15, 20, 30].map(grams => (
+                <button
+                  key={grams}
+                  type="button"
+                  onClick={() => setSelectedSeedPreset(grams)}
+                  className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all text-center active-press ${
+                    selectedSeedPreset === grams
+                      ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                      : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
+                  }`}
+                >
+                  {grams}g
+                </button>
+              ))}
 
-            {/* Custom Option: Button or Active Inline Input */}
-            {selectedSeedPreset === 'custom' ? (
-              <div className="py-1 px-1.5 rounded-xl border border-[#2E1E14] bg-[#FAF5EE] shadow-xs flex items-center justify-center space-x-0.5">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  autoFocus
-                  placeholder="25"
-                  value={customSeedGrams}
-                  onChange={(e) => {
-                    const onlyDigits = e.target.value.replace(/[^0-9]/g, '');
-                    setCustomSeedGrams(onlyDigits);
-                  }}
-                  onBlur={() => {
-                    if (!customSeedGrams || parseInt(customSeedGrams, 10) < 1) {
-                      setCustomSeedGrams('25');
-                    }
-                  }}
-                  className="w-9 text-center font-mono font-bold text-xs bg-transparent text-[#2E1E14] focus:outline-none"
-                />
-                <span className="text-[11px] font-bold text-[#2E1E14]">g</span>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setSelectedSeedPreset('custom')}
-                className="py-2 px-1 rounded-xl text-xs font-bold border border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8] transition-all text-center active-press"
-              >
-                Custom
-              </button>
-            )}
+              {/* Custom Option: Button or Active Inline Input */}
+              {selectedSeedPreset === 'custom' ? (
+                <div className="py-1 px-1.5 rounded-xl border border-[#2E1E14] bg-[#FAF5EE] shadow-xs flex items-center justify-center space-x-0.5">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoFocus
+                    placeholder="25"
+                    value={customSeedGrams}
+                    onChange={(e) => {
+                      const onlyDigits = e.target.value.replace(/[^0-9]/g, '');
+                      setCustomSeedGrams(onlyDigits);
+                    }}
+                    onBlur={() => {
+                      if (!customSeedGrams || parseInt(customSeedGrams, 10) < 1) {
+                        setCustomSeedGrams('25');
+                      }
+                    }}
+                    className="w-9 text-center font-mono font-bold text-xs bg-transparent text-[#2E1E14] focus:outline-none"
+                  />
+                  <span className="text-[11px] font-bold text-[#2E1E14]">g</span>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setSelectedSeedPreset('custom')}
+                  className="py-2 px-1 rounded-xl text-xs font-bold border border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8] transition-all text-center active-press"
+                >
+                  Custom
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Cold Retard Slider */}
         <div className="p-3 bg-[#E7CEB5] rounded-2xl border border-[#D1C1A8] space-y-1.5">
@@ -430,7 +486,9 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
             {/* Quick 3-Stage Milestone Breadcrumb */}
             <div className="grid grid-cols-3 gap-1.5 pt-1 text-[10px]">
               <div className="bg-[#FAF5EE] p-2 rounded-xl border border-[#D1C1A8] text-center">
-                <span className="text-[#AD9677] block font-bold">1. Feed Starter</span>
+                <span className="text-[#AD9677] block font-bold">
+                  {startFrom === 'peak' ? '1. Mix Dough' : '1. Feed Starter'}
+                </span>
                 <span className="font-mono font-extrabold text-[#2E1E14] text-xs">
                   {format(projectedSchedule.startDate, 'h:mm a')}
                 </span>
@@ -458,7 +516,9 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
           onClick={handleBuildTimeline}
           className="w-full py-3.5 px-4 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-2xl font-bold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all active-press"
         >
-          <span className="tracking-wide">Start Bake</span>
+          <span className="tracking-wide">
+            {startFrom === 'peak' ? 'Start Bake (from Peak)' : 'Start Bake (from Feed)'}
+          </span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>

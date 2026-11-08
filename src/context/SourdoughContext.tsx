@@ -36,7 +36,7 @@ interface SourdoughContextType {
   setCustomPushServerUrl: (url: string) => void;
 
   // Core Actions
-  startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe) => void;
+  startNewBake: (mode: ScheduleMode, targetDate: Date, coldRetardHours?: number, recipeToUse?: Recipe, startFrom?: 'feed' | 'peak') => void;
   startCurrentStepNow: () => void;
   completeCurrentStep: () => void;
   advanceToStepIndex: (index: number) => void;
@@ -335,16 +335,24 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     mode: ScheduleMode,
     targetDate: Date,
     coldRetardHours: number = 14,
-    recipeToUse: Recipe = selectedRecipe
+    recipeToUse: Recipe = selectedRecipe,
+    startFrom: 'feed' | 'peak' = 'feed'
   ) => {
     const fullRecipe = getRecipeWithSteps(recipeToUse);
     let calculatedSteps = [];
     let startTime: Date;
     let targetBakeBy: Date | undefined;
+    let initialStepIndex = 0;
 
     if (mode === 'start-when') {
       startTime = targetDate;
-      calculatedSteps = calculateForwardSchedule(fullRecipe, startTime, coldRetardHours);
+      if (startFrom === 'peak') {
+        const mixIdx = fullRecipe.steps.findIndex(s => s.phase === 'mix' || s.id === 'mix-dough');
+        initialStepIndex = mixIdx !== -1 ? mixIdx : 0;
+        calculatedSteps = startFromChosenStep(fullRecipe, initialStepIndex, startTime, coldRetardHours);
+      } else {
+        calculatedSteps = calculateForwardSchedule(fullRecipe, startTime, coldRetardHours);
+      }
       targetBakeBy = calculatedSteps[calculatedSteps.length - 1]?.endTime;
     } else {
       targetBakeBy = targetDate;
@@ -362,7 +370,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       targetBakeByTime: targetBakeBy,
       coldRetardHours,
       steps: calculatedSteps,
-      currentStepIndex: 0,
+      currentStepIndex: initialStepIndex,
       startedAt: new Date(),
       isCompleted: false,
       flourGrams: fullRecipe.flourGrams,

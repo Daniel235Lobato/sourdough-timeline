@@ -222,7 +222,8 @@ export function startFromChosenStep(
   const recipe = getRecipeWithSteps(recipeInput);
   const fullSteps = calculateForwardSchedule(recipe, currentRealTime, coldRetardHours);
 
-  // Mark previous steps as completed
+  // Mark previous steps as completed and chain active and upcoming steps from currentRealTime
+  let cursor = currentRealTime;
   return fullSteps.map((step, idx) => {
     if (idx < stepIndex) {
       return {
@@ -231,16 +232,24 @@ export function startFromChosenStep(
         actualEndTime: subMinutes(currentRealTime, (stepIndex - idx) * 30)
       };
     } else if (idx === stepIndex) {
+      const start = currentRealTime;
+      const end = addMinutes(start, step.durationMinutes);
+      cursor = end;
       return {
         ...step,
         status: 'current' as const,
-        startTime: currentRealTime,
-        endTime: addMinutes(currentRealTime, step.durationMinutes)
+        startTime: start,
+        endTime: end
       };
     } else {
+      const start = cursor;
+      const end = addMinutes(start, step.durationMinutes);
+      cursor = end;
       return {
         ...step,
-        status: 'upcoming' as const
+        status: 'upcoming' as const,
+        startTime: start,
+        endTime: end
       };
     }
   });
