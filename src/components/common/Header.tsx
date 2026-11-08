@@ -41,12 +41,9 @@ export const Header: React.FC<HeaderProps> = ({
             <Logo size={32} className="w-full h-full" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="font-serif font-extrabold text-[#2E1E14] text-[19px] tracking-tight leading-none">
+            <span className="font-serif font-extrabold text-[#2E1E14] text-[20px] tracking-tight leading-none">
               Levain
             </span>
-            <p className="font-serif italic text-[10px] text-[#986A4C] tracking-wide mt-0.5 leading-none">
-              Sourdough Baking Made Easy
-            </p>
           </div>
         </button>
 
