@@ -46,6 +46,8 @@ interface SourdoughContextType {
   updateColdRetardHours: (newHours: number) => void;
   finishAndSaveBake: (rating: number, notes: string, ambientTemp?: number, flourType?: string) => void;
   resetSession: () => void;
+  deleteHistoryEntry: (id: string) => void;
+  clearAllHistory: () => void;
   
   // Recipe Management
   saveRecipe: (recipe: Recipe) => void;
@@ -715,6 +717,20 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, [cancelRemotePush]);
 
   /**
+   * Delete single bake history entry
+   */
+  const deleteHistoryEntry = useCallback((id: string) => {
+    setBakeHistory(prev => prev.filter(entry => entry.id !== id));
+  }, []);
+
+  /**
+   * Clear all bake history entries
+   */
+  const clearAllHistory = useCallback(() => {
+    setBakeHistory([]);
+  }, []);
+
+  /**
    * Recipe Management
    */
   const saveRecipe = useCallback((recipe: Recipe) => {
@@ -830,6 +846,8 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       updateColdRetardHours,
       finishAndSaveBake,
       resetSession,
+      deleteHistoryEntry,
+      clearAllHistory,
       saveRecipe,
       deleteRecipe,
       scaleRecipeLoaves,
