@@ -79,68 +79,57 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* Main Bake Card */}
       <div className="rounded-3xl bg-[#E7CEB5] p-4 sm:p-5 border border-[#D1C1A8] shadow-card space-y-3.5">
-        
-        {/* 1. Header with Emblem, Title & Hydration Badge */}
-        <div className="flex items-center space-x-3 px-0.5">
-          <div className="w-10 h-10 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] flex items-center justify-center shrink-0 shadow-2xs">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 48 48"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-[#2E1E14]"
-            >
-              <path d="M18 13C18 11 20 10 20 8" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
-              <path d="M24 11C24 9 26 8 26 6" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
-              <path d="M30 13C30 11 32 10 32 8" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
-              <path
-                d="M9 34C9 22.5 15 17.5 24 17.5C33 17.5 39 22.5 39 34H9Z"
-                fill="#D1C1A8"
-                fillOpacity="0.4"
-                stroke="#2E1E14"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path d="M15.5 26C19 22 29 22 32.5 26" stroke="#986A4C" strokeWidth="2.2" strokeLinecap="round" />
-              <path d="M7 34H41" stroke="#2E1E14" strokeWidth="2.2" strokeLinecap="round" />
-            </svg>
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <h1 className="font-serif text-lg sm:text-xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
-                Begin Your Bake
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-[#FAF5EE] border border-[#D1C1A8] text-[11px] font-bold text-[#986A4C] shrink-0">
-                {selectedRecipe.hydration}% Hydration
-              </span>
-            </div>
-            <p className="text-xs text-[#2E1E14]/75 mt-0.5 leading-snug">
-              {selectedRecipe.steps.length} guided steps · {retardHours}h cold proof
-            </p>
-          </div>
-        </div>
-
-        {/* 2. Active Recipe Details (Full Name, Weights & Loaves) */}
+        {/* Active Recipe Card */}
         <div className="bg-[#FAF5EE] rounded-2xl p-3.5 border border-[#D1C1A8] space-y-3">
-          {/* Active Recipe Row */}
+          {/* Active Recipe Row with Emblem & Badges */}
           <button
             type="button"
             onClick={onNavigateToRecipes}
             className="w-full flex items-center justify-between text-left group active-press"
           >
-            <div className="min-w-0 pr-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#986A4C] block leading-none">
-                Active Recipe
-              </span>
-              <h2 className="font-serif text-base sm:text-lg font-extrabold text-[#2E1E14] mt-1 leading-snug">
-                {selectedRecipe.name}
-              </h2>
+            <div className="flex items-center space-x-3 min-w-0 pr-2">
+              <div className="w-10 h-10 rounded-2xl bg-[#E7CEB5]/50 border border-[#D1C1A8] flex items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 48 48"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-[#2E1E14]"
+                >
+                  <path d="M18 13C18 11 20 10 20 8" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M24 11C24 9 26 8 26 6" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
+                  <path d="M30 13C30 11 32 10 32 8" stroke="#AD9677" strokeWidth="2" strokeLinecap="round" />
+                  <path
+                    d="M9 34C9 22.5 15 17.5 24 17.5C33 17.5 39 22.5 39 34H9Z"
+                    fill="#D1C1A8"
+                    fillOpacity="0.4"
+                    stroke="#2E1E14"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M15.5 26C19 22 29 22 32.5 26" stroke="#986A4C" strokeWidth="2.2" strokeLinecap="round" />
+                  <path d="M7 34H41" stroke="#2E1E14" strokeWidth="2.2" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              <div className="min-w-0">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#986A4C] block leading-none">
+                    Active Recipe
+                  </span>
+                  <span className="text-[10px] text-[#2E1E14]/60 font-semibold leading-none">
+                    • {selectedRecipe.hydration}% Hydration
+                  </span>
+                </div>
+                <h2 className="font-serif text-base sm:text-lg font-extrabold text-[#2E1E14] mt-0.5 leading-snug">
+                  {selectedRecipe.name}
+                </h2>
+              </div>
             </div>
 
-            <span className="text-xs font-semibold text-[#986A4C] group-hover:text-[#2E1E14] flex items-center shrink-0 ml-2 transition-colors px-2.5 py-1 rounded-xl bg-[#E7CEB5]/50 border border-[#D1C1A8]">
+            <span className="text-xs font-semibold text-[#986A4C] group-hover:text-[#2E1E14] flex items-center shrink-0 transition-colors px-2.5 py-1 rounded-xl bg-[#E7CEB5]/50 border border-[#D1C1A8]">
               <span>Change</span>
               <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
             </span>
