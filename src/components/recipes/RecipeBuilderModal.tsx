@@ -46,24 +46,15 @@ export const RecipeBuilderModal: React.FC<RecipeBuilderModalProps> = ({
       },
       {
         id: `step-${Date.now()}-2`,
-        name: 'Mix Dough & Autolyse',
+        name: 'Mix Dough & Salt',
         shortName: 'Mix Dough',
         phase: 'mix',
         icon: 'Mix',
         durationMinutes: 30,
-        description: 'Incorporate flour, water, and active starter.'
+        description: 'Combine flour, water, peaked starter, and salt. Rest 30 min before first fold.'
       },
       {
         id: `step-${Date.now()}-3`,
-        name: 'Add Salt',
-        shortName: 'Add Salt',
-        phase: 'mix',
-        icon: 'Salt',
-        durationMinutes: 30,
-        description: 'Incorporate sea salt.'
-      },
-      {
-        id: `step-${Date.now()}-4`,
         name: 'Stretch & Fold Sets',
         shortName: 'Stretch & Folds',
         phase: 'ferment',

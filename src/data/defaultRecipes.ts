@@ -75,38 +75,22 @@ export const DEFAULT_RECIPES: Recipe[] = [
       },
       {
         id: 'mix-dough',
-        name: 'Mix Dough & Autolyse',
+        name: 'Mix Dough & Salt',
         shortName: 'Mix Dough',
         phase: 'mix',
         icon: 'Mix',
-        durationMinutes: 30, // 30 min rest before salt
-        description: 'Combine flour, water, and active starter. Allow flour to hydrate.',
+        durationMinutes: 30, // 30 min rest before Fold #1
+        description: 'Combine flour, water, peaked starter, and salt into a cohesive dough.',
         detailedInstructions: [
-          'In a mixing bowl, disperse peaked starter into warm water.',
-          'Add flour. Mix by hand or dough scraper until all flour is fully hydrated (shaggy mass).',
-          'Cover bowl with a damp towel and rest for 30 minutes to develop gluten and enzymatic activity.'
+          'In a mixing bowl, disperse peaked starter into warm water (~80°F / 27°C).',
+          'Add flour and fine sea salt.',
+          'Mix by hand or dough scraper until all dry flour is absorbed and a shaggy cohesive dough forms.',
+          'Cover bowl with a damp towel and rest for 30 minutes before Fold #1.'
         ],
         ingredientsUsed: [
           { name: 'Bread Flour', amount: 500, unit: 'g' },
           { name: 'Water (~80°F/27°C)', amount: 325, unit: 'g' },
-          { name: 'Peaked Starter', amount: 100, unit: 'g' }
-        ]
-      },
-      {
-        id: 'add-salt',
-        name: 'Add Salt',
-        shortName: 'Add Salt',
-        phase: 'mix',
-        icon: 'Salt',
-        durationMinutes: 30, // 30 min rest before S&F 1
-        description: 'Incorporate salt to strengthen gluten and control fermentation.',
-        detailedInstructions: [
-          'Sprinkle fine sea salt evenly over the dough surface (optionally with 5g splash of water).',
-          'Dimple and pinch the salt into the dough with your fingers.',
-          'Perform slap-and-folds or bowl squeezes for 2–3 minutes until smooth and elastic.',
-          'Cover and rest for 30 minutes before the first Stretch & Fold.'
-        ],
-        ingredientsUsed: [
+          { name: 'Peaked Starter', amount: 100, unit: 'g' },
           { name: 'Fine Sea Salt', amount: 10, unit: 'g' }
         ]
       },
@@ -397,7 +381,8 @@ export function getRecipeWithSteps(recipe: Recipe): Recipe {
       step.ingredientsUsed = [
         { name: 'Flour', amount: recipe.flourGrams, unit: 'g' },
         { name: 'Water', amount: recipe.waterGrams, unit: 'g' },
-        { name: 'Peaked Starter', amount: recipe.starterGrams, unit: 'g' }
+        { name: 'Peaked Starter', amount: recipe.starterGrams, unit: 'g' },
+        { name: 'Fine Sea Salt', amount: recipe.saltGrams ?? Math.round(recipe.flourGrams * 0.02), unit: 'g' }
       ];
     }
 

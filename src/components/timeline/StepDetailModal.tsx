@@ -46,7 +46,7 @@ export const StepDetailModal: React.FC<StepDetailModalProps> = ({
       case 'starter':
         return { label: 'STARTER BUILD', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'mix':
-        return { label: 'MIX & AUTOLYSE', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
+        return { label: 'MIX & REST', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'ferment':
         return { label: 'BULK FERMENT', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'shape':
