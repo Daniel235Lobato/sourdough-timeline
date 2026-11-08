@@ -78,27 +78,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
         />
       )}
 
-      {/* Quick Action Toolbar (Responsive Grid, Never Overflows on iPhone) */}
+      {/* Subtle Utility Toolbar */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-xs">
         <button
           onClick={() => setIsRunningBehindOpen(true)}
-          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] font-bold text-[#2E1E14] hover:bg-[#FAF5EE] shadow-xs transition-all active-press truncate"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] font-semibold text-[#2E1E14]/80 hover:text-[#2E1E14] hover:bg-[#E7CEB5] transition-all active-press truncate"
         >
           <Clock className="w-3.5 h-3.5 text-[#986A4C] flex-shrink-0" />
-          <span className="truncate">Running Behind</span>
+          <span className="truncate">Adjust Schedule</span>
         </button>
 
         <button
           onClick={() => setIsAdjustRetardOpen(!isAdjustRetardOpen)}
-          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] font-bold text-[#2E1E14] hover:bg-[#FAF5EE] shadow-xs transition-all active-press truncate"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] font-semibold text-[#2E1E14]/80 hover:text-[#2E1E14] hover:bg-[#E7CEB5] transition-all active-press truncate"
         >
           <Snowflake className="w-3.5 h-3.5 text-[#986A4C] flex-shrink-0" />
-          <span className="truncate">Retard ({activeSession.coldRetardHours}h)</span>
+          <span className="truncate">Fridge Retard ({activeSession.coldRetardHours}h)</span>
         </button>
 
         <button
           onClick={() => setIsStartFromStepOpen(true)}
-          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] font-bold text-[#2E1E14] hover:bg-[#FAF5EE] shadow-xs transition-all active-press truncate"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] font-semibold text-[#2E1E14]/80 hover:text-[#2E1E14] hover:bg-[#E7CEB5] transition-all active-press truncate"
         >
           <Play className="w-3.5 h-3.5 text-[#986A4C] flex-shrink-0" />
           <span className="truncate">Jump Step</span>
@@ -111,7 +111,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ onNavigateHome }) =>
               onNavigateHome();
             }
           }}
-          className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] font-bold text-[#2E1E14]/80 hover:text-[#986A4C] hover:bg-[#FAF5EE] shadow-xs transition-all active-press truncate"
+          className="flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] font-semibold text-[#2E1E14]/65 hover:text-[#986A4C] hover:bg-[#E7CEB5] transition-all active-press truncate"
         >
           <RotateCcw className="w-3.5 h-3.5 flex-shrink-0" />
           <span className="truncate">Reset</span>
