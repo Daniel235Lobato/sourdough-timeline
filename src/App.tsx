@@ -65,17 +65,19 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 const MainAppContent: React.FC = () => {
   const { activeSession } = useSourdough();
   const [activeTab, setActiveTab] = useState<string>(activeSession ? 'timeline' : 'home');
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
 
   return (
-    <div className="min-h-screen bg-[#FAF5EE] text-[#2E1E14] flex flex-col font-sans selection:bg-[#D1C1A8] selection:text-[#2E1E14] w-full max-w-full overflow-x-hidden">
+    <div className="min-h-dvh bg-[#FAF5EE] text-[#2E1E14] flex flex-col font-sans selection:bg-[#D1C1A8] selection:text-[#2E1E14] w-full max-w-full overflow-x-hidden">
       {/* Sticky Header */}
-      <Header activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        onOpenNotifications={() => setIsNotificationModalOpen(true)}
+      />
 
       {/* Main Tab Screen Container */}
-      <main className="flex-1 w-full max-w-xl mx-auto pt-2 pb-24 px-3 sm:px-4 min-w-0 overflow-x-hidden box-border">
-        {/* Device & PWA Step Notification Banner */}
-        <NotificationBanner />
-
+      <main className="flex-1 flex flex-col w-full max-w-xl mx-auto pt-2.5 pb-24 px-3.5 sm:px-4 min-w-0 overflow-x-hidden box-border">
         {(activeTab === 'home' || (!activeSession && activeTab === 'timeline')) && (
           <HomeView
             onNavigateToTimeline={() => setActiveTab('timeline')}
@@ -99,6 +101,12 @@ const MainAppContent: React.FC = () => {
           <HydrationCalculatorView onApplyFormula={() => setActiveTab('home')} />
         )}
       </main>
+
+      {/* Notification & PWA Setup Modal */}
+      <NotificationBanner
+        isOpen={isNotificationModalOpen}
+        onClose={() => setIsNotificationModalOpen(false)}
+      />
 
       {/* Mobile-First Bottom Navigation Bar */}
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />

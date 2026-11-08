@@ -1,15 +1,20 @@
 import React from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Bell, BellRing } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
 import { Logo } from './Logo';
 
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onOpenNotifications?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
-  const { activeSession } = useSourdough();
+export const Header: React.FC<HeaderProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenNotifications
+}) => {
+  const { activeSession, isPushSubscribed } = useSourdough();
 
   // Calculate session completion percentage
   let progressPercent = 0;
@@ -25,29 +30,29 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-[#FAF5EE]/95 backdrop-blur-md border-b border-[#D1C1A8] px-4 py-3 max-w-2xl mx-auto w-full transition-all">
+    <header className="sticky top-0 z-30 bg-[#FAF5EE]/90 backdrop-blur-xl border-b border-[#D1C1A8]/70 px-4 py-2.5 max-w-2xl mx-auto w-full transition-all">
       <div className="flex items-center justify-between">
         {/* Brand / Logo */}
         <button 
           onClick={() => setActiveTab(activeSession ? 'timeline' : 'home')}
           className="flex items-center space-x-2.5 text-left group active-press"
         >
-          <div className="w-10 h-10 rounded-2xl bg-[#E7CEB5] border border-[#AD9677]/60 flex items-center justify-center p-1 shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
-            <Logo size={36} className="w-full h-full" />
+          <div className="w-9 h-9 rounded-xl bg-[#E7CEB5] border border-[#D1C1A8] flex items-center justify-center p-1 shadow-2xs group-hover:scale-105 transition-transform overflow-hidden">
+            <Logo size={32} className="w-full h-full" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="font-serif font-extrabold text-[#2E1E14] text-[21px] tracking-tight leading-none">
+            <span className="font-serif font-extrabold text-[#2E1E14] text-[19px] tracking-tight leading-none">
               Levain
             </span>
-            <p className="font-serif italic text-[11px] text-[#986A4C] tracking-wide mt-1 leading-none">
+            <p className="font-serif italic text-[10px] text-[#986A4C] tracking-wide mt-0.5 leading-none">
               Sourdough Baking Made Easy
             </p>
           </div>
         </button>
 
-        {/* Live Ambient Status */}
-        {activeSession && (
-          <div className="flex items-center space-x-2">
+        {/* Right Controls: Live Step Pill & Minimalist Notification Bell */}
+        <div className="flex items-center space-x-2">
+          {activeSession && (
             <button
               onClick={() => setActiveTab('timeline')}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active-press ${
@@ -59,13 +64,32 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               <MapPin className="w-3.5 h-3.5" />
               <span>Step {currentStepNum}/{totalSteps}</span>
             </button>
-          </div>
-        )}
+          )}
+
+          {onOpenNotifications && (
+            <button
+              type="button"
+              onClick={onOpenNotifications}
+              className="relative w-9 h-9 rounded-full bg-[#E7CEB5]/70 hover:bg-[#E7CEB5] border border-[#D1C1A8] text-[#2E1E14] flex items-center justify-center transition-all active-press"
+              title="Step Alerts & Notification Setup"
+              aria-label="Step Alerts & Notification Setup"
+            >
+              {isPushSubscribed ? (
+                <BellRing className="w-4 h-4 text-[#2E1E14]" />
+              ) : (
+                <>
+                  <Bell className="w-4 h-4 text-[#2E1E14]" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#986A4C] ring-2 ring-[#FAF5EE]" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Progress Bar when Bake is Active */}
       {activeSession && !activeSession.isCompleted && (
-        <div className="mt-2.5 pt-2 border-t border-[#D1C1A8]">
+        <div className="mt-2 pt-2 border-t border-[#D1C1A8]/70">
           <div className="flex items-center justify-between text-[11px] font-medium text-[#2E1E14] mb-1">
             <span className="truncate max-w-[200px] font-medium">
               {activeSession.recipeName}
