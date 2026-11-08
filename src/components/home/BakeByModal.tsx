@@ -119,39 +119,39 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
   const minDateAttribute = format(earliestPossibleBakeBy, 'yyyy-MM-dd');
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md">
+    <Modal isOpen={isOpen} onClose={onClose} maxWidthClass="max-w-md" cardClass="p-4 sm:p-5 bg-[#FAF5EE] border border-[#D1C1A8] text-[#2E1E14]">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-stone-100 dark:border-stone-800">
+      <div className="flex items-center justify-between pb-3.5 border-b border-[#D1C1A8]">
         <div className="flex items-center space-x-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border border-orange-200/60 dark:border-orange-900/60 flex items-center justify-center shadow-xs">
-            <Calendar className="w-5 h-5" />
+          <div className="w-10 h-10 rounded-2xl bg-[#E7CEB5] text-[#2E1E14] border border-[#D1C1A8] flex items-center justify-center shadow-xs">
+            <Calendar className="w-5 h-5 text-[#986A4C]" />
           </div>
           <div>
-            <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
+            <h3 className="font-serif text-lg font-bold text-[#2E1E14]">
               Target Serve Time
             </h3>
-            <p className="text-xs text-stone-500 dark:text-stone-400">
+            <p className="text-xs text-[#2E1E14]/75">
               Work backward from when you want fresh sourdough
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="p-2 rounded-full text-[#2E1E14]/70 hover:text-[#2E1E14] hover:bg-[#E7CEB5] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
       </div>
 
       {/* Earliest Safe Time Notice */}
-      <div className="mt-4 p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200/80 dark:border-stone-700/80 text-xs text-stone-600 dark:text-stone-300 flex items-start space-x-2">
-        <Clock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+      <div className="mt-4 p-3.5 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] text-xs text-[#2E1E14] flex items-start space-x-2">
+        <Clock className="w-4 h-4 text-[#986A4C] flex-shrink-0 mt-0.5" />
         <div className="leading-relaxed">
-          <span className="font-semibold text-stone-900 dark:text-stone-100">
+          <span className="font-bold text-[#2E1E14]">
             Minimum timeline duration: ~{minDurationHours} hours.
           </span>{' '}
           Earliest possible bake-by time from now is{' '}
-          <span className="font-bold text-amber-800 dark:text-amber-300">
+          <span className="font-bold text-[#2E1E14]">
             {format(earliestPossibleBakeBy, 'EEE, MMM d')} at {format(earliestPossibleBakeBy, 'h:mm a')}
           </span>.
         </div>
@@ -160,7 +160,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
       {/* Date & Time Selection */}
       <div className="mt-4 space-y-4">
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14]/70 mb-2">
             Target Ready Date:
           </label>
 
@@ -179,8 +179,8 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                   onClick={() => handleQuickDaySelect(offset)}
                   className={`w-full py-2.5 px-1 sm:px-2 rounded-xl text-xs font-bold border transition-all text-center truncate active-press ${
                     isSelected
-                      ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/50 text-orange-800 dark:text-orange-300 shadow-xs ring-1 ring-orange-500/30'
-                      : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+                      ? 'border-[#2E1E14] bg-[#E7CEB5] text-[#2E1E14] shadow-xs ring-1 ring-[#2E1E14]/30'
+                      : 'border-[#D1C1A8] bg-[#FAF5EE] text-[#2E1E14] hover:bg-[#E7CEB5]/60'
                   }`}
                 >
                   {isTomorrowDate ? 'Tomorrow' : format(dayDate, 'EEE, MMM d')}
@@ -195,21 +195,21 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
               min={minDateAttribute}
               value={selectedDateStr}
               onChange={(e) => setSelectedDateStr(e.target.value)}
-              className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full bg-[#E7CEB5] border border-[#D1C1A8] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#2E1E14] focus:outline-none focus:ring-2 focus:ring-[#2E1E14]"
             />
             <input
               type="time"
               step="1800"
               value={selectedTimeStr}
               onChange={(e) => setSelectedTimeStr(e.target.value)}
-              className="w-full bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full bg-[#E7CEB5] border border-[#D1C1A8] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-[#2E1E14] focus:outline-none focus:ring-2 focus:ring-[#2E1E14]"
             />
           </div>
         </div>
 
         {/* Quick Time Presets */}
         <div>
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14]/70 mb-1.5">
             Popular Target Times:
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -220,8 +220,8 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                 onClick={() => handleTimePreset(time)}
                 className={`w-full py-2 px-2 rounded-xl text-xs font-bold border transition-all text-center flex items-center justify-center active-press ${
                   selectedTimeStr === time
-                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/50 text-orange-800 dark:text-orange-300 shadow-xs ring-1 ring-orange-500/30'
-                    : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/60'
+                    ? 'border-[#2E1E14] bg-[#E7CEB5] text-[#2E1E14] shadow-xs ring-1 ring-[#2E1E14]/30'
+                    : 'border-[#D1C1A8] bg-[#FAF5EE] text-[#2E1E14] hover:bg-[#E7CEB5]/60'
                 }`}
               >
                 {time === '08:00' ? '8:00 AM' : time === '10:00' ? '10:00 AM' : time === '12:30' ? '12:30 PM' : '5:00 PM'}
@@ -233,11 +233,11 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
         {/* Cold Retard Slider */}
         <div className="pt-2">
           <div className="flex items-center justify-between mb-2">
-            <span className="flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-              <Snowflake className="w-3.5 h-3.5 text-sky-500" />
+            <span className="flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-wider text-[#2E1E14]/70">
+              <Snowflake className="w-3.5 h-3.5 text-[#986A4C]" />
               <span>Adjust Cold Retard Window</span>
             </span>
-            <span className="text-xs font-bold font-mono px-2.5 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+            <span className="text-xs font-bold font-mono px-2.5 py-0.5 rounded-full bg-[#E7CEB5] text-[#2E1E14] border border-[#D1C1A8]">
               {coldRetardHours} Hours
             </span>
           </div>
@@ -249,9 +249,9 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
             step="1"
             value={coldRetardHours}
             onChange={(e) => setColdRetardHours(Number(e.target.value))}
-            className="w-full h-2 bg-stone-200 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-sky-600"
+            className="w-full h-2 bg-[#FAF5EE] rounded-lg appearance-none cursor-pointer accent-[#2E1E14]"
           />
-          <div className="flex justify-between text-[11px] text-stone-400 font-semibold mt-1">
+          <div className="flex justify-between text-[11px] text-[#2E1E14]/70 font-semibold mt-1">
             <span>12h (Min)</span>
             <span>48h (Max)</span>
           </div>
@@ -259,8 +259,8 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
 
         {/* Too Early Error Warning Banner */}
         {isSelectedTimeTooEarly ? (
-          <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/60 p-3.5 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 flex items-start space-x-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="rounded-2xl bg-[#E7CEB5] p-3.5 border border-[#986A4C] text-xs text-[#2E1E14] flex items-start space-x-2">
+            <AlertCircle className="w-4 h-4 text-[#986A4C] flex-shrink-0 mt-0.5" />
             <div>
               <span className="font-bold">Target time is too early:</span> Sourdough requires at least {minDurationHours} hours from now to ferment properly.
               <button
@@ -269,29 +269,29 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
                   setSelectedDateStr(format(earliestPossibleBakeBy, 'yyyy-MM-dd'));
                   setSelectedTimeStr(format(earliestPossibleBakeBy, 'HH:mm'));
                 }}
-                className="block mt-1 font-bold text-amber-800 dark:text-amber-300 underline"
+                className="block mt-1 font-bold text-[#986A4C] underline"
               >
                 Set to earliest valid time ({format(earliestPossibleBakeBy, 'EEE, h:mm a')})
               </button>
             </div>
           </div>
         ) : reverseCalculation && (
-          <div className="rounded-2xl bg-orange-50/70 dark:bg-stone-800/90 p-4 border border-orange-200/80 dark:border-stone-700/80">
+          <div className="rounded-2xl bg-[#E7CEB5] p-4 border border-[#D1C1A8]">
             <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs font-bold text-sm">
+              <div className="w-8 h-8 rounded-full bg-[#2E1E14] text-[#FAF5EE] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs font-bold text-sm">
                 🌱
               </div>
               <div className="min-w-0 flex-1">
-                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-orange-800 dark:text-orange-300">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#986A4C]">
                   Recommended Feeding Time:
                 </span>
-                <div className="font-serif text-lg sm:text-xl font-extrabold text-stone-900 dark:text-stone-100 mt-0.5 break-words">
+                <div className="font-serif text-lg sm:text-xl font-extrabold text-[#2E1E14] mt-0.5 break-words">
                   {format(reverseCalculation.calculatedStartTime, 'EEEE, MMM d')} at{' '}
-                  <span className="text-orange-700 dark:text-orange-400">
+                  <span className="text-[#986A4C]">
                     {format(reverseCalculation.calculatedStartTime, 'h:mm a')}
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-stone-600 dark:text-stone-400 mt-1 leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-[#2E1E14]/75 mt-1 leading-relaxed">
                   Based on your recipe, 6h starter build, 4.5h mix & folds, {coldRetardHours}h refrigerator retard, baking, and 2h cooling.
                 </p>
               </div>
@@ -305,7 +305,7 @@ export const BakeByModal: React.FC<BakeByModalProps> = ({
         <button
           onClick={handleBuildTimeline}
           disabled={isSelectedTimeTooEarly}
-          className="w-full py-4 px-4 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-2xl font-bold shadow-md shadow-orange-600/30 flex items-center justify-center space-x-2 transition-all active-press disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 px-4 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-2xl font-bold shadow-md flex items-center justify-center space-x-2 transition-all active-press disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="tracking-wide">CALCULATE START TIME & BAKE</span>
           <ArrowRight className="w-4 h-4" />

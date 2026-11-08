@@ -39,20 +39,20 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
   };
 
   return (
-    <div className="pb-24 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in">
+    <div className="pb-24 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in text-[#2E1E14]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100 tracking-tight leading-tight">
+          <h2 className="font-serif text-2xl font-bold text-[#2E1E14] tracking-tight leading-tight">
             Sourdough Recipes
           </h2>
-          <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+          <p className="text-xs text-[#2E1E14]/80 mt-0.5">
             Select a recipe or build your own custom formula
           </p>
         </div>
         <button
           onClick={handleCreateNew}
-          className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white text-xs font-bold shadow-md shadow-amber-600/25 transition-all active-press"
+          className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-2xl bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] text-xs font-bold shadow-xs transition-all active-press"
         >
           <Plus className="w-4 h-4" />
           <span>New Recipe</span>
@@ -70,24 +70,24 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
               onClick={() => setSelectedRecipe(recipe)}
               className={`rounded-3xl p-5 sm:p-6 border transition-all duration-200 cursor-pointer relative overflow-hidden active-press ${
                 isSelected
-                  ? 'bg-white dark:bg-[#181614] border-amber-500/90 dark:border-amber-500 shadow-card-hover ring-1 ring-amber-500/20'
-                  : 'bg-white dark:bg-[#181614] border-stone-200/80 dark:border-stone-800/80 hover:border-stone-300 dark:hover:border-stone-700 shadow-card'
+                  ? 'bg-[#E7CEB5] border-2 border-[#2E1E14] shadow-md ring-1 ring-[#2E1E14]/20'
+                  : 'bg-[#E7CEB5]/70 border border-[#D1C1A8] hover:border-[#AD9677] shadow-sm'
               }`}
             >
               {/* Top Row: Name & Selected indicator */}
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 pr-2">
                   <div className="flex items-center space-x-2">
-                    <h3 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-stone-100">
+                    <h3 className="font-serif text-lg sm:text-xl font-extrabold text-[#2E1E14]">
                       {recipe.name}
                     </h3>
                     {recipe.isCustom && (
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-[#FAF5EE] text-[#2E1E14] border border-[#D1C1A8]">
                         Custom
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
+                  <p className="text-xs text-[#2E1E14]/85 mt-1 leading-relaxed">
                     {recipe.description}
                   </p>
                 </div>
@@ -97,14 +97,14 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
                     <>
                       <button
                         onClick={(e) => handleEditRecipe(recipe, e)}
-                        className="p-2 rounded-xl text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                        className="p-2 rounded-xl text-[#2E1E14]/70 hover:text-[#2E1E14] hover:bg-[#FAF5EE] transition-colors"
                         title="Edit recipe"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={(e) => handleDeleteRecipe(recipe.id, e)}
-                        className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                        className="p-2 rounded-xl text-[#986A4C] hover:bg-[#FAF5EE] transition-colors"
                         title="Delete recipe"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -113,7 +113,7 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
                   )}
 
                   {isSelected && (
-                    <div className="w-7 h-7 rounded-full bg-amber-600 text-white flex items-center justify-center shadow-xs">
+                    <div className="w-7 h-7 rounded-full bg-[#2E1E14] text-[#FAF5EE] flex items-center justify-center shadow-xs">
                       <Check className="w-4 h-4" />
                     </div>
                   )}
@@ -121,29 +121,33 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
               </div>
 
               {/* Formula Metric Badges */}
-              <div className="grid grid-cols-4 gap-2 my-3.5">
-                <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-2.5 text-center border border-stone-100 dark:border-stone-800/60">
-                  <span className="text-[9px] uppercase font-bold text-stone-400 block tracking-wider">Flour</span>
-                  <span className="font-serif text-sm sm:text-base font-bold text-stone-800 dark:text-stone-200">{recipe.flourGrams}g</span>
+              <div className="grid grid-cols-5 gap-1.5 sm:gap-2 my-3.5">
+                <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-2.5 text-center border border-[#D1C1A8]">
+                  <span className="text-[9px] uppercase font-bold text-[#AD9677] block tracking-wider">Flour</span>
+                  <span className="font-serif text-xs sm:text-base font-extrabold text-[#2E1E14]">{recipe.flourGrams}g</span>
                 </div>
-                <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-2.5 text-center border border-stone-100 dark:border-stone-800/60">
-                  <span className="text-[9px] uppercase font-bold text-stone-400 block tracking-wider">Water</span>
-                  <span className="font-serif text-sm sm:text-base font-bold text-stone-800 dark:text-stone-200">{recipe.waterGrams}g</span>
+                <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-2.5 text-center border border-[#D1C1A8]">
+                  <span className="text-[9px] uppercase font-bold text-[#AD9677] block tracking-wider">Water</span>
+                  <span className="font-serif text-xs sm:text-base font-extrabold text-[#2E1E14]">{recipe.waterGrams}g</span>
                 </div>
-                <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-2.5 text-center border border-stone-100 dark:border-stone-800/60">
-                  <span className="text-[9px] uppercase font-bold text-stone-400 block tracking-wider">Starter</span>
-                  <span className="font-serif text-sm sm:text-base font-bold text-stone-800 dark:text-stone-200">{recipe.starterGrams}g</span>
+                <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-2.5 text-center border border-[#D1C1A8]">
+                  <span className="text-[9px] uppercase font-bold text-[#AD9677] block tracking-wider">Starter</span>
+                  <span className="font-serif text-xs sm:text-base font-extrabold text-[#2E1E14]">{recipe.starterGrams}g</span>
                 </div>
-                <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-2.5 text-center border border-stone-100 dark:border-stone-800/60">
-                  <span className="text-[9px] uppercase font-bold text-amber-700 dark:text-amber-400 block tracking-wider">Hydration</span>
-                  <span className="font-serif text-sm sm:text-base font-bold text-amber-800 dark:text-amber-300">{recipe.hydration}%</span>
+                <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-2.5 text-center border border-[#D1C1A8]">
+                  <span className="text-[9px] uppercase font-bold text-[#AD9677] block tracking-wider">Salt</span>
+                  <span className="font-serif text-xs sm:text-base font-extrabold text-[#2E1E14]">{recipe.saltGrams ?? Math.round(recipe.flourGrams * 0.02)}g</span>
+                </div>
+                <div className="bg-[#FAF5EE] rounded-2xl p-2 sm:p-2.5 text-center border border-[#D1C1A8]">
+                  <span className="text-[9px] uppercase font-bold text-[#986A4C] block tracking-wider">Hydration</span>
+                  <span className="font-serif text-xs sm:text-base font-extrabold text-[#986A4C]">{recipe.hydration}%</span>
                 </div>
               </div>
 
               {/* Batch Size Scaling Bar */}
-              <div className="flex items-center justify-between pt-3 border-t border-stone-100 dark:border-stone-800/80 text-xs">
+              <div className="flex items-center justify-between pt-3 border-t border-[#D1C1A8] text-xs">
                 <div className="flex items-center space-x-1.5">
-                  <span className="text-stone-500 dark:text-stone-400 font-semibold">Batch:</span>
+                  <span className="text-[#2E1E14] font-bold">Batch:</span>
                   {[1, 2, 3, 4].map((num) => (
                     <button
                       key={num}
@@ -153,28 +157,28 @@ export const RecipeListView: React.FC<RecipeListViewProps> = ({ onSelectAndBake 
                       }}
                       className={`w-7 h-7 rounded-xl text-xs font-bold transition-all active-press ${
                         recipe.loavesCount === num
-                          ? 'bg-amber-600 text-white shadow-xs'
-                          : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
+                          ? 'bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
+                          : 'bg-[#FAF5EE] text-[#2E1E14] border border-[#D1C1A8] hover:bg-[#D1C1A8]/40'
                       }`}
                     >
                       {num}
                     </button>
                   ))}
-                  <span className="text-stone-400 text-[11px] ml-1">loaves</span>
+                  <span className="text-[#AD9677] text-[11px] ml-1 font-bold">loaves</span>
                 </div>
 
                 {isSelected ? (
                   <button
                     onClick={onSelectAndBake}
-                    className="flex items-center space-x-1 font-bold text-amber-700 dark:text-amber-400 hover:text-amber-800"
+                    className="flex items-center space-x-1 font-bold text-[#986A4C] hover:text-[#2E1E14]"
                   >
-                    <span>Use & Schedule</span>
+                    <span>Use &amp; Schedule</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 ) : (
                   <button
                     onClick={() => setSelectedRecipe(recipe)}
-                    className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 font-bold"
+                    className="text-[#2E1E14]/80 hover:text-[#2E1E14] font-bold"
                   >
                     Select
                   </button>

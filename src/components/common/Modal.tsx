@@ -15,7 +15,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   children,
   maxWidthClass = 'max-w-md',
-  backdropClass = 'bg-stone-900/60 backdrop-blur-sm',
+  backdropClass = 'bg-[#2E1E14]/60 backdrop-blur-sm',
   cardClass = ''
 }) => {
   useEffect(() => {
@@ -48,7 +48,7 @@ export const Modal: React.FC<ModalProps> = ({
       aria-modal="true"
     >
       <div
-        className={`bg-white dark:bg-[#181614] rounded-3xl w-full p-5 sm:p-6 shadow-2xl border border-stone-200/90 dark:border-stone-800/90 relative max-h-[90vh] overflow-y-auto overflow-x-hidden my-auto ${maxWidthClass} ${cardClass}`}
+        className={`bg-[#FAF5EE] text-[#2E1E14] rounded-3xl w-full p-5 sm:p-6 shadow-2xl border border-[#D1C1A8] relative max-h-[90vh] overflow-y-auto overflow-x-hidden my-auto ${maxWidthClass} ${cardClass}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

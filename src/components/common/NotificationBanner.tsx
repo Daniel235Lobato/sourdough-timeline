@@ -52,34 +52,26 @@ export const NotificationBanner: React.FC = () => {
   return (
     <>
       <div className="px-3 sm:px-4 mb-4 animate-fade-in">
-        <div className={`p-4 sm:p-5 rounded-3xl border transition-all shadow-card ${
-          isPushSubscribed
-            ? 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-200/80 dark:border-emerald-800/60 text-emerald-950 dark:text-emerald-100'
-            : 'bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-amber-300/70 dark:border-amber-700/60 text-stone-900 dark:text-stone-100'
-        }`}>
+        <div className="p-4 sm:p-5 rounded-3xl border border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] shadow-xs">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs ${
-                isPushSubscribed
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-amber-600 text-white'
-              }`}>
+              <div className="w-10 h-10 rounded-2xl bg-[#2E1E14] text-[#FAF5EE] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
                 {isPushSubscribed ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
               </div>
 
               <div className="space-y-1">
                 <div className="flex items-center space-x-2">
-                  <h4 className="font-serif font-bold text-sm sm:text-base tracking-tight">
+                  <h4 className="font-serif font-bold text-sm sm:text-base tracking-tight text-[#2E1E14]">
                     {isPushSubscribed ? 'Step Notifications Active' : 'Step Timer Alerts'}
                   </h4>
                   {isIOS && !isStandalone && (
-                    <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 text-[10px] font-bold">
+                    <span className="px-2 py-0.5 rounded-full bg-[#FAF5EE] text-[#2E1E14] text-[10px] font-bold border border-[#D1C1A8]">
                       iOS App
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed max-w-sm">
+                <p className="text-xs text-[#2E1E14]/75 leading-relaxed max-w-sm">
                   {isPushSubscribed
                     ? 'Your device will receive alerts and oven chimes when each timer finishes (even when phone is locked).'
                     : isIOS && !isStandalone
@@ -92,24 +84,24 @@ export const NotificationBanner: React.FC = () => {
                     <button
                       onClick={handleEnablePush}
                       disabled={isPushSubscribing}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold text-xs shadow-sm flex items-center space-x-1.5 transition-all active-press disabled:opacity-50"
+                      className="px-4 py-2 rounded-xl bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] font-semibold text-xs shadow-xs flex items-center space-x-1.5 transition-all active-press disabled:opacity-50"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>{isPushSubscribing ? 'Enabling...' : isIOS && !isStandalone ? 'Setup on iPhone' : 'Turn On Notifications'}</span>
                     </button>
                   ) : (
-                    <div className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold">
-                      <Check className="w-3.5 h-3.5" />
+                    <div className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-[#FAF5EE] text-[#2E1E14] text-xs font-semibold border border-[#D1C1A8]">
+                      <Check className="w-3.5 h-3.5 text-[#986A4C]" />
                       <span>Alerts Active</span>
                     </div>
                   )}
 
                   <button
                     onClick={() => setShowGuideModal(true)}
-                    className="text-xs font-bold text-amber-700 dark:text-amber-400 hover:underline px-1 py-1 flex items-center space-x-1"
+                    className="text-xs font-semibold text-[#986A4C] hover:text-[#2E1E14] px-1 py-1 flex items-center space-x-1"
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
-                    <span>How to setup PWA & Alerts</span>
+                    <span>How to setup PWA &amp; Alerts</span>
                   </button>
                 </div>
               </div>
@@ -118,7 +110,7 @@ export const NotificationBanner: React.FC = () => {
             <button
               onClick={handleDismiss}
               title="Dismiss banner"
-              className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+              className="p-1 rounded-lg text-[#2E1E14]/60 hover:text-[#2E1E14] hover:bg-[#FAF5EE] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -128,37 +120,37 @@ export const NotificationBanner: React.FC = () => {
 
       {/* Comprehensive PWA & Notification Setup Modal */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-[#181614] border border-stone-200/90 dark:border-stone-800/90 rounded-3xl p-6 max-w-md w-full shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#2E1E14]/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#FAF5EE] border border-[#D1C1A8] rounded-3xl p-6 max-w-md w-full shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto text-[#2E1E14]">
             <button
               onClick={() => setShowGuideModal(false)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="absolute top-4 right-4 text-[#2E1E14]/70 hover:text-[#2E1E14] p-2 rounded-full hover:bg-[#E7CEB5] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/60 dark:border-amber-900/60 text-amber-700 dark:text-amber-300 flex items-center justify-center shadow-xs">
-              <Smartphone className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-2xl bg-[#E7CEB5] border border-[#D1C1A8] text-[#2E1E14] flex items-center justify-center shadow-xs">
+              <Smartphone className="w-6 h-6 text-[#986A4C]" />
             </div>
 
             <div>
-              <h3 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="font-serif text-xl font-bold text-[#2E1E14]">
                 Notification & PWA Setup Guide
               </h3>
-              <p className="text-xs text-stone-600 dark:text-stone-300 mt-1 leading-relaxed">
+              <p className="text-xs text-[#2E1E14]/75 mt-1 leading-relaxed">
                 Follow these simple steps to ensure you receive step alerts and oven bell chimes even when your phone is locked or closed.
               </p>
             </div>
 
             {/* Platform Tabs */}
-            <div className="flex rounded-2xl bg-stone-100 dark:bg-stone-800/80 p-1 text-xs font-bold">
+            <div className="flex rounded-2xl bg-[#E7CEB5] p-1 text-xs font-bold border border-[#D1C1A8]">
               <button
                 type="button"
                 onClick={() => setActiveTab('ios')}
                 className={`flex-1 py-2 rounded-xl transition-all text-center ${
                   activeTab === 'ios'
-                    ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-xs'
-                    : 'text-stone-500 dark:text-stone-400'
+                    ? 'bg-[#FAF5EE] text-[#2E1E14] shadow-xs'
+                    : 'text-[#2E1E14]/70 hover:text-[#2E1E14]'
                 }`}
               >
                 iPhone (iOS)
@@ -168,8 +160,8 @@ export const NotificationBanner: React.FC = () => {
                 onClick={() => setActiveTab('android')}
                 className={`flex-1 py-2 rounded-xl transition-all text-center ${
                   activeTab === 'android'
-                    ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-xs'
-                    : 'text-stone-500 dark:text-stone-400'
+                    ? 'bg-[#FAF5EE] text-[#2E1E14] shadow-xs'
+                    : 'text-[#2E1E14]/70 hover:text-[#2E1E14]'
                 }`}
               >
                 Android / PC
@@ -179,8 +171,8 @@ export const NotificationBanner: React.FC = () => {
                 onClick={() => setActiveTab('settings')}
                 className={`flex-1 py-2 rounded-xl transition-all text-center ${
                   activeTab === 'settings'
-                    ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-xs'
-                    : 'text-stone-500 dark:text-stone-400'
+                    ? 'bg-[#FAF5EE] text-[#2E1E14] shadow-xs'
+                    : 'text-[#2E1E14]/70 hover:text-[#2E1E14]'
                 }`}
               >
                 Sound & Tips
@@ -189,40 +181,40 @@ export const NotificationBanner: React.FC = () => {
 
             {/* Tab 1: iOS iPhone Setup */}
             {activeTab === 'ios' && (
-              <div className="space-y-3 bg-stone-50 dark:bg-stone-800/60 p-4 rounded-2xl text-xs text-stone-700 dark:text-stone-200 border border-stone-200/80 dark:border-stone-700 animate-fade-in">
+              <div className="space-y-3 bg-[#E7CEB5] p-4 rounded-2xl text-xs text-[#2E1E14] border border-[#D1C1A8] animate-fade-in">
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     1
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Tap Share in Safari</span>
-                    <div className="flex items-center space-x-1 mt-0.5 text-stone-500 dark:text-stone-400">
-                      <Share2 className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="font-bold text-[#2E1E14]">Tap Share in Safari</span>
+                    <div className="flex items-center space-x-1 mt-0.5 text-[#2E1E14]/75">
+                      <Share2 className="w-3.5 h-3.5 text-[#986A4C]" />
                       <span>Tap the Share icon at the bottom of Safari</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     2
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Tap "Add to Home Screen"</span>
-                    <div className="flex items-center space-x-1 mt-0.5 text-stone-500 dark:text-stone-400">
-                      <PlusSquare className="w-3.5 h-3.5 text-stone-600 dark:text-stone-300" />
+                    <span className="font-bold text-[#2E1E14]">Tap "Add to Home Screen"</span>
+                    <div className="flex items-center space-x-1 mt-0.5 text-[#2E1E14]/75">
+                      <PlusSquare className="w-3.5 h-3.5 text-[#986A4C]" />
                       <span>Scroll down the menu and select "Add to Home Screen"</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     3
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Open App & Allow Alerts</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
+                    <span className="font-bold text-[#2E1E14]">Open App & Allow Alerts</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
                       Open Levain from your Home Screen icon and tap "Turn On Notifications".
                     </p>
                   </div>
@@ -232,38 +224,38 @@ export const NotificationBanner: React.FC = () => {
 
             {/* Tab 2: Android Setup */}
             {activeTab === 'android' && (
-              <div className="space-y-3 bg-stone-50 dark:bg-stone-800/60 p-4 rounded-2xl text-xs text-stone-700 dark:text-stone-200 border border-stone-200/80 dark:border-stone-700 animate-fade-in">
+              <div className="space-y-3 bg-[#E7CEB5] p-4 rounded-2xl text-xs text-[#2E1E14] border border-[#D1C1A8] animate-fade-in">
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     1
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Tap Browser Menu (⋮)</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
+                    <span className="font-bold text-[#2E1E14]">Tap Browser Menu (⋮)</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
                       In Chrome, tap the 3 dots in the top-right corner.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     2
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Select "Install App"</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
+                    <span className="font-bold text-[#2E1E14]">Select "Install App"</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
                       Tap "Install App" or "Add to Home Screen".
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-2.5">
-                  <span className="w-5 h-5 rounded-full bg-amber-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full bg-[#2E1E14] text-[#FAF5EE] font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                     3
                   </span>
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Allow Notifications</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
+                    <span className="font-bold text-[#2E1E14]">Allow Notifications</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
                       When prompted, tap "Allow" so timers notify you in the background.
                     </p>
                   </div>
@@ -273,23 +265,23 @@ export const NotificationBanner: React.FC = () => {
 
             {/* Tab 3: Sound & Troubleshooting Tips */}
             {activeTab === 'settings' && (
-              <div className="space-y-3 bg-stone-50 dark:bg-stone-800/60 p-4 rounded-2xl text-xs text-stone-700 dark:text-stone-200 border border-stone-200/80 dark:border-stone-700 animate-fade-in">
+              <div className="space-y-3 bg-[#E7CEB5] p-4 rounded-2xl text-xs text-[#2E1E14] border border-[#D1C1A8] animate-fade-in">
                 <div className="flex items-start space-x-2.5">
-                  <Volume2 className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <Volume2 className="w-4 h-4 text-[#986A4C] flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">Kitchen Oven Bell Chime</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
+                    <span className="font-bold text-[#2E1E14]">Kitchen Oven Bell Chime</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
                       Each step timer plays a realistic oven chime at 00:00:00. Ensure your device ringer / volume is on.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-2.5">
-                  <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 text-[#986A4C] flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-stone-900 dark:text-stone-100">iPhone Notification Settings</span>
-                    <p className="mt-0.5 text-stone-500 dark:text-stone-400">
-                      Go to <code className="font-mono font-bold text-stone-700 dark:text-stone-300">Settings &gt; Notifications &gt; Levain</code> and make sure Lock Screen and Sounds are enabled.
+                    <span className="font-bold text-[#2E1E14]">iPhone Notification Settings</span>
+                    <p className="mt-0.5 text-[#2E1E14]/75">
+                      Go to <code className="font-mono font-bold text-[#2E1E14]">Settings &gt; Notifications &gt; Levain</code> and make sure Lock Screen and Sounds are enabled.
                     </p>
                   </div>
                 </div>
@@ -298,7 +290,7 @@ export const NotificationBanner: React.FC = () => {
 
             <button
               onClick={() => setShowGuideModal(false)}
-              className="w-full py-3.5 bg-stone-900 dark:bg-amber-600 hover:bg-black dark:hover:bg-amber-700 text-white rounded-2xl font-bold text-xs transition-all active-press shadow-sm"
+              className="w-full py-3.5 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-2xl font-bold text-xs transition-all active-press shadow-xs"
             >
               Got it
             </button>

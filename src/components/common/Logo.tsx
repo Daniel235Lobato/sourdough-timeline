@@ -20,9 +20,8 @@ export const Logo: React.FC<LogoProps> = ({ className = 'w-full h-full', size = 
         {/* Main Loaf Outline */}
         <path
           d="M 28 52 C 28 38, 40 32, 50 32 C 60 32, 72 38, 72 52 C 72 56, 68 58, 50 58 C 32 58, 28 56, 28 52 Z"
-          fill="#fbf5ee"
-          className="dark:fill-stone-900"
-          stroke="#be5d3c"
+          fill="#E7CEB5"
+          stroke="#836A4D"
           strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -31,7 +30,7 @@ export const Logo: React.FC<LogoProps> = ({ className = 'w-full h-full', size = 
         {/* Lower Loaf Shadow/Crust line */}
         <path
           d="M 52 54 C 60 54, 68 53, 70 50"
-          stroke="#be5d3c"
+          stroke="#986A4C"
           strokeWidth="2.2"
           strokeLinecap="round"
         />
@@ -40,35 +39,35 @@ export const Logo: React.FC<LogoProps> = ({ className = 'w-full h-full', size = 
         {/* Central score spine */}
         <path
           d="M 36 49 C 44 42, 54 36, 64 36"
-          stroke="#be5d3c"
+          stroke="#986A4C"
           strokeWidth="2.6"
           strokeLinecap="round"
         />
         {/* Wheat slash 1 */}
         <path
           d="M 40 44 C 44 41, 48 40, 48 37"
-          stroke="#be5d3c"
+          stroke="#986A4C"
           strokeWidth="2.2"
           strokeLinecap="round"
         />
         {/* Wheat slash 2 */}
         <path
           d="M 46 41 C 50 38, 54 37, 54 34"
-          stroke="#be5d3c"
+          stroke="#986A4C"
           strokeWidth="2.2"
           strokeLinecap="round"
         />
         {/* Wheat slash 3 */}
         <path
           d="M 53 38 C 57 35, 60 34, 60 32"
-          stroke="#be5d3c"
+          stroke="#986A4C"
           strokeWidth="2.2"
           strokeLinecap="round"
         />
       </g>
 
       {/* Wheat Laurel Wreath */}
-      <g className="text-stone-700 dark:text-amber-200/90" stroke="currentColor" fill="currentColor">
+      <g className="text-[#836A4D]" stroke="currentColor" fill="currentColor">
         {/* Base Laurel Arcs */}
         <path
           d="M 21 34 C 14 46, 15 62, 28 71 C 36 76, 46 76, 49 74"

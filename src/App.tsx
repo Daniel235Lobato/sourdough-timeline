@@ -41,17 +41,17 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col items-center justify-center p-6 text-center">
+        <div className="min-h-screen bg-[#FAF5EE] text-[#2E1E14] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 mb-4">
             <Logo size={64} className="w-full h-full" />
           </div>
-          <h1 className="font-serif text-2xl font-bold mb-2">Something went wrong</h1>
-          <p className="text-xs text-stone-400 max-w-sm mb-4">
+          <h1 className="font-serif text-2xl font-bold mb-2 text-[#2E1E14]">Something went wrong</h1>
+          <p className="text-xs text-[#2E1E14]/80 max-w-sm mb-4">
             {this.state.error?.message || 'An unexpected error occurred while loading the app.'}
           </p>
           <button
             onClick={this.handleReset}
-            className="py-2.5 px-5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-xs transition-colors"
+            className="py-2.5 px-5 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-xl font-bold text-xs transition-colors"
           >
             Clear Data & Reload
           </button>
@@ -67,7 +67,7 @@ const MainAppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>(activeSession ? 'timeline' : 'home');
 
   return (
-    <div className="min-h-screen bg-[#FBF9F5] dark:bg-[#121110] text-stone-900 dark:text-stone-100 flex flex-col font-sans transition-colors selection:bg-amber-200 selection:text-amber-900 w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF5EE] text-[#2E1E14] flex flex-col font-sans selection:bg-[#D1C1A8] selection:text-[#2E1E14] w-full max-w-full overflow-x-hidden">
       {/* Sticky Header */}
       <Header activeTab={activeTab} setActiveTab={setActiveTab} />
 

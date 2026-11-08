@@ -38,23 +38,23 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
   const getPhaseBadge = () => {
     switch (step.phase) {
       case 'starter':
-        return { label: 'STARTER', color: 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' };
+        return { label: 'STARTER', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'mix':
-        return { label: 'MIX', color: 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800' };
+        return { label: 'MIX', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'ferment':
-        return { label: 'FERMENT', color: 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800' };
+        return { label: 'FERMENT', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'shape':
-        return { label: 'SHAPE', color: 'bg-stone-200 dark:bg-stone-800 text-stone-800 dark:text-stone-300 border-stone-300 dark:border-stone-700' };
+        return { label: 'SHAPE', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'retard':
-        return { label: 'RETARD', color: 'bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800' };
+        return { label: 'RETARD', color: 'bg-[#FAF5EE] text-[#986A4C] border-[#D1C1A8]' };
       case 'bake':
-        return { label: 'BAKE', color: 'bg-orange-100 dark:bg-orange-950/70 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800' };
+        return { label: 'BAKE', color: 'bg-[#986A4C] text-[#FAF5EE] border-[#2E1E14]' };
       case 'cool':
-        return { label: 'COOL', color: 'bg-indigo-100 dark:bg-indigo-950/70 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' };
+        return { label: 'COOL', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
       case 'complete':
-        return { label: 'READY', color: 'bg-amber-200 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 border-amber-300 dark:border-amber-700' };
+        return { label: 'READY', color: 'bg-[#2E1E14] text-[#FAF5EE] border-[#2E1E14]' };
       default:
-        return { label: 'STEP', color: 'bg-stone-100 text-stone-700' };
+        return { label: 'STEP', color: 'bg-[#FAF5EE] text-[#2E1E14] border-[#D1C1A8]' };
     }
   };
 
@@ -67,10 +67,10 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         <div 
           className={`absolute left-[19px] sm:left-[21px] top-12 bottom-0 w-[3px] rounded-full transition-colors duration-300 ${
             isCompleted 
-              ? 'bg-emerald-500/90 dark:bg-emerald-500/80 shadow-glow-emerald' 
+              ? 'bg-[#2E1E14]' 
               : isActive 
-                ? 'bg-gradient-to-b from-amber-500 to-stone-200 dark:to-stone-800' 
-                : 'bg-stone-200/80 dark:bg-stone-800/80'
+                ? 'bg-gradient-to-b from-[#986A4C] to-[#AD9677]' 
+                : 'bg-[#D1C1A8]'
           }`}
         />
       )}
@@ -78,15 +78,15 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
       {/* Node Bullet Status Indicator */}
       <div className="relative z-10 flex-shrink-0 mt-3 sm:mt-4">
         {isCompleted ? (
-          <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-600/25 border-2 border-emerald-500/40 transition-transform group-hover:scale-105">
+          <div className="w-10 h-10 rounded-2xl bg-[#2E1E14] text-[#FAF5EE] flex items-center justify-center shadow-xs border-2 border-[#2E1E14] transition-transform group-hover:scale-105">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         ) : isActive ? (
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 ring-4 ring-amber-500/20 border-2 border-amber-400 animate-pulse">
+          <div className="w-10 h-10 rounded-2xl bg-[#986A4C] text-[#FAF5EE] flex items-center justify-center shadow-md ring-4 ring-[#986A4C]/25 border-2 border-[#2E1E14] animate-pulse">
             <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: '8s' }} />
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-2xl bg-white dark:bg-[#181614] border border-stone-300 dark:border-stone-700 text-stone-400 flex items-center justify-center shadow-2xs">
+          <div className="w-10 h-10 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] text-[#2E1E14]/60 flex items-center justify-center shadow-2xs">
             <Circle className="w-3.5 h-3.5" />
           </div>
         )}
@@ -97,21 +97,15 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         onClick={() => onOpenDetail(step)}
         className={`flex-1 min-w-0 rounded-3xl p-3.5 sm:p-5 transition-all duration-200 border cursor-pointer active-press ${
           isActive 
-            ? 'bg-white dark:bg-[#181614] border-amber-500/80 dark:border-amber-500 shadow-card-hover ring-1 ring-amber-500/20' 
+            ? 'bg-[#E7CEB5] border-2 border-[#2E1E14] shadow-md ring-1 ring-[#2E1E14]/20' 
             : isCompleted 
-              ? 'bg-white/80 dark:bg-[#161513]/80 border-stone-200/80 dark:border-stone-800/80 opacity-90 shadow-2xs hover:border-emerald-400' 
-              : 'bg-white dark:bg-[#181614] border-stone-200/80 dark:border-stone-800/80 shadow-card hover:border-amber-400'
+              ? 'bg-[#E7CEB5]/70 border border-[#D1C1A8] opacity-85 shadow-2xs hover:border-[#2E1E14]' 
+              : 'bg-[#E7CEB5] border border-[#D1C1A8] shadow-sm hover:border-[#AD9677]'
         }`}
       >
         <div className="flex items-center space-x-3.5 sm:space-x-5">
           {/* Large Minimalist Instructional Icon Hero Plate (64px mobile, 80px sm+) */}
-          <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex-shrink-0 flex items-center justify-center p-2 transition-transform group-hover:scale-105 ${
-            isCompleted 
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300'
-              : isActive 
-                ? 'bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400 shadow-xs'
-                : 'bg-stone-50 dark:bg-[#1e1b18] border border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-300'
-          }`}>
+          <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex-shrink-0 flex items-center justify-center p-2 transition-transform group-hover:scale-105 bg-[#FAF5EE] border border-[#D1C1A8] text-[#2E1E14]`}>
             <StepInstructionIcon 
               stepId={step.id} 
               stepName={step.name} 
@@ -129,28 +123,28 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
                 {badge.label}
               </span>
               {step.isOvernightTransition && (
-                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EE] text-[#986A4C] border border-[#D1C1A8]">
                   {step.dayLabel || 'Overnight'}
                 </span>
               )}
             </div>
 
             {/* Short Action Name (Cleanly fitted without ellipsis ...) */}
-            <h3 className={`font-serif text-[15px] sm:text-lg font-bold leading-snug break-words ${
+            <h3 className={`font-serif text-[15px] sm:text-lg font-extrabold leading-snug break-words ${
               isCompleted 
-                ? 'text-stone-500 dark:text-stone-400 line-through decoration-emerald-500/50' 
-                : 'text-stone-900 dark:text-stone-100'
+                ? 'text-[#2E1E14]/60 line-through decoration-[#2E1E14]/40' 
+                : 'text-[#2E1E14]'
             }`}>
               {step.name}
             </h3>
 
             {/* Scheduled Time & Duration */}
-            <div className="flex items-center space-x-2 mt-1 font-mono text-xs sm:text-sm text-stone-600 dark:text-stone-400 font-bold">
+            <div className="flex items-center space-x-2 mt-1 font-mono text-xs sm:text-sm text-[#2E1E14] font-bold">
               <span>{formatStepTime(step.startTime)}</span>
               {step.durationMinutes > 0 && (
                 <>
-                  <span className="text-stone-300 dark:text-stone-600 font-sans">•</span>
-                  <span className="font-sans text-[11px] sm:text-xs font-semibold text-stone-500 dark:text-stone-400">
+                  <span className="text-[#AD9677] font-sans">•</span>
+                  <span className="font-sans text-[11px] sm:text-xs font-bold text-[#2E1E14]/80">
                     {step.durationMinutes >= 60 
                       ? `${Math.round((step.durationMinutes / 60) * 10) / 10}h` 
                       : `${step.durationMinutes}m`}
@@ -161,7 +155,7 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
           </div>
 
           {/* Right Chevron indicating tap for details */}
-          <div className="flex-shrink-0 text-stone-400 group-hover:text-stone-700 dark:group-hover:text-stone-200 transition-colors pl-1">
+          <div className="flex-shrink-0 text-[#2E1E14]/60 group-hover:text-[#2E1E14] transition-colors pl-1">
             <ChevronRight className="w-5 h-5" />
           </div>
         </div>

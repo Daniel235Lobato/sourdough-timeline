@@ -8,7 +8,7 @@ export const CompletedLoafAnimation: React.FC<{ className?: string }> = ({ class
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#ce7449', '#f3d9c7', '#10b981', '#fbbf24', '#b45309']
+        colors: ['#E7CEB5', '#D1C1A8', '#AD9677', '#836A4D', '#986A4C']
       });
     } catch {
       // Confetti fallback
@@ -16,20 +16,20 @@ export const CompletedLoafAnimation: React.FC<{ className?: string }> = ({ class
   }, []);
 
   return (
-    <div className={`relative flex flex-col items-center justify-center py-6 text-center ${className}`}>
+    <div className={`relative flex flex-col items-center justify-center py-6 text-center text-[#836A4D] ${className}`}>
       {/* Golden halo effect */}
       <div className="relative mb-4">
-        <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl animate-pulse" />
-        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-200 p-1 shadow-xl relative animate-float flex items-center justify-center">
-          <div className="w-full h-full rounded-full bg-amber-50 dark:bg-stone-900 flex items-center justify-center text-5xl">
+        <div className="absolute inset-0 bg-[#AD9677]/20 rounded-full blur-2xl animate-pulse" />
+        <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#836A4D] via-[#986A4C] to-[#D1C1A8] p-1 shadow-md relative animate-float flex items-center justify-center">
+          <div className="w-full h-full rounded-full bg-[#E7CEB5] flex items-center justify-center text-5xl">
             🍞
           </div>
         </div>
       </div>
-      <h3 className="font-serif text-2xl font-bold text-stone-900 dark:text-stone-100">
+      <h3 className="font-serif text-2xl font-bold text-[#836A4D]">
         Artisan Loaf Complete
       </h3>
-      <p className="text-sm text-stone-600 dark:text-stone-400 max-w-xs mt-1">
+      <p className="text-sm text-[#836A4D]/80 max-w-xs mt-1">
         Crispy blistered crust, caramelized ear, and open tender crumb. You are an artisan baker!
       </p>
     </div>
