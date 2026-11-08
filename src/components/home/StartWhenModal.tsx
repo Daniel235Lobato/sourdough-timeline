@@ -223,45 +223,48 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
       </div>
 
       <div className="mt-4 space-y-3.5">
-        {/* Starting Point Selection: Start from Feed vs Start from Peak */}
+        {/* Starting Point Selection: Start from Feed vs Start from Peak (Animated Toggle, No Emojis) */}
         <div>
           <label className="block text-[11px] font-bold uppercase tracking-wider text-[#2E1E14] mb-1.5">
-            Starter Status Prior to Start
+            Starting Point
           </label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="relative p-1 rounded-2xl bg-[#FAF5EE] border border-[#D1C1A8] flex">
+            {/* Smooth Sliding Pill Indicator */}
+            <div
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-xl bg-[#2E1E14] shadow-xs transition-transform duration-300 ease-in-out pointer-events-none ${
+                startFrom === 'peak' ? 'translate-x-[calc(100%+4px)]' : 'translate-x-0'
+              }`}
+            />
+
+            {/* Start from Feed */}
             <button
               type="button"
               onClick={() => setStartFrom('feed')}
-              className={`p-2.5 rounded-xl border transition-all text-left flex flex-col active-press ${
+              className={`relative z-10 w-1/2 py-2 px-2 text-center rounded-xl transition-colors duration-200 active-press select-none flex flex-col items-center justify-center ${
                 startFrom === 'feed'
-                  ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
-                  : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
+                  ? 'text-[#FAF5EE]'
+                  : 'text-[#2E1E14]/75 hover:text-[#2E1E14]'
               }`}
             >
-              <span className="font-bold text-xs flex items-center space-x-1">
-                <span>🌾</span>
-                <span>Start from Feed</span>
-              </span>
-              <span className={`text-[10px] mt-0.5 ${startFrom === 'feed' ? 'text-[#FAF5EE]/80' : 'text-[#2E1E14]/70'}`}>
+              <span className="text-xs font-bold leading-tight">Start from Feed</span>
+              <span className={`text-[10px] leading-tight transition-opacity ${startFrom === 'feed' ? 'opacity-80' : 'opacity-60'}`}>
                 Needs 5–6h levain rise
               </span>
             </button>
 
+            {/* Start from Peak */}
             <button
               type="button"
               onClick={() => setStartFrom('peak')}
-              className={`p-2.5 rounded-xl border transition-all text-left flex flex-col active-press ${
+              className={`relative z-10 w-1/2 py-2 px-2 text-center rounded-xl transition-colors duration-200 active-press select-none flex flex-col items-center justify-center ${
                 startFrom === 'peak'
-                  ? 'border-[#2E1E14] bg-[#2E1E14] text-[#FAF5EE] shadow-xs'
-                  : 'border-[#D1C1A8] bg-[#E7CEB5] text-[#2E1E14] hover:bg-[#D1C1A8]'
+                  ? 'text-[#FAF5EE]'
+                  : 'text-[#2E1E14]/75 hover:text-[#2E1E14]'
               }`}
             >
-              <span className="font-bold text-xs flex items-center space-x-1">
-                <span>⚡</span>
-                <span>Start from Peak</span>
-              </span>
-              <span className={`text-[10px] mt-0.5 ${startFrom === 'peak' ? 'text-[#FAF5EE]/80' : 'text-[#2E1E14]/70'}`}>
-                Starter is ripe; mix now
+              <span className="text-xs font-bold leading-tight">Start from Peak</span>
+              <span className={`text-[10px] leading-tight transition-opacity ${startFrom === 'peak' ? 'opacity-80' : 'opacity-60'}`}>
+                Starter ripe, mix now
               </span>
             </button>
           </div>
