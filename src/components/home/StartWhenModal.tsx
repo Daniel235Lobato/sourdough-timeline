@@ -520,7 +520,7 @@ export const StartWhenModal: React.FC<StartWhenModalProps> = ({
           className="w-full py-3.5 px-4 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-2xl font-bold text-sm sm:text-base shadow-sm flex items-center justify-center space-x-2 transition-all active-press"
         >
           <span className="tracking-wide">
-            {startFrom === 'peak' ? 'Start Bake (from Peak)' : 'Start Bake (from Feed)'}
+            Start Bake
           </span>
           <ArrowRight className="w-4 h-4" />
         </button>
