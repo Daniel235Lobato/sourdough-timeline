@@ -42,13 +42,23 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto overflow-x-hidden overscroll-contain animate-fade-in ${backdropClass}`}
+      className={`fixed inset-0 z-50 overflow-y-auto overflow-x-hidden overscroll-contain animate-fade-in ${backdropClass} flex flex-col items-center justify-start sm:justify-center`}
+      style={{
+        paddingTop: 'max(2.5rem, calc(env(safe-area-inset-top, 0px) + 1.5rem))',
+        paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom, 0px) + 1.5rem))',
+        paddingLeft: 'max(1rem, calc(env(safe-area-inset-left, 0px) + 0.75rem))',
+        paddingRight: 'max(1rem, calc(env(safe-area-inset-right, 0px) + 0.75rem))',
+        minHeight: '100dvh'
+      }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className={`bg-[#FAF5EE] text-[#2E1E14] rounded-3xl w-full p-5 sm:p-6 shadow-2xl border border-[#D1C1A8] relative max-h-[90vh] overflow-y-auto overflow-x-hidden my-auto ${maxWidthClass} ${cardClass}`}
+        className={`bg-[#FAF5EE] text-[#2E1E14] rounded-3xl w-full p-5 sm:p-6 shadow-2xl border border-[#D1C1A8] relative overflow-y-auto overflow-x-hidden my-auto shrink-0 ${maxWidthClass} ${cardClass}`}
+        style={{
+          maxHeight: 'calc(100dvh - 5.5rem)'
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
