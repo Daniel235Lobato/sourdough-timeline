@@ -1,5 +1,7 @@
 import React, { useState, Component, ErrorInfo, ReactNode } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SourdoughProvider, useSourdough } from './context/SourdoughContext';
+import { SignInWall } from './components/auth/SignInWall';
 import { Header } from './components/common/Header';
 import { BottomNav } from './components/common/BottomNav';
 import { HomeView } from './components/home/HomeView';
@@ -109,12 +111,33 @@ const MainAppContent: React.FC = () => {
   );
 };
 
+const AuthGatedApp: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh bg-[#FAF5EE] flex flex-col items-center justify-center space-y-3">
+        <div className="w-10 h-10 border-3 border-[#986A4C] border-t-transparent rounded-full animate-spin" />
+        <span className="font-serif text-sm font-semibold text-[#2E1E14]">Opening bakery...</span>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <SignInWall />;
+  }
+
+  return <MainAppContent />;
+};
+
 export default function App() {
   return (
     <ErrorBoundary>
-      <SourdoughProvider>
-        <MainAppContent />
-      </SourdoughProvider>
+      <AuthProvider>
+        <SourdoughProvider>
+          <AuthGatedApp />
+        </SourdoughProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
