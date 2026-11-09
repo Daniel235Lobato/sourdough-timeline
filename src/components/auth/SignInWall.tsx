@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User as UserIcon, Eye, EyeOff, ArrowRight, Settings, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from '../common/Logo';
-import { FirebaseConfig } from '../../services/firebase';
 
 export const SignInWall: React.FC = () => {
-  const { isFirebaseConfigured, login, register, loginWithGoogle, updateFirebaseConfig } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
 
   const [mode, setMode] = useState<'signin' | 'register'>('signin');
-  const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
-  const [rawConfigInput, setRawConfigInput] = useState<string>('');
-  const [configError, setConfigError] = useState<string | null>(null);
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,11 +18,6 @@ export const SignInWall: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-
-    if (!isFirebaseConfigured) {
-      setShowConfigModal(true);
-      return;
-    }
 
     if (mode === 'register') {
       if (!name.trim()) {
@@ -72,61 +62,12 @@ export const SignInWall: React.FC = () => {
 
   const handleGoogleClick = async () => {
     setErrorMessage(null);
-    if (!isFirebaseConfigured) {
-      setShowConfigModal(true);
-      return;
-    }
-
     setIsSubmitting(true);
     const res = await loginWithGoogle();
     setIsSubmitting(false);
 
     if (!res.success) {
       setErrorMessage(res.error || 'Google sign-in failed.');
-    }
-  };
-
-  const handleSaveConfig = (e: React.FormEvent) => {
-    e.preventDefault();
-    setConfigError(null);
-
-    try {
-      let parsed: any = null;
-      const trimmed = rawConfigInput.trim();
-
-      // If user pasted JS code like: const firebaseConfig = { apiKey: ... };
-      if (trimmed.includes('{')) {
-        const jsonLike = trimmed
-          .substring(trimmed.indexOf('{'), trimmed.lastIndexOf('}') + 1)
-          // Add quotes around unquoted object keys
-          .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-          // Replace single quotes with double quotes
-          .replace(/'/g, '"')
-          // Remove trailing commas before closing braces
-          .replace(/,\s*}/g, '}');
-
-        parsed = JSON.parse(jsonLike);
-      } else {
-        throw new Error('Please paste your full firebaseConfig object from the Firebase Console.');
-      }
-
-      if (!parsed.apiKey || !parsed.projectId) {
-        throw new Error('Config is missing apiKey or projectId.');
-      }
-
-      const cleanConfig: FirebaseConfig = {
-        apiKey: parsed.apiKey,
-        authDomain: parsed.authDomain || `${parsed.projectId}.firebaseapp.com`,
-        projectId: parsed.projectId,
-        storageBucket: parsed.storageBucket || `${parsed.projectId}.appspot.com`,
-        messagingSenderId: parsed.messagingSenderId || '',
-        appId: parsed.appId || ''
-      };
-
-      updateFirebaseConfig(cleanConfig);
-      setShowConfigModal(false);
-    } catch (err: any) {
-      setConfigError(err.message || 'Invalid Firebase configuration format. Please paste the object copied from Firebase.');
     }
   };
 
@@ -324,104 +265,7 @@ export const SignInWall: React.FC = () => {
             <span>Continue with Google</span>
           </button>
         </div>
-
-        {/* Firebase Connection Status / Setup Button */}
-        <div className="text-center pt-1">
-          <button
-            type="button"
-            onClick={() => setShowConfigModal(true)}
-            className="text-[11px] font-semibold text-[#836A4D] hover:text-[#2E1E14] inline-flex items-center gap-1 active-press"
-          >
-            <Settings className="w-3.5 h-3.5 text-[#986A4C]" />
-            <span>
-              {isFirebaseConfigured
-                ? 'Firebase Auth Active · Manage Keys'
-                : 'Connect Free Firebase Project to Activate'}
-            </span>
-          </button>
-        </div>
       </div>
-
-      {/* Firebase Setup Modal */}
-      {showConfigModal && (
-        <div className="fixed inset-0 z-50 bg-[#2E1E14]/60 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md bg-[#FAF5EE] border border-[#D1C1A8] rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 text-[#2E1E14]">
-            <div className="flex items-center justify-between border-b border-[#D1C1A8]/60 pb-3">
-              <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-[#986A4C]" />
-                <h3 className="font-serif font-extrabold text-base sm:text-lg text-[#2E1E14]">
-                  Firebase Auth Setup
-                </h3>
-              </div>
-              {isFirebaseConfigured && (
-                <button
-                  type="button"
-                  onClick={() => setShowConfigModal(false)}
-                  className="text-xs font-bold text-[#836A4D] hover:text-[#2E1E14] px-2 py-1"
-                >
-                  Close
-                </button>
-              )}
-            </div>
-
-            <div className="text-xs text-[#2E1E14]/80 space-y-2">
-              <p>
-                To enable <strong>real Google popup sign-in</strong> and <strong>secure email/password registration</strong>, paste your Firebase config below.
-              </p>
-              <div className="bg-[#E7CEB5]/50 border border-[#D1C1A8] rounded-xl p-3 space-y-1 text-[11px]">
-                <div className="font-bold text-[#2E1E14]">Quick 3-step setup (100% Free):</div>
-                <ol className="list-decimal list-inside space-y-0.5 text-[#2E1E14]/80">
-                  <li>Go to <span className="font-semibold text-[#2E1E14]">console.firebase.google.com</span></li>
-                  <li>Click <span className="font-semibold text-[#2E1E14]">Authentication</span> &gt; Enable <span className="font-semibold text-[#2E1E14]">Google</span> and <span className="font-semibold text-[#2E1E14]">Email/Password</span></li>
-                  <li>Under Project Settings, add a Web App (&lt;/&gt;) and copy the <code className="bg-[#FAF5EE] px-1 rounded">firebaseConfig</code></li>
-                </ol>
-              </div>
-            </div>
-
-            {configError && (
-              <div className="bg-red-50 border border-red-200 text-red-800 text-xs rounded-xl p-2.5 flex items-start space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-                <span>{configError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveConfig} className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-[#836A4D] block">
-                  Paste firebaseConfig object
-                </label>
-                <textarea
-                  rows={6}
-                  required
-                  value={rawConfigInput}
-                  onChange={(e) => setRawConfigInput(e.target.value)}
-                  placeholder={`const firebaseConfig = {\n  apiKey: "AIzaSy...",\n  authDomain: "levain.firebaseapp.com",\n  projectId: "levain-app",\n  appId: "1:..."\n};`}
-                  className="w-full font-mono text-[11px] bg-[#FAF5EE] border border-[#D1C1A8] rounded-xl p-2.5 text-[#2E1E14] placeholder-[#2E1E14]/40 focus:outline-hidden focus:ring-1 focus:ring-[#986A4C]"
-                />
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-1">
-                {isFirebaseConfigured && (
-                  <button
-                    type="button"
-                    onClick={() => setShowConfigModal(false)}
-                    className="py-2.5 px-4 rounded-xl text-xs font-bold text-[#836A4D] hover:text-[#2E1E14] active-press"
-                  >
-                    Cancel
-                  </button>
-                )}
-                <button
-                  type="submit"
-                  className="py-2.5 px-5 rounded-xl bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] font-bold text-xs shadow-md transition-all flex items-center space-x-1.5 active-press"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Save &amp; Activate Firebase</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
