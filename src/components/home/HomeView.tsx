@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { 
   Clock, 
@@ -25,18 +25,34 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [isStartWhenOpen, setIsStartWhenOpen] = useState<boolean>(false);
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState<boolean>(false);
   const [startStage, setStartStage] = useState<'feed' | 'peak'>('feed');
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+
+  // Continuously sync with the device's clock in real time
+  useEffect(() => {
+    const syncTime = () => setCurrentTime(new Date());
+
+    // Update every second so time changes immediately as minutes advance
+    const timer = setInterval(syncTime, 1000);
+    window.addEventListener('focus', syncTime);
+    document.addEventListener('visibilitychange', syncTime);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', syncTime);
+      document.removeEventListener('visibilitychange', syncTime);
+    };
+  }, []);
 
   const retardHours = selectedRecipe.defaultRetardHours || 14;
   const saltGrams = selectedRecipe.saltGrams ?? Math.round(selectedRecipe.flourGrams * 0.02);
 
-  // Live schedule preview based on selected recipe and starter stage
+  // Live schedule preview based on selected recipe and starter stage, synced with real device time
   const schedulePreview = useMemo(() => {
-    const now = new Date();
-    let steps = calculateForwardSchedule(selectedRecipe, now, retardHours);
+    let steps = calculateForwardSchedule(selectedRecipe, currentTime, retardHours);
     if (startStage === 'peak') {
       const mixIdx = steps.findIndex(s => s.phase !== 'starter');
       if (mixIdx > 0) {
-        steps = startFromChosenStep(selectedRecipe, mixIdx, now, retardHours);
+        steps = startFromChosenStep(selectedRecipe, mixIdx, currentTime, retardHours);
       }
     }
 
@@ -58,7 +74,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       fridge: formatSchedulePoint(retardStep?.startTime),
       bake: formatSchedulePoint(bakeStep?.startTime || lastStep?.endTime),
     };
-  }, [selectedRecipe, startStage, retardHours]);
+  }, [selectedRecipe, startStage, retardHours, currentTime]);
 
   const handleQuickStartNow = () => {
     startNewBake('start-when', new Date(), retardHours, selectedRecipe, startStage);
