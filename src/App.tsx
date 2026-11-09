@@ -6,7 +6,6 @@ import { HomeView } from './components/home/HomeView';
 import { TimelineView } from './components/timeline/TimelineView';
 import { RecipeListView } from './components/recipes/RecipeListView';
 import { BakeHistoryView } from './components/history/BakeHistoryView';
-import { HydrationCalculatorView } from './components/calculator/HydrationCalculatorView';
 import { NotificationBanner } from './components/common/NotificationBanner';
 import { Logo } from './components/common/Logo';
 
@@ -95,10 +94,6 @@ const MainAppContent: React.FC = () => {
 
         {activeTab === 'history' && (
           <BakeHistoryView />
-        )}
-
-        {activeTab === 'calculator' && (
-          <HydrationCalculatorView onApplyFormula={() => setActiveTab('home')} />
         )}
       </main>
 

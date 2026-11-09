@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, BookOpen, History, Calculator } from 'lucide-react';
+import { Compass, BookOpen, History } from 'lucide-react';
 import { useSourdough } from '../../context/SourdoughContext';
 
 interface BottomNavProps {
@@ -26,11 +26,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
       id: 'history',
       label: 'History',
       icon: History
-    },
-    {
-      id: 'calculator',
-      label: 'Hydration',
-      icon: Calculator
     }
   ];
 
