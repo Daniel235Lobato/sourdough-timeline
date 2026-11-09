@@ -3,6 +3,7 @@ import { MapPin, Bell, BellRing, LogOut, X, User as UserIcon } from 'lucide-reac
 import { useSourdough } from '../../context/SourdoughContext';
 import { useAuth } from '../../context/AuthContext';
 import { Logo } from './Logo';
+import { Modal } from './Modal';
 
 interface HeaderProps {
   activeTab: string;
@@ -126,9 +127,13 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       )}
       {/* User Profile Modal */}
-      {isProfileOpen && user && (
-        <div className="fixed inset-0 z-50 bg-[#2E1E14]/40 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-xs bg-[#FAF5EE] border border-[#D1C1A8] rounded-3xl p-5 shadow-card space-y-4 text-[#2E1E14]">
+      {user && (
+        <Modal
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+          maxWidthClass="max-w-xs"
+        >
+          <div className="space-y-4 text-[#2E1E14]">
             <div className="flex items-center justify-between border-b border-[#D1C1A8]/60 pb-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#836A4D]">
                 Baker Account
@@ -177,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </header>
   );
