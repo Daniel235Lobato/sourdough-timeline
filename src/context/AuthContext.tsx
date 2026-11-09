@@ -129,6 +129,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (err.code === 'auth/popup-closed-by-user') {
         return { success: false, error: 'Google sign-in popup was closed before completing.' };
       }
+      if (err.code === 'auth/unauthorized-domain') {
+        const domain = window.location.hostname;
+        return { 
+          success: false, 
+          error: `Domain "${domain}" is not authorized. Please add "${domain}" to Authorized Domains in Firebase Console > Authentication > Settings > Authorized domains.` 
+        };
+      }
       return { success: false, error: err.message || 'Google sign-in failed.' };
     }
   };
