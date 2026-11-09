@@ -131,14 +131,9 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
 
               <div className="min-w-0">
-                <div className="flex items-center space-x-2">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-[#986A4C] block leading-none">
-                    Active Recipe
-                  </span>
-                  <span className="text-[10px] text-[#2E1E14]/60 font-semibold leading-none">
-                    • {selectedRecipe.hydration}% Hydration
-                  </span>
-                </div>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-[#986A4C] block leading-none">
+                  Active Recipe
+                </span>
                 <h2 className="font-serif text-base sm:text-lg font-extrabold text-[#2E1E14] mt-0.5 leading-snug">
                   {selectedRecipe.name}
                 </h2>
