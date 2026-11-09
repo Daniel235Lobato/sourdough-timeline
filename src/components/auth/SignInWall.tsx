@@ -8,7 +8,7 @@ export const SignInWall: React.FC = () => {
   const { isFirebaseConfigured, login, register, loginWithGoogle, updateFirebaseConfig } = useAuth();
 
   const [mode, setMode] = useState<'signin' | 'register'>('signin');
-  const [showConfigModal, setShowConfigModal] = useState<boolean>(!isFirebaseConfigured);
+  const [showConfigModal, setShowConfigModal] = useState<boolean>(false);
   const [rawConfigInput, setRawConfigInput] = useState<string>('');
   const [configError, setConfigError] = useState<string | null>(null);
 

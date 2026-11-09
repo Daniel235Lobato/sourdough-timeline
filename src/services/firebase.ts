@@ -1,8 +1,6 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
 
-const STORAGE_FIREBASE_CONFIG_KEY = 'levain_firebase_config';
-
 export interface FirebaseConfig {
   apiKey: string;
   authDomain: string;
@@ -12,9 +10,23 @@ export interface FirebaseConfig {
   appId: string;
 }
 
-// 1. Check local storage for user-pasted config
-// 2. Check Vite environment variables
-export function getActiveFirebaseConfig(): FirebaseConfig | null {
+export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
+  apiKey: "AIzaSyAeOPmy_VpSv00xvOIeG396aVB9s5oObZg",
+  authDomain: "levain-a0c29.firebaseapp.com",
+  projectId: "levain-a0c29",
+  storageBucket: "levain-a0c29.firebasestorage.app",
+  messagingSenderId: "921954582254",
+  appId: "1:921954582254:web:7ec0911e755078a367fdff"
+};
+
+const STORAGE_FIREBASE_CONFIG_KEY = 'levain_firebase_config';
+
+export function saveFirebaseConfig(config: FirebaseConfig) {
+  localStorage.setItem(STORAGE_FIREBASE_CONFIG_KEY, JSON.stringify(config));
+  window.location.reload();
+}
+
+export function getActiveFirebaseConfig(): FirebaseConfig {
   try {
     const localConfig = localStorage.getItem(STORAGE_FIREBASE_CONFIG_KEY);
     if (localConfig) {
@@ -33,40 +45,29 @@ export function getActiveFirebaseConfig(): FirebaseConfig | null {
   if (envApiKey && envProjectId) {
     return {
       apiKey: envApiKey,
-      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || `${envProjectId}.firebaseapp.com`,
+      authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEFAULT_FIREBASE_CONFIG.authDomain,
       projectId: envProjectId,
-      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${envProjectId}.appspot.com`,
-      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-      appId: import.meta.env.VITE_FIREBASE_APP_ID || ''
+      storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || DEFAULT_FIREBASE_CONFIG.storageBucket,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || DEFAULT_FIREBASE_CONFIG.messagingSenderId,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID || DEFAULT_FIREBASE_CONFIG.appId
     };
   }
 
-  return null;
+  return DEFAULT_FIREBASE_CONFIG;
 }
 
-export function saveFirebaseConfig(config: FirebaseConfig) {
-  localStorage.setItem(STORAGE_FIREBASE_CONFIG_KEY, JSON.stringify(config));
-  window.location.reload();
+let app: FirebaseApp;
+const config = getActiveFirebaseConfig();
+
+try {
+  app = getApps().length === 0 ? initializeApp(config) : getApp();
+} catch (err) {
+  console.error('[Firebase] Init failed:', err);
+  app = initializeApp(config);
 }
 
-export function clearFirebaseConfig() {
-  localStorage.removeItem(STORAGE_FIREBASE_CONFIG_KEY);
-  window.location.reload();
-}
-
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
+const auth: Auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
-
-const config = getActiveFirebaseConfig();
-if (config) {
-  try {
-    app = getApps().length === 0 ? initializeApp(config) : getApp();
-    auth = getAuth(app);
-  } catch (err) {
-    console.error('[Firebase] Init failed:', err);
-  }
-}
 
 export { app, auth, googleProvider };
