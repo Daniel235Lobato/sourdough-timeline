@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { 
   Clock, 
@@ -25,17 +25,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [isStartWhenOpen, setIsStartWhenOpen] = useState<boolean>(false);
   const [isStartFromStepOpen, setIsStartFromStepOpen] = useState<boolean>(false);
   const [startStage, setStartStage] = useState<'feed' | 'peak'>('feed');
-  const [homeStep, setHomeStep] = useState<'intro' | 'card'>('intro');
-
-  // Auto-transition to bake card after introductory animation sequence, while allowing instant tap
-  useEffect(() => {
-    if (homeStep === 'intro') {
-      const timer = setTimeout(() => {
-        setHomeStep('card');
-      }, 3600);
-      return () => clearTimeout(timer);
-    }
-  }, [homeStep]);
 
   const retardHours = selectedRecipe.defaultRetardHours || 14;
   const saltGrams = selectedRecipe.saltGrams ?? Math.round(selectedRecipe.flourGrams * 0.02);
@@ -78,203 +67,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   return (
     <div className="w-full flex-1 flex flex-col justify-start max-w-md mx-auto space-y-3 animate-fade-in text-[#2E1E14]">
-      {homeStep === 'intro' ? (
-        /* Introductory Step with Artisanal Sourdough Animation */
-        <div className="w-full flex-1 flex flex-col justify-start space-y-3 animate-fade-in">
-          {/* Introductory Step Header */}
-          <div className="px-1 pt-0.5">
-            <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
-              Levain Sourdough
-            </h1>
-            <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
-              Fresh flour, wild fermentation, and time. Let&apos;s craft your loaf.
-            </p>
-          </div>
+      {/* Screen Introduction & Prompt Header */}
+      <div className="px-1 pt-0.5">
+        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
+          Plan Your Bake
+        </h1>
+        <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
+          Choose your starter point and recipe to begin your guided sourdough journey.
+        </p>
+      </div>
 
-          {/* Animated Introductory Step Card */}
-          <div className="rounded-3xl bg-[#E7CEB5] p-5 sm:p-6 border border-[#D1C1A8] shadow-card space-y-4 text-center flex flex-col items-center justify-center animate-fade-in">
-            {/* Step Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF5EE]/90 border border-[#D1C1A8] text-[10px] font-bold uppercase tracking-wider text-[#836A4D]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#986A4C] animate-ping" />
-              <span>Bake Overview</span>
-            </div>
-
-            {/* Artisanal SVG Animation Centerpiece */}
-            <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center my-1">
-              {/* Outer pulsing glow halo */}
-              <div className="absolute inset-0 rounded-full border-2 border-[#AD9677]/40 bg-[#FAF5EE]/60 animate-glow-ring pointer-events-none" />
-
-              {/* Floating bread loaf with rising steam */}
-              <div className="relative z-10 w-24 h-24 sm:w-28 sm:h-28 animate-gentle-float flex items-center justify-center">
-                <svg viewBox="0 0 100 100" className="w-full h-full" fill="none">
-                  {/* Steam lines wafting upward */}
-                  <path
-                    d="M 44 26 C 42 20, 46 16, 43 10"
-                    stroke="#986A4C"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    className="animate-steam-1 opacity-75"
-                  />
-                  <path
-                    d="M 50 24 C 52 18, 48 14, 51 8"
-                    stroke="#836A4D"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    className="animate-steam-2 opacity-85"
-                  />
-                  <path
-                    d="M 56 26 C 58 20, 54 16, 57 10"
-                    stroke="#986A4C"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    className="animate-steam-3 opacity-75"
-                  />
-
-                  {/* Sourdough Boule Loaf Body */}
-                  <path
-                    d="M 22 56 C 22 36, 36 28, 50 28 C 64 28, 78 36, 78 56 C 78 62, 72 66, 50 66 C 28 66, 22 62, 22 56 Z"
-                    fill="#FAF5EE"
-                    stroke="#836A4D"
-                    strokeWidth="3.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-
-                  {/* Lower crust accent */}
-                  <path
-                    d="M 26 57 C 34 62, 66 62, 74 57"
-                    stroke="#986A4C"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Artisanal Ear & Wheat Scoring */}
-                  <path
-                    d="M 32 50 C 42 42, 58 35, 68 35"
-                    stroke="#986A4C"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M 38 45 C 42 41, 46 40, 46 36"
-                    stroke="#986A4C"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M 46 41 C 50 37, 54 36, 54 32"
-                    stroke="#986A4C"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M 54 38 C 58 34, 62 33, 62 29"
-                    stroke="#986A4C"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Wheat Laurel Wreath Framing */}
-                  <path
-                    d="M 16 38 C 10 50, 11 65, 23 74 C 31 79, 41 79, 48 77"
-                    stroke="#836A4D"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M 84 38 C 90 50, 89 65, 77 74 C 69 79, 59 79, 52 77"
-                    stroke="#836A4D"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Intro Headline & Copy */}
-            <div className="space-y-1 max-w-xs">
-              <h2 className="font-serif text-xl sm:text-2xl font-extrabold text-[#2E1E14] tracking-tight">
-                Craft Your Perfect Loaf
-              </h2>
-              <p className="text-xs sm:text-sm text-[#2E1E14]/75 leading-relaxed">
-                Personalized wild fermentation schedules synchronized to your kitchen temperature and routine.
-              </p>
-            </div>
-
-            {/* 4-Step Journey Preview */}
-            <div className="grid grid-cols-4 gap-1.5 w-full max-w-xs pt-1">
-              <div className="bg-[#FAF5EE]/90 rounded-xl p-2 border border-[#D1C1A8]/70 flex flex-col items-center text-center">
-                <span className="text-base">🌾</span>
-                <span className="text-[10px] font-bold text-[#2E1E14] mt-1">Starter</span>
-                <span className="text-[9px] text-[#2E1E14]/65">Feed &amp; Peak</span>
-              </div>
-              <div className="bg-[#FAF5EE]/90 rounded-xl p-2 border border-[#D1C1A8]/70 flex flex-col items-center text-center">
-                <span className="text-base">🥣</span>
-                <span className="text-[10px] font-bold text-[#2E1E14] mt-1">Mix</span>
-                <span className="text-[9px] text-[#2E1E14]/65">3 Folds</span>
-              </div>
-              <div className="bg-[#FAF5EE]/90 rounded-xl p-2 border border-[#D1C1A8]/70 flex flex-col items-center text-center">
-                <span className="text-base">❄️</span>
-                <span className="text-[10px] font-bold text-[#2E1E14] mt-1">Retard</span>
-                <span className="text-[9px] text-[#2E1E14]/65">Overnight</span>
-              </div>
-              <div className="bg-[#FAF5EE]/90 rounded-xl p-2 border border-[#D1C1A8]/70 flex flex-col items-center text-center">
-                <span className="text-base">🔥</span>
-                <span className="text-[10px] font-bold text-[#2E1E14] mt-1">Bake</span>
-                <span className="text-[9px] text-[#2E1E14]/65">Cast Iron</span>
-              </div>
-            </div>
-
-            {/* Action CTA Button */}
-            <div className="w-full max-w-xs space-y-2 pt-1">
-              <button
-                type="button"
-                onClick={() => setHomeStep('card')}
-                className="w-full py-3 px-4 bg-[#2E1E14] hover:bg-[#986A4C] text-[#FAF5EE] rounded-xl font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2 active-press"
-              >
-                <span>Plan Your Bake</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
-              <div className="flex items-center justify-between text-[11px] text-[#2E1E14]/60 px-1">
-                <span>Auto-opening in 3s...</span>
-                <button
-                  type="button"
-                  onClick={() => setHomeStep('card')}
-                  className="font-semibold text-[#836A4D] hover:text-[#2E1E14] underline"
-                >
-                  Skip to Card
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* The Current Start Bake Card Flow */
-        <>
-          {/* Screen Introduction & Prompt Header */}
-          <div className="px-1 pt-0.5 flex items-start justify-between">
-            <div>
-              <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
-                Plan Your Bake
-              </h1>
-              <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
-                Choose your starter point and recipe to begin your guided sourdough journey.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setHomeStep('intro')}
-              className="text-xs font-bold text-[#836A4D] hover:text-[#2E1E14] bg-[#FAF5EE] px-2.5 py-1.5 rounded-xl border border-[#D1C1A8] shadow-2xs flex items-center gap-1 active-press shrink-0 ml-2 mt-1"
-              title="Replay introductory animation"
-            >
-              <span>↺</span>
-              <span className="hidden sm:inline">Intro</span>
-            </button>
-          </div>
-
-          {/* Main Bake Card */}
-          <div className="rounded-3xl bg-[#E7CEB5] p-4 sm:p-5 border border-[#D1C1A8] shadow-card space-y-3.5">
+      {/* Main Bake Card */}
+      <div className="rounded-3xl bg-[#E7CEB5] p-4 sm:p-5 border border-[#D1C1A8] shadow-card space-y-3.5">
         {/* Active Recipe Card */}
         <div className="bg-[#FAF5EE] rounded-2xl p-3.5 border border-[#D1C1A8] space-y-3">
           {/* Active Recipe Row with Emblem & Badges */}
@@ -506,8 +310,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </div>
       </div>
-    </>
-  )}
 
       {/* Modals */}
       <StartWhenModal
