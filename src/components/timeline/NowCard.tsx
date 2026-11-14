@@ -97,6 +97,8 @@ export const NowCard: React.FC<NowCardProps> = ({
   const isTimerRunning = hasStartedCurrentStep || isAlreadyStarted;
 
   const hasExtraInfo = Boolean(
+    currentStep.description ||
+    (currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0) ||
     (currentStep.detailedInstructions && currentStep.detailedInstructions.length > 0) ||
     currentStep.fermentationCues ||
     currentStep.temperatureNote
@@ -105,10 +107,10 @@ export const NowCard: React.FC<NowCardProps> = ({
   return (
     <div 
       ref={cardRef} 
-      className="scroll-mt-4 rounded-3xl bg-[#E7CEB5] border border-[#D1C1A8] text-[#2E1E14] p-5 sm:p-6 shadow-xs transition-all relative w-full max-w-full min-w-0 box-border"
+      className="scroll-mt-4 rounded-3xl bg-[#E7CEB5] border border-[#D1C1A8] text-[#2E1E14] p-4 sm:p-6 shadow-xs transition-all relative w-full max-w-full min-w-0 box-border"
     >
       {/* 1. Header: Subtle breadcrumb + quiet Behind link */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#D1C1A8]/60 mb-4">
+      <div className="flex items-center justify-between pb-2.5 border-b border-[#D1C1A8]/60 mb-3">
         <span className="text-xs font-semibold text-[#2E1E14]/70">
           Step {currentStep.index + 1} of {activeSession?.steps.length} · <span className="capitalize">{currentStep.phase}</span>
         </span>
@@ -121,29 +123,11 @@ export const NowCard: React.FC<NowCardProps> = ({
         </button>
       </div>
 
-      {/* 2. Step Title & Clean Guidance */}
-      <div className="space-y-1.5 mb-4">
+      {/* 2. Minimalist Step Title */}
+      <div className="mb-2 text-center">
         <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] leading-tight">
           {currentStep.name}
         </h2>
-        <p className="text-xs sm:text-sm text-[#2E1E14]/80 leading-relaxed">
-          {currentStep.description}
-        </p>
-
-        {/* Ingredients as calm, clean horizontal chips */}
-        {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-2">
-            {currentStep.ingredientsUsed.map((ing, i) => (
-              <span 
-                key={i} 
-                className="inline-flex items-center px-2.5 py-1 rounded-xl bg-[#FAF5EE] border border-[#D1C1A8] text-xs text-[#2E1E14]"
-              >
-                <strong className="font-mono font-bold mr-1">{ing.amount}{ing.unit}</strong>
-                <span>{ing.name}</span>
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* 3. Fluid Artisan Chronometer Timer */}
@@ -203,9 +187,36 @@ export const NowCard: React.FC<NowCardProps> = ({
         </div>
       </div>
 
-      {/* 6. Expandable Guidance Tray (Only shown when requested) */}
+      {/* 6. Expandable Guidance Tray (All step details, ingredients, instructions & cues) */}
       {hasExtraInfo && isDetailsOpen && (
         <div className="mt-4 pt-3.5 border-t border-[#D1C1A8] space-y-3 animate-fade-in text-xs text-[#2E1E14]">
+          {/* Step Overview */}
+          {currentStep.description && (
+            <div className="bg-[#FAF5EE] p-3.5 rounded-2xl border border-[#D1C1A8] leading-relaxed text-[#2E1E14]/85">
+              {currentStep.description}
+            </div>
+          )}
+
+          {/* Ingredients Used */}
+          {currentStep.ingredientsUsed && currentStep.ingredientsUsed.length > 0 && (
+            <div className="bg-[#FAF5EE] p-3.5 rounded-2xl border border-[#D1C1A8] space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#2E1E14]/70 block">
+                Ingredients:
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                {currentStep.ingredientsUsed.map((ing, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center px-2.5 py-1 rounded-xl bg-[#E7CEB5]/55 border border-[#D1C1A8] text-xs text-[#2E1E14]"
+                  >
+                    <strong className="font-mono font-bold mr-1">{ing.amount}{ing.unit}</strong>
+                    <span>{ing.name}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Step Instructions */}
           {currentStep.detailedInstructions && currentStep.detailedInstructions.length > 0 && (
             <div className="space-y-1.5 bg-[#FAF5EE] p-3.5 rounded-2xl border border-[#D1C1A8]">
