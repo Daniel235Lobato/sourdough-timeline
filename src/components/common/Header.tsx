@@ -34,7 +34,10 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-[#FAF5EE]/90 backdrop-blur-xl border-b border-[#D1C1A8]/70 px-4 py-2.5 max-w-2xl mx-auto w-full transition-all">
+    <header
+      className="shrink-0 z-30 bg-[#FAF5EE] border-b border-[#D1C1A8]/70 px-4 pb-2.5 max-w-2xl mx-auto w-full transition-colors"
+      style={{ paddingTop: 'max(0.625rem, env(safe-area-inset-top, 0px))' }}
+    >
       <div className="flex items-center justify-between">
         {/* Brand / Logo */}
         <button 

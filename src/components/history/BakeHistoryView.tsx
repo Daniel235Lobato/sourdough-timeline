@@ -11,7 +11,7 @@ export const BakeHistoryView: React.FC = () => {
   const [isClearAllOpen, setIsClearAllOpen] = useState(false);
 
   return (
-    <div className="pb-24 pt-1 px-3 sm:px-4 max-w-xl mx-auto space-y-5 animate-fade-in text-[#2E1E14]">
+    <div className="pb-6 pt-1 px-1 sm:px-2 max-w-xl mx-auto space-y-4 animate-fade-in text-[#2E1E14]">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>

@@ -69,16 +69,16 @@ const MainAppContent: React.FC = () => {
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState<boolean>(false);
 
   return (
-    <div className="min-h-dvh bg-[#FAF5EE] text-[#2E1E14] flex flex-col font-sans selection:bg-[#D1C1A8] selection:text-[#2E1E14] w-full max-w-full overflow-x-hidden">
-      {/* Sticky Header */}
+    <div className="h-dvh overflow-hidden bg-[#FAF5EE] text-[#2E1E14] flex flex-col font-sans selection:bg-[#D1C1A8] selection:text-[#2E1E14] w-full max-w-full">
+      {/* Crisp Stationary Header */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenNotifications={() => setIsNotificationModalOpen(true)}
       />
 
-      {/* Main Tab Screen Container */}
-      <main className="flex-1 flex flex-col w-full max-w-xl mx-auto pt-2.5 pb-24 px-3.5 sm:px-4 min-w-0 overflow-x-hidden box-border">
+      {/* Main Tab Screen Container (fills exact remaining viewport height) */}
+      <main className="flex-1 min-h-0 flex flex-col w-full max-w-xl mx-auto pt-2 pb-2 px-3.5 sm:px-4 overflow-y-auto overflow-x-hidden overscroll-contain no-scrollbar box-border">
         {(activeTab === 'home' || (!activeSession && activeTab === 'timeline')) && (
           <HomeView
             onNavigateToTimeline={() => setActiveTab('timeline')}

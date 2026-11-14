@@ -82,21 +82,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-start max-w-md mx-auto space-y-3 animate-fade-in text-[#2E1E14]">
+    <div className="w-full flex-1 min-h-0 flex flex-col justify-center max-w-md mx-auto space-y-2.5 sm:space-y-3 animate-fade-in text-[#2E1E14]">
       {/* Screen Introduction & Prompt Header */}
-      <div className="px-1 pt-0.5">
-        <h1 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
+      <div className="px-1">
+        <h1 className="font-serif text-xl sm:text-3xl font-extrabold text-[#2E1E14] tracking-tight leading-tight">
           Plan Your Bake
         </h1>
-        <p className="text-sm sm:text-base text-[#2E1E14]/75 mt-1 leading-normal">
+        <p className="text-xs sm:text-sm text-[#2E1E14]/75 mt-0.5 leading-snug">
           Choose your starter point and recipe to begin your guided sourdough journey.
         </p>
       </div>
 
       {/* Main Bake Card */}
-      <div className="rounded-3xl bg-[#E7CEB5] p-4 sm:p-5 border border-[#D1C1A8] shadow-card space-y-3.5">
+      <div className="rounded-3xl bg-[#E7CEB5] p-3.5 sm:p-5 border border-[#D1C1A8] shadow-card space-y-2.5 sm:space-y-3.5">
         {/* Active Recipe Card */}
-        <div className="bg-[#FAF5EE] rounded-2xl p-3.5 border border-[#D1C1A8] space-y-3">
+        <div className="bg-[#FAF5EE] rounded-2xl p-3 sm:p-3.5 border border-[#D1C1A8] space-y-2.5">
           {/* Active Recipe Row with Emblem & Badges */}
           <button
             type="button"

@@ -30,8 +30,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab })
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-4 pb-safe pointer-events-none">
-      <nav className="max-w-md mx-auto mb-2 sm:mb-3 bg-[#E7CEB5]/95 backdrop-blur-xl border border-[#D1C1A8] rounded-3xl shadow-dock pointer-events-auto p-1.5 transition-all">
+    <div className="shrink-0 z-40 px-3 sm:px-4 pt-1.5 pb-safe bg-[#FAF5EE]">
+      <nav className="max-w-md mx-auto mb-2 sm:mb-3 bg-[#E7CEB5] border border-[#D1C1A8] rounded-3xl shadow-dock p-1.5 transition-all">
         <div className="flex items-center justify-around">
           {navItems.map(item => {
             const Icon = item.icon;

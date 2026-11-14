@@ -72,7 +72,7 @@ export const SignInWall: React.FC = () => {
   };
 
   return (
-    <div className="min-h-dvh w-full bg-[#FAF5EE] text-[#2E1E14] flex flex-col justify-center items-center px-4 py-8 select-none">
+    <div className="h-dvh overflow-y-auto w-full bg-[#FAF5EE] text-[#2E1E14] flex flex-col justify-center items-center px-4 py-6 select-none no-scrollbar">
       <div className="w-full max-w-sm mx-auto space-y-4 animate-fade-in">
         {/* Brand Logo & Introduction */}
         <div className="flex flex-col items-center text-center space-y-1.5">
