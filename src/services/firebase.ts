@@ -11,12 +11,12 @@ export interface FirebaseConfig {
 }
 
 export const DEFAULT_FIREBASE_CONFIG: FirebaseConfig = {
-  apiKey: "AIzaSyAeOPmy_VpSv00xvOIeG396aVB9s5oObZg",
-  authDomain: "levain-a0c29.firebaseapp.com",
-  projectId: "levain-a0c29",
-  storageBucket: "levain-a0c29.firebasestorage.app",
-  messagingSenderId: "921954582254",
-  appId: "1:921954582254:web:7ec0911e755078a367fdff"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || ''
 };
 
 const STORAGE_FIREBASE_CONFIG_KEY = 'levain_firebase_config';
