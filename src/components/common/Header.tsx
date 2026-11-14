@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className="shrink-0 z-30 bg-[#FAF5EE] border-b border-[#D1C1A8]/70 px-4 py-3 max-w-2xl mx-auto w-full">
+    <header className="shrink-0 z-30 bg-[#FAF5EE] border-b border-[#D1C1A8]/70 px-4 pt-5 sm:pt-3 pb-3 max-w-2xl mx-auto w-full">
       <div className="flex items-center justify-between">
         {/* Brand / Logo */}
         <button 
