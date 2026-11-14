@@ -124,6 +124,15 @@
   animation: gentleFloat 4.5s ease-in-out infinite;
 }
 
+@keyframes timerBreathe {
+  0%, 100% { transform: scale(0.98); opacity: 0.45; }
+  50% { transform: scale(1.03); opacity: 0.85; }
+}
+
+.animate-timer-breathe {
+  animation: timerBreathe 4s ease-in-out infinite;
+}
+
 /* Tactile micro-press feedback for buttons & interactive elements (100% -> 97.5% -> 100%) */
 button, 
 [role="button"], 

@@ -17,26 +17,31 @@ self.addEventListener('push', (event) => {
     try {
       data = event.data.json();
     } catch (e) {
-      data = { title: '🍞 Sourdough Alert', body: event.data.text() };
+      data = { title: '⏱️ Levain Timer', body: event.data.text() };
     }
   }
 
-  const title = data.title || '🍞 Sourdough Step Complete!';
+  // Drop stale notifications that arrive > 15 minutes after their scheduled fire time
+  if (typeof data.fireTimestamp === 'number' && Date.now() - data.fireTimestamp > 15 * 60 * 1000) {
+    return;
+  }
+
+  const title = data.title || '⏱️ Time for Your Next Step';
   const options = {
-    body: data.body || 'Time to start your next baking step!',
+    body: data.body || 'Your step timer has finished. Tap to start your next baking step.',
     icon: data.icon || './logo.png',
     badge: data.badge || './favicon.png',
-    tag: data.tag || 'sourdough-timer-' + Date.now(),
+    tag: data.tag || 'levain-timer-reminder',
     renotify: true,
     requireInteraction: true,
-    vibrate: [300, 150, 300, 150, 500],
+    vibrate: [250, 120, 250, 120, 400],
     data: {
       url: data.url || './',
       stepId: data.stepId,
       timestamp: Date.now()
     },
     actions: [
-      { action: 'open_timeline', title: 'Open Schedule 🍞' }
+      { action: 'open_timeline', title: 'Start Next Step' }
     ]
   };
 

@@ -13,8 +13,9 @@ import {
 } from 'lucide-react';
 import { ScheduledStep } from '../../types/timeline';
 import { useSourdough } from '../../context/SourdoughContext';
-import { useCountdown, formatDurationToHMS } from '../../hooks/useCountdown';
+import { useCountdown } from '../../hooks/useCountdown';
 import { StepInstructionIcon } from '../icons/StepIcons';
+import { FluidStepTimer } from './FluidStepTimer';
 
 interface NowCardProps {
   currentStep: ScheduledStep;
@@ -94,11 +95,6 @@ export const NowCard: React.FC<NowCardProps> = ({
   };
 
   const isTimerRunning = hasStartedCurrentStep || isAlreadyStarted;
-  const timeDisplay = isZeroDurationStep
-    ? 'Ready Now'
-    : isTimerRunning 
-      ? countdown.formattedCountdown 
-      : formatDurationToHMS(currentStep.durationMinutes);
 
   const hasExtraInfo = Boolean(
     (currentStep.detailedInstructions && currentStep.detailedInstructions.length > 0) ||
@@ -150,29 +146,14 @@ export const NowCard: React.FC<NowCardProps> = ({
         )}
       </div>
 
-      {/* 3. Integrated Serene Timer */}
-      <div className="my-4 py-2 text-center rounded-2xl bg-[#FAF5EE]/70 border border-[#D1C1A8]/60">
-        <div className="text-[11px] font-semibold text-[#2E1E14]/70 uppercase tracking-wider mb-0.5">
-          {isZeroDurationStep 
-            ? 'Milestone Ready' 
-            : isTimerRunning 
-              ? (countdown.isPast ? 'Target reached' : 'Time remaining') 
-              : 'Duration'}
-        </div>
-        <div className="font-mono text-3xl sm:text-4xl font-extrabold text-[#2E1E14] tracking-wider">
-          {timeDisplay}
-        </div>
-        {nextStep && (
-          <div className="text-xs text-[#2E1E14]/75 mt-1">
-            Next: <strong className="text-[#2E1E14] font-semibold">{nextStep.shortName || nextStep.name}</strong>
-            {!isZeroDurationStep && (
-              <span className="text-[#2E1E14]/60 ml-1">
-                · {nextStep.startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      {/* 3. Fluid Artisan Chronometer Timer */}
+      <FluidStepTimer
+        currentStep={currentStep}
+        nextStep={nextStep}
+        countdown={countdown}
+        isTimerRunning={isTimerRunning}
+        isZeroDurationStep={isZeroDurationStep}
+      />
 
       {/* 4. One Primary Action Button */}
       <div className="space-y-2.5">

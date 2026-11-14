@@ -216,13 +216,45 @@ export function useNotifications() {
     }
   }, [swRegistration, requestPermission]);
 
+const SCHEDULED_MSGS_STORAGE_KEY = 'levain_scheduled_msg_ids_v1';
+
+type StoredScheduledMsg = string | { messageId: string; base?: string };
+
+function getStoredScheduledMsgs(): StoredScheduledMsg[] {
+  try {
+    const saved = localStorage.getItem(SCHEDULED_MSGS_STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function setStoredScheduledMsgs(msgs: StoredScheduledMsg[]): void {
+  try {
+    if (msgs.length === 0) {
+      localStorage.removeItem(SCHEDULED_MSGS_STORAGE_KEY);
+    } else {
+      localStorage.setItem(SCHEDULED_MSGS_STORAGE_KEY, JSON.stringify(msgs));
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+function extractMessageIds(msgs: StoredScheduledMsg[]): string[] {
+  return msgs
+    .map(m => (typeof m === 'string' ? m : m?.messageId))
+    .filter((id): id is string => Boolean(id));
+}
+
   // 4. Schedule Remote Push for a Single Step Timer
   const scheduleRemotePush = useCallback(async (params: SchedulePushParams) => {
     if (!pushSubscription) return;
     const apiUrl = getApiBaseUrl();
 
     try {
-      await fetch(`${apiUrl}/api/notifications/schedule`, {
+      const res = await fetch(`${apiUrl}/api/notifications/schedule`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -230,19 +262,17 @@ export function useNotifications() {
           ...params
         })
       });
+      if (res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.qstashMessage?.messageId) {
+          const current = getStoredScheduledMsgs();
+          setStoredScheduledMsgs([...current, data.qstashMessage]);
+        }
+      }
     } catch (e) {
       console.warn('[Push] Remote schedule error:', e);
     }
   }, [pushSubscription]);
-
-  const [scheduledMsgIds, setScheduledMsgIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('levain_scheduled_msg_ids_v1');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
 
   // 5. Batch Sync Session Step Timers with Push Server
   const syncSessionPushSchedules = useCallback(async (
@@ -251,6 +281,7 @@ export function useNotifications() {
   ) => {
     if (!pushSubscription) return;
     const apiUrl = getApiBaseUrl();
+    const existingMsgs = getStoredScheduledMsgs();
 
     try {
       const res = await fetch(`${apiUrl}/api/notifications/sync-session`, {
@@ -260,27 +291,30 @@ export function useNotifications() {
           subscription: pushSubscription,
           schedules,
           recipeName,
-          messageIds: scheduledMsgIds
+          scheduledMessages: existingMsgs,
+          messageIds: extractMessageIds(existingMsgs)
         })
       });
       if (res.ok) {
         setServerStatus('connected');
         const data = await res.json().catch(() => ({}));
-        if (Array.isArray(data.messageIds)) {
-          setScheduledMsgIds(data.messageIds);
-          localStorage.setItem('levain_scheduled_msg_ids_v1', JSON.stringify(data.messageIds));
+        if (Array.isArray(data.scheduledMessages)) {
+          setStoredScheduledMsgs(data.scheduledMessages);
+        } else if (Array.isArray(data.messageIds)) {
+          setStoredScheduledMsgs(data.messageIds);
         }
       }
     } catch (e) {
       console.warn(`[Push] Session push sync error (${apiUrl}):`, e);
       setServerStatus('unreachable');
     }
-  }, [pushSubscription, scheduledMsgIds]);
+  }, [pushSubscription]);
 
   // 6. Cancel Scheduled Remote Push Notifications
   const cancelRemotePush = useCallback(async (stepId?: string) => {
     if (!pushSubscription) return;
     const apiUrl = getApiBaseUrl();
+    const existingMsgs = getStoredScheduledMsgs();
 
     try {
       await fetch(`${apiUrl}/api/notifications/cancel`, {
@@ -289,15 +323,15 @@ export function useNotifications() {
         body: JSON.stringify({
           subscriptionEndpoint: pushSubscription.endpoint,
           stepId,
-          messageIds: scheduledMsgIds
+          scheduledMessages: existingMsgs,
+          messageIds: extractMessageIds(existingMsgs)
         })
       });
-      setScheduledMsgIds([]);
-      localStorage.removeItem('levain_scheduled_msg_ids_v1');
+      setStoredScheduledMsgs([]);
     } catch (e) {
       console.warn('[Push] Cancel push error:', e);
     }
-  }, [pushSubscription, scheduledMsgIds]);
+  }, [pushSubscription]);
 
   // 7. Test Push Notification (Immediate trigger to verify device lock-screen push)
   const sendTestPush = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
@@ -344,17 +378,20 @@ export function useNotifications() {
   // 8. Local In-App Notification (When app is active in foreground)
   const sendNotification = useCallback((title: string, body: string) => {
     if ('Notification' in window && Notification.permission === 'granted') {
+      const formattedTitle = /^[⏱️🍞🔔]/.test(title) ? title : `⏱️ ${title}`;
       try {
         if (swRegistration && 'showNotification' in swRegistration) {
-          swRegistration.showNotification(`🍞 ${title}`, {
+          swRegistration.showNotification(formattedTitle, {
             body,
             icon: './logo.png',
-            badge: './favicon.png'
+            badge: './favicon.png',
+            tag: 'levain-timer-reminder'
           });
         } else {
-          new Notification(`🍞 ${title}`, {
+          new Notification(formattedTitle, {
             body,
-            icon: './logo.png'
+            icon: './logo.png',
+            tag: 'levain-timer-reminder'
           });
         }
       } catch (e) {

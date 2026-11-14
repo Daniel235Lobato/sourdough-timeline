@@ -193,28 +193,23 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     localStorage.setItem(STORAGE_KEYS.BAKE_HISTORY, JSON.stringify(bakeHistory));
   }, [bakeHistory]);
 
-  // Track the currently synced step to avoid redundant HTTP requests across app reloads/opens
-  const lastSyncedStepRef = useRef<{ stepId: string; endMs: number } | null>(null);
-
-  // Restore last synced step from localStorage on mount
-  useEffect(() => {
+  // Track the currently synced step synchronously to avoid redundant HTTP requests or missed cancellations on mount
+  const lastSyncedStepRef = useRef<{ stepId: string; endMs: number } | null>((() => {
     try {
       const saved = localStorage.getItem('levain_last_synced_step_v1');
-      if (saved) {
-        lastSyncedStepRef.current = JSON.parse(saved);
-      }
+      return saved ? JSON.parse(saved) : null;
     } catch {
-      // Ignore parse error
+      return null;
     }
-  }, []);
+  })());
 
   // 1. Auto-sync ONLY the currently active step timer with Web Push Server (for device lock-screen / iOS PWA background push)
   useEffect(() => {
     const currentStep = activeSession?.steps?.[activeSession.currentStepIndex];
     const endMs = currentStep?.endTime ? new Date(currentStep.endTime).getTime() : 0;
 
-    if (!activeSession || activeSession.isCompleted) {
-      if (lastSyncedStepRef.current !== null) {
+    if (!activeSession || activeSession.isCompleted || !notificationsEnabled) {
+      if (lastSyncedStepRef.current !== null || localStorage.getItem('levain_scheduled_msg_ids_v1')) {
         lastSyncedStepRef.current = null;
         localStorage.removeItem('levain_last_synced_step_v1');
         if (isPushSubscribed) {
@@ -248,23 +243,26 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
           const nextStepLabel = nextStep 
             ? `${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}` 
             : undefined;
+          const currentStepLabel = currentStep.shortName || currentStep.name;
 
           const scheduleItem = {
             stepId: currentStep.id,
-            stepName: currentStep.shortName || currentStep.name,
+            stepName: currentStepLabel,
             nextStepName: nextStepLabel,
             fireTimestamp: endMs,
-            title: `🍞 ${currentStep.shortName || currentStep.name} Complete!`,
+            title: nextStepLabel
+              ? `⏱️ Time for: ${nextStepLabel}`
+              : `🍞 Bake Timer Complete!`,
             body: nextStepLabel
-              ? `Time to start: ${nextStepLabel}`
-              : `Bake Complete! Your sourdough is ready 🎉`
+              ? `${currentStepLabel} timer finished · Time to start ${nextStepLabel}`
+              : `${currentStepLabel} timer finished · Your sourdough is ready!`
           };
 
           // Sync ONLY the single current active step
           syncSessionPushSchedules([scheduleItem], activeSession.recipeName);
         } else {
           // Timer already reached 0
-          if (lastSyncedStepRef.current !== null) {
+          if (lastSyncedStepRef.current !== null || localStorage.getItem('levain_scheduled_msg_ids_v1')) {
             lastSyncedStepRef.current = null;
             localStorage.removeItem('levain_last_synced_step_v1');
             cancelRemotePush();
@@ -272,7 +270,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
       } else {
         // Step not started yet (paused waiting for user to tap "Start Step") or 0-minute milestone; cancel any remote push
-        if (lastSyncedStepRef.current !== null) {
+        if (lastSyncedStepRef.current !== null || localStorage.getItem('levain_scheduled_msg_ids_v1')) {
           lastSyncedStepRef.current = null;
           localStorage.removeItem('levain_last_synced_step_v1');
           cancelRemotePush();
@@ -284,6 +282,7 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
     activeSession?.steps,
     activeSession?.isCompleted,
     activeSession?.recipeName,
+    notificationsEnabled,
     isPushSubscribed,
     syncSessionPushSchedules,
     cancelRemotePush
@@ -301,20 +300,24 @@ export const SourdoughProvider: React.FC<{ children: ReactNode }> = ({ children 
       const now = Date.now();
       const endMs = new Date(currentStep.endTime).getTime();
 
-      // Check if timer has just expired and hasn't notified yet
-      if (now >= endMs && !notifiedStepEndIds.has(currentStep.id)) {
+      // Check if timer has just expired and hasn't notified yet (within a 5-minute window so stale sessions don't re-fire)
+      if (now >= endMs && now - endMs < 5 * 60 * 1000 && !notifiedStepEndIds.has(currentStep.id)) {
         setNotifiedStepEndIds(prev => new Set(prev).add(currentStep.id));
         const nextStep = activeSession.steps[activeSession.currentStepIndex + 1];
+        const currentStepLabel = currentStep.shortName || currentStep.name;
+        const nextStepLabel = nextStep
+          ? `${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}`
+          : undefined;
 
         if (soundEnabled) {
           playStepChime();
         }
         if (notificationsEnabled) {
           sendNotification(
-            `${currentStep.shortName || currentStep.name} Complete!`,
-            nextStep
-              ? `Time to start: ${nextStep.shortName || nextStep.name}${nextStep.durationMinutes > 0 ? ` (${nextStep.durationMinutes}m)` : ''}`
-              : `Bake Complete! Your sourdough is ready 🎉`
+            nextStepLabel ? `⏱️ Time for: ${nextStepLabel}` : `🍞 Bake Timer Complete!`,
+            nextStepLabel
+              ? `${currentStepLabel} timer finished · Time to start ${nextStepLabel}`
+              : `${currentStepLabel} timer finished · Your sourdough is ready!`
           );
         }
       }

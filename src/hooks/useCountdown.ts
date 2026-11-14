@@ -8,6 +8,7 @@ export interface CountdownResult {
   isPast: boolean;
   formattedCountdown: string; // HH:MM:SS format
   progressPercentage: number;
+  exactProgress: number; // 0-100 float for fluid SVG ring animation
 }
 
 export function formatDurationToHMS(minutesTotal: number): string {
@@ -47,7 +48,8 @@ export function useCountdown(
       totalSecondsRemaining: 0,
       isPast: false,
       formattedCountdown: '00:00:00',
-      progressPercentage: 0
+      progressPercentage: 0,
+      exactProgress: 0
     };
   }
 
@@ -76,11 +78,13 @@ export function useCountdown(
 
   // Calculate percentage elapsed if start date is provided
   let progressPercentage = 0;
+  let exactProgress = 0;
   if (startDate) {
     const totalDurationMs = targetMs - startDate.getTime();
     if (totalDurationMs > 0) {
       const elapsedMs = now - startDate.getTime();
-      progressPercentage = Math.min(100, Math.max(0, Math.round((elapsedMs / totalDurationMs) * 100)));
+      exactProgress = Math.min(100, Math.max(0, (elapsedMs / totalDurationMs) * 100));
+      progressPercentage = Math.round(exactProgress);
     }
   }
 
@@ -91,6 +95,7 @@ export function useCountdown(
     totalSecondsRemaining,
     isPast,
     formattedCountdown,
-    progressPercentage
+    progressPercentage,
+    exactProgress
   };
 }
